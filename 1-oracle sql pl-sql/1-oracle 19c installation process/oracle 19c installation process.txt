@@ -1,0 +1,20 @@
+how to install oracle 19c : We need to use oracle 19c in the training
+------------------------------------------------------------------
+(Condition A )Note: on oracle company laptop, otherwise ur installation will fail
+----------------------
+rename your computer
+dont use vpn
+use ur own network/wifi
+
+download link:
+----------------
+https://www.oracle.com/in/database/technologies/oracle19c-windows-downloads.html
+
+keep password : admin
+
+refer video: first watch complete video before installatino, and must ensure Condition A before starting installation
+https://www.youtube.com/watch?v=EE-FDv2FsSE
+
+
+online practice:
+https://livesql.oracle.com/next/

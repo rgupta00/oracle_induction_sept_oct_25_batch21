@@ -1,0 +1,57 @@
+case employee mgt system
+case study --> erd --> table design
+boat
+
+step 1: create a new schema emp123
+step 2: create table related to case stduy
+	and practice
+	
+
+
+How to create new schema? oracle 19c?
+-------------------------------------
+step 1: login as sysdba
+sqlplus / as sysdba
+
+
+how to know what type of database we are using?
+--------------------------------------------
+SELECT BANNER FROM V$VERSION WHERE BANNER LIKE 'Oracle%';
+
+
+
+step2:
+CREATE USER emp123 IDENTIFIED BY emp123;
+
+step 3:
+2. Grant basic privileges to allow login and object creation
+----------------------------------------------------------
+GRANT CONNECT, RESOURCE TO emp123;
+
+GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE TO emp123;
+
+
+
+step 4. (Optional but recommended) Allow unlimited tablespace usage
+---------------------------------------------------------------
+-- Required if the user is creating large objects or many tables
+
+ALTER USER emp123 QUOTA UNLIMITED ON USERS;
+
+step 5. (Optional but JDBC-friendly) Unlock the user if required
+---------------------------------------------------------------
+This is just for confirmation; newly created users are unlocked by default
+
+ALTER USER emp123 ACCOUNT UNLOCK;
+
+
+Additional Notes
+------------------------
+Ensure the USERS tablespace exists and is the default tablespace for new users.
+
+You can specify a default tablespace and temporary tablespace like this:
+------------------------------------------------------------------
+CREATE USER emp123 IDENTIFIED BY emp123
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA UNLIMITED ON users;

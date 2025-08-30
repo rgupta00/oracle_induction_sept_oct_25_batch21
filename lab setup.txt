@@ -1,0 +1,59 @@
+Sw tools to install oracle induction training 
+=================================================
+
+git 
+----
+https://github.com/git-for-windows/git/releases/download/v2.50.0.windows.1/Git-2.50.0-64-bit.exe
+Note : create an account with github
+
+
+JDK 17.0.10
+----------
+https://download.oracle.com/java/17/archive/jdk-17.0.10_windows-x64_bin.exe
+
+maven:
+------
+https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.zip
+
+STS 4.x 
+--------
+https://spring.io/tools
+https://cdn.spring.io/spring-tools/release/STS4/4.31.0.RELEASE/dist/e4.36/spring-tools-for-eclipse-4.31.0.RELEASE-e4.36.0-win32.win32.x86_64.zip
+
+
+Plugin for xml
+-------------
+Step 1: Install XML Editors and Tools (if not present)
+STS 4 no longer bundles the full XML tooling by default, so install them manually:
+Go to: Help ? Eclipse Marketplace
+Search for: Eclipse Web Tools Platform (WTP)
+Install:
+Eclipse XML Editors and Tools
+Optionally: Eclipse Web Developer Tools (for full WTP experience)
+Restart STS
+
+
+Oracle:
+Oracle Database 19c
+--------------------
+https://www.oracle.com/in/database/technologies/oracle19c-windows-downloads.html
+
+keep password : admin
+
+refer video: first watch complete video before installatino, and must ensure Condition A before starting installation
+https://www.youtube.com/watch?v=EE-FDv2FsSE
+
+
+SQL Developer 24.3.1
+-------------------
+https://download.oracle.com/otn_software/java/sqldeveloper/sqldeveloper-24.3.1.347.1826-no-jre.zip
+
+
+Nodejs: v20
+-------
+https://nodejs.org/en/download
+
+
+vs code:
+-------
+https://code.visualstudio.com/download
