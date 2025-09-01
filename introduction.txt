@@ -1,0 +1,77 @@
+Discussion about training topics:
+----------------------------------
+trainee intro
+
+trainer intro
+https://www.linkedin.com/in/rajeevguptajavatrainer/
+
+syllabus intro
+
++------------------------------------------------------------+------------+------------+-------------+--
+| Session title                                               | Start date | End date   | Trainer     |                
++------------------------------------------------------------+------------+------------+-------------+---
+| Oracle Database 19c: SQL workshop                           | 1-Sep-25   | 5-Sep-25   | Rajeev Gupta|  
+| Fundamentals of Java 17                                     | 8-Sep-25   | 11-Sep-25  | Rajeev Gupta|     
+| XML Fundamentals                                            | 12-Sep-25  | 15-Sep-25  | Rajeev Gupta|     
+| JPA with Eclipselink                                        | 16-Sep-25  | 16-Sep-25  | Rajeev Gupta|     
+| Oracle Weblogic Server 14C Administration                   | 17-Sep-25  | 18-Sep-25  | Rajeev Gupta|     
+| Rest Services and Web Services                              | 19-Sep-25  | 22-Sep-25  | Rajeev Gupta| 
+| Micro Services architecture, Springboot features, Kafka     | 23-Sep-25  | 24-Sep-25  | Rajeev Gupta| 
+| (Basics)                                                    |            |            |             |         
+| Micro Services Architecture, Spring Boot features, Kafka    | 25-Sep-25  | 29-Sep-25  | Rajeev Gupta| 
+| (Advanced)                                                  |            |            |             |                               
+| Developing Web Applications with JavaScript, HTML5, and CSS | 30-Sep-25  | 6-Oct-25   | Rajeev Gupta| 
+| OJET and Angular JS, Node JS and KnockOut JS                | 7-Oct-25   | 13-Oct-25  | Rajeev Gupta| 
+| Introduction to DevOps                                      | 14-Oct-25  | 14-Oct-25  | Rajeev Gupta| 
+| Oracle Cloud Infrastructure Foundations (2025):             | 15-Oct-25  | 15-Oct-25  | Rajeev Gupta| 
+| Hands-on Workshop                                           |            |            |             |                                 
++------------------------------------------------------------+------------+------------+-------------+----
+
+
+github repo
+https://github.com/rgupta00?tab=repositories
+
+cheetsheet notes etc:
+-------------------------
+https://github.com/rgupta00/oracle_induction_sept_oct_25_batch21
+
+programming codes:
+------------------
+https://github.com/rgupta00/oracle_induction_sept_oct_25_batch21_code
+
+
+pdf notes for traning:
+-----------------------
+https://drive.google.com/drive/folders/1xhg2bcBNg_u-1btx3zIMakayBil_Q94c
+
+
+Oracle Database 19c: SQL workshop — 5 days
+
+Fundamentals of Java 17 — 4 days
+
+XML Fundamentals — 2 days
+
+JPA with Eclipselink — 1 day
+
+Oracle Weblogic Server 14C Administration — 2 days
+
+Rest Services and Web Services — 2 days
+
+Micro Services architecture, Springboot features, Kafka (Basics) — 2 days
+
+Micro Services Architecture, Spring Boot features, Kafka (Advanced) — 3 days
+
+Developing Web Applications with JavaScript, HTML5, and CSS — 5 days
+
+OJET and Angular JS, Node JS and KnockOut JS — 5 days
+
+Introduction to DevOps — 1 day
+
+Oracle Cloud Infrastructure Foundations (2025): Hands-on Workshop — 1 day
+
+Oracle Cloud Infrastructure Foundations (2025): Hands-on Workshop — 1 day
+
+
+
+sw installation instructions
+-----------------------------
