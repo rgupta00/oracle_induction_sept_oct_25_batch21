@@ -5976,7 +5976,6 @@ exec proc_insert_cust(100, 'BusyCoder', '+91-9090909090', '12-12-1990', 'Chennai
 
 
 
-
 Good resources:
 -----------------
 
