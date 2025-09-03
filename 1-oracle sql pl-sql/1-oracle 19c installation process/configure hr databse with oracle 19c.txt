@@ -83,3 +83,20 @@ Hostname	localhost
 Port		1521
 SID			orcl
 Service Name	leave empty if using SID
+
+
+
+Note: error to take care
+https://stackoverflow.com/questions/36563723/ora-20000-schema-hr-does-not-exist-or-insufficient-privileges
+
+alter session set "_ORACLE_SCRIPT"=true; 
+Session altered. 
+
+create user hr identified by hr; 
+User created. 
+
+drop user hr cascade; 
+User droped. 
+
+@?/demo/schema/human_resources/hr_main.sql
+User created. ...
