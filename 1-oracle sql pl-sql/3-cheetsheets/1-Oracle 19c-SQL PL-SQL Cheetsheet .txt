@@ -4401,11 +4401,17 @@ It contains details about:
 Type					Examples
 -------------------------------------
 Tables					Names, columns, data types, constraints
+
 Users					Usernames, roles, privileges
+
 Indexes					Index names, columns used
+
 Views					Definitions, dependencies
+
 Procedures/Functions	Names, parameters, return types
+
 Triggers				Trigger timing, events, target tables
+
 Storage					Tablespace, segments, extents
 
 Common Data Dictionary Views:
@@ -4426,6 +4432,7 @@ List all your tables:
 
 
 SELECT table_name FROM user_tables;
+
 List all table:
 
 
@@ -5944,6 +5951,20 @@ WHERE dept_no = 10;
 ----------------
 COMMENT ON TABLE employee IS 'Stores employee records';
 COMMENT ON COLUMN employee.salary IS 'Monthly salary in INR';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
