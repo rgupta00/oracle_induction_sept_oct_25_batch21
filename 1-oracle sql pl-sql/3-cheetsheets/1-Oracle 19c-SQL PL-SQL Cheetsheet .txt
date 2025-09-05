@@ -2732,6 +2732,23 @@ Nested Subquery → “Get me a list first, then check if I’m in it.”
 Correlated Subquery → “For each person, check something about them one by one.”
 Join → “Bring two lists together, line up matching rows, and show combined info.”
 
+
+
+
+
+
+
+
+
+
+
+SQL: str query language
+
+PLSQL: procuedrral ex of SQL
+
+	select from where group by having
+	if else switch looping
+	
 Session-9: Oracle PLSQL – Introduction
 ==================================
 
@@ -2747,7 +2764,7 @@ What is PLSQL?
 		an exception-building part.
 
 Two blocks in PLSQL
-
+------------------------
 	1. Anonymous Block
 
 	2. Named Block   — Stored as an object in DB
@@ -2912,9 +2929,7 @@ set serveroutput on;
 declare
   v_ph_no varchar2(100);
 begin
-  select phone_number into v_ph_no 
-  from employees 
-  where employee_id = 102;
+  select phone_number into v_ph_no  from employees where employee_id = 102;
 
   dbms_output.put_line('The phone number of the employee is ' || v_ph_no);
 end;
@@ -3184,8 +3199,16 @@ Example code:
  basic DML operations (Insert, Update, Delete, Select) on the customer table and prints 
  confirmation messages using dbms_output.put_line.
 
-set serveroutput on;
 
+	create table cust1
+	(
+		cust_id number(6) primary key,
+		cust_name varchar2(30) not null,
+		mobile_no number(10),
+		age number(3)
+	);
+
+set serveroutput on;
 declare
   v_cust_id number;
   v_cust_name varchar2(250);
@@ -3214,6 +3237,8 @@ begin
 end;
 /
 
+
+next things?
 
  %TYPE Attribute and %ROWTYPE Attribute
  --------------------------------------
@@ -3363,12 +3388,14 @@ In simple terms:
 
 
 
+
 Cursor Types
 --------------
 Cursor 	Type				Description
 ---------------------------------------
 Implicit Cursor				Used automatically by Oracle for single-row queries
 Explicit Cursor				Declared and controlled by the programmer
+
 
 
 Implicit Cursor in PL/SQL
@@ -3430,7 +3457,8 @@ Fetch multiple rows (e.g., all employees in a department)	Loop					Explicit curs
 
 
 Basic Syntax of Explicit Cursor
------------------------------------
+--------------------------------
+
 Explicit cursor is a user defined cursor
     1) Declare the cursor
     2) Open the cursor
@@ -3442,9 +3470,7 @@ Explicit cursor is a user defined cursor
 --How to declare a cursor:
 ==========================
 
-CURSOR cursor_name
-IS
-   SELECT_statement;
+CURSOR cursor_name IS SELECT_statement;
 
 cursor C1                 -- c1 is the cursor variable
 is
@@ -3460,6 +3486,7 @@ select emp_name from employees;
 Ex1: Example cursor:
 ===================
 declare
+
 vemp_salary EMPLOYEES.salary%TYPE;                --Cursor declaration
 cursor c1 is select salary from employees;
 begin
@@ -3570,7 +3597,7 @@ Key Steps
 
 
 Ex3:with looping
------------------------------
+------------------
 declare
   cursor c1 is
     select last_name, employee_id, salary from employees
@@ -3672,8 +3699,11 @@ end;
 
 
 
-Note: While working on cursor keep in mind that when SELECT INTO return 0 row then it throws excxeption
-and when we are doing UPDATE / DELETE and 0 row is retrun we dont get any exception raised
+Note: While working on cursor keep in mind that 
+when SELECT INTO return 0 row then it throws excxeption
+
+and when we are doing UPDATE / DELETE 
+and 0 row is retrun we dont get any exception raised
 
 so there is difference in the output:
 ------------------------------
@@ -4004,6 +4034,13 @@ Body: The actual implementation
 
 Example:
 
+create table emp (
+    emp_id number primary key,
+    name varchar2(50)
+);
+
+create sequence emp_seq start with 1 increment by 1;
+
 Specification:
 --------------
 
@@ -4029,6 +4066,23 @@ CREATE PACKAGE BODY emp_pkg AS
     END;
 END emp_pkg;
 
+how to test:
+------------
+begin
+    emp_pkg.add_employee('Rajeev');
+    emp_pkg.add_employee('Anita');
+end;
+/
+
+select * from emp;
+
+-- Check package counter
+begin
+    dbms_output.put_line('Employees added in this session: ' || emp_pkg.get_count);
+end;
+/
+
+
 
 4. TRIGGER
 -----------
@@ -4047,6 +4101,66 @@ END emp_pkg;
 	BEGIN
 		:NEW.created_at := SYSDATE;
 	END;
+
+Complete example:
+----------------
+Step 1: Create the students table
+------------------------------
+CREATE TABLE students (
+    student_id NUMBER PRIMARY KEY,
+    name VARCHAR2(50),
+    grade VARCHAR2(10),
+    created_at DATE
+);
+
+Step 2: Create the trigger
+------------------------------
+CREATE OR REPLACE TRIGGER trg_before_insert
+BEFORE INSERT ON students
+FOR EACH ROW
+BEGIN
+    -- Automatically set created_at to current date/time
+    :NEW.created_at := SYSDATE;
+END;
+/
+
+
+Explanation:
+-------------
+CREATE OR REPLACE TRIGGER trg_before_insert
+	Creates a trigger named trg_before_insert.
+	OR REPLACE allows updating the trigger if it already exists.
+BEFORE INSERT ON students
+	Trigger fires before an INSERT operation on the students table.
+
+FOR EACH ROW
+	This is a row-level trigger, meaning it executes for each row being inserted.
+
+:NEW.created_at := SYSDATE;
+	:NEW refers to the new row being inserted.
+	Sets the created_at column to the current system date and time.
+
+Step 3: Insert data without specifying created_at
+---------------------------------------------------
+INSERT INTO students (student_id, name, grade)
+VALUES (1, 'Anita', 'A');
+
+INSERT INTO students (student_id, name, grade)
+VALUES (2, 'Rahul', 'B');
+
+
+We don’t provide created_at, because the trigger will automatically set it.
+------------------------------
+
+Step 4: Check the table
+-----------------------
+SELECT * FROM students;
+
+Key Points:
+-------------
+	The trigger ensures consistency, automatically filling created_at.
+	You don’t need to manually set created_at in every insert.
+	SYSDATE returns current date and time in Oracle.
 
 Comparison Table
 ----------------
@@ -4297,6 +4411,7 @@ Storage					Tablespace, segments, extents
 Common Data Dictionary Views:
 -------------------------------------
 View Name					Description
+
 USER_TABLES	Tables 			owned by the current user
 USER_TAB_COLUMNS			Columns of user's tables
 USER_CONSTRAINTS			Constraints on user's tables
