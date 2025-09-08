@@ -1,0 +1,681 @@
+
+Core Java
+
+introduction:
+-----------
+Session 1: Java Basics & Thinking in Objects
+    • What is Java, platform independence, JDK/JRE/JVM
+    • Primitive variables, type casting, Operators: arithmetic, relational, logical, bitwise
+final, constants, and var (Java 10)
+    • Control structures:
+        ◦ if-else, switch
+        ◦ Loops: while, do-while, for
+        ◦ break, continue, return
+    • 1D and 2D Arrays
+	
+	
+	
+	sw setup 
+	jdk 17, manve and eclipse sts
+	
+	workspace --> many project ---> packages ---> code
+												HelloWorld
+											
+									a way to orgainised the code
+									
+									src: source code
+									
+									
+		oracle.com
+		
+		com.oracle.training.session1 (good name)
+		
+		foo X
+		bar X
+		
+
+
+
+
+
+Sesssion-1
+-----------
+Java Object orinetation
+---------------------------
+
+basics fundamentals :-
+------------------------------
+class: template to create the objects, cookie cutter
+
+object: real actor that works 
+	identity: address of an object
+	
+	state: data ..instatance variables
+	
+	behaviour: methods
+	
+	
+instance varibale:
+static varible:
+constructors
+getter 
+setters
+
+
+How to created class, object, constructors,getter setter 
+- Create a class to hold the Account details
+	id name balance
+how to achive encapsultaion
+how to achive abstraction?
+static method and data
+init block
+static init block
+relationship bw the objects
+any 2 thing is this world 
+visibity modifier
+concept of packages
+
+
+Type of relationship between the object?
+----------------------------------------
+
+What is object orientation?
+----------------------------
+	is study of the subject that talk about relationship bw the objects
+	
+	
+USE A 
+HAS A 
+IS A 
+
+USE A 
+--------
+Trainer teach with the Marker => use a 
+Passanger name raj moving from BTM to zoo  using Metro => use a 
+
+class Metro{
+}
+
+//syntexically vs symentically
+
+Wrong design:
+------------
+class Passanger{
+	private Metro metro=new Metro();
+	
+}
+Wrong design: "extends" used for inheritance*
+------------
+class Passanger extends Metro{
+	
+}
+
+right way:
+---------
+class Passanger{
+	public void travel(Metro metro){
+	}
+}
+
+Car c=new Car();
+
+Vehicle v=new Car();
+
+
+
+
+HAS A 
+-----
+Compostition
+
+aggigration
+
+
+
+loose coupling and high cohesions?
+---------------------------------
+	
+	Noun analaysis
+	
+	A passanger is moving from LN to RC using metro
+	 class			method      prop			class
+	
+		class Passanger{
+			
+		}
+		
+		class Metro{
+		}
+		
+		
+	
+	USE a : .....
+	 class Passanger {
+		public void travel(String s, String d, Metro metro){
+		}
+	 }
+	 
+	 class Metro{
+	 
+	 }
+	 
+	 trainer and marker
+	 
+	 trainer and lunch
+	 
+	 class Triner{
+		public void write(Marker m){
+		}
+		public void eat(Lunch lunch){
+		
+		}
+	 }
+	 
+	 
+	USE A
+	
+	
+	HAS A: association
+	-------------------
+	
+		Compostition
+		
+		Aggigation
+		
+		
+	
+	IS A
+	
+
+how to create loose coupling and high cohesions
+
+
+
+
+
+
+
+
+
+Session-3
+----------
+
+relation bw objects
+	has a
+	use a 
+	
+	is a : aka inhertance relationship
+
+Inheritance
+Type of inheritance
+
+parameter passing from drived class to base class
+super()
+
+diamond problem
+
+polymorphism
+	method overloading
+	method overriding
+	
+abstract class in details
+
+interface in details
+
+how to achive run time polymorphism?
+
+Two way to achive abstraction 
+	abstract class
+	interface
+
+When to go for interface and when to go for abstract classes in java?
+
+
+interface A{
+	public static final int i=10; //u can never hv instance varible inside the interface
+								//no possiblity of ctr
+	A(){}
+}
+
+election promise
+
+
+interface Jumpable{
+	public abstract void jump();
+}
+
+class Monkey implements Jumpable{
+}
+class Monkey extends Jumpable{
+}
+
+java support multiple inhertance only via interface?
+-----------------------------------------------------
+final keyword in details
+	final method
+	final class
+	final variables
+	final method arguments
+	
+	
+final is something which can not be change
+
+	
+	
+	
+Session-4
+-----------	
+Concept of package and visibilty modifier
+Introduction to solid principle
+
+
+
+
+session-5
+-----------
+String class in java
+
+how it works, important methods
+
+Immutablity: why
+"thread safty"
+	if i want to achive thread safty : 2 ways one synchrnoized keyword and another is immutable object 
+	immutable object : they are nativly thread safe
+	immutable object  are more scallable as compared to syn kb in distbuted computing
+	
+	
+Wrapper classes, some java 5 features
+
+some java 5 features
+some java 7 features
+ some java 8 features
+  some java 9 features
+  every 6 month : less small enhancement 
+  ...
+  some java 25 features
+  
+ 
+ enum ShirtSize{
+	SMALL, MEDIUM, LARGE
+}
+
+enum ShirtSize{
+	public final ShirtSize SMALL=new ShirtSize(), 
+	public final ShirtSize MEDIUM=new ShirtSize(), 
+	public final ShirtSize LARGE=new ShirtSize(), 
+
+ 
+Inner class
+Exception handing
+IO
+
+
+
+
+session-6
+--------
+Exception handing revsion, custom exceptions
+
+try
+catch
+finally
+throw
+throws
+
+
+
+
+
+
+
+
+Session-7
+----------
+Quick recap of collection api
+
+Comparable and comparator
+
+introduction to generics <> type safty to ur collection
+
+
+maven: build tools, life cycle of the project
+	it download jar file of the frameworks (collection of jar file)
+	
+	devOps
+	
+jdbc api to intract with the database
+
+jdbc connector: is avaiable in a jar file which used to connect to the database
+
+					chines	-------------------------	franch
+					
+u -------------------> java app ----------------- rdbms
+					data is lost					mysql
+
+java app --> data is lost as soon as close my system
+
+	store the data somewhere : mysql 
+
+
+
+com.mysql.cj.jdbc.Driver
+
+
+        String url = "jdbc:mysql://localhost:3306/testdb"; // testdb = your database
+        String user = "root";  // your MySQL username
+        String password = "root"; // your MySQL password
+		
+		
+------------------------
+21 st aug: microservice
+-----------------------
+
+what is pre req
+---------------
+Spring frmework
+	Dependency injection
+	
+Spring boot 
+	framework to create REST web service
+
+
+
+microservice: set of design pattern to created distributed application
+we have to use few framework:
+ spring boot
+	--
+	--
+	Spring cloud : is a compoent of spring boot which contain many tools
+	to create microserivce
+	
+
+
+
+
+
+
+
+
+
+Session -2 spring boot 
+---------------------------
+Spring rest crud application
+return correct status code
+Spring rest ex handling
+Spring rest validation
+
+
+
+Spring boot data
+	h2 databse 
+	
+	
+	
+spring boot swagger documnetation
+
+Spring rest actuator
+	used to monitor ur spring app 
+
+Spring rest caching
+
+Spring rest schedule process
+
+Spring rest dto and entity pattern
+
+
+Session -3 spring boot projects
+---------------------------
+
+Case study small bank application
+
+Spring rest security
+	basic auth
+	jwt
+	
+	
+
+Step 1: basics rest controller
+------------------------------
+package com.productapp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.productapp.dao.Product;
+import com.productapp.service.ProductService;
+
+@RestController
+@RequestMapping(path="productapp")
+public class ProductController {
+	
+	private ProductService productService;
+
+	
+	@Autowired
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
+	
+	//get all products
+	@GetMapping(path = "products")
+	public List<Product> getAll(){
+		return productService.getAll();
+	}
+	//get by id
+	@GetMapping(path = "products/{id}")
+	public Product getById(@PathVariable("id")  int id) {
+		return productService.getProductById(id);
+	}
+	
+	//add product-- parser convert json <---> java 
+	//@ResponseBody: used to trigger the parser to convert java --> json
+	//@RequestBody: used to trigger the parser to convert json --> java
+	@PostMapping(path = "products")
+	public Product addProduct(@RequestBody Product product) {
+		return productService.addProduct(product);
+	}
+	
+	//update
+	@PutMapping(path = "products/{id}")
+	public Product updateProduct(@PathVariable("id")  int id, @RequestBody Product product) {
+		return productService.updateProduct(id, product);
+	}
+	
+	//delete
+	@DeleteMapping(path = "products/{id}")
+	public Product deleteById(@PathVariable("id")  int id) {
+		return productService.getProductById(id);
+	}
+
+}
+
+
+step 2: correct http status code
+-------------------------------
+ResponseEntity? data + http status code
+
+@RestController
+@RequestMapping(path="productapp")
+public class ProductController {
+	
+	private ProductService productService;
+
+	
+	@Autowired
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
+	
+	//get all products
+	@GetMapping(path = "products")
+	public ResponseEntity<List<Product>> getAll(){
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAll());
+	}
+	//get by id
+	@GetMapping(path = "products/{id}")
+	public ResponseEntity<Product> getById(@PathVariable("id")  int id) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(id));
+	}
+	
+	@PostMapping(path = "products")
+	public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+		Product productAddedToDb= productService.addProduct(product);
+		return ResponseEntity.status(HttpStatus.CREATED).body(productAddedToDb);
+	}
+	
+	//update
+	@PutMapping(path = "products/{id}")
+	public ResponseEntity<Product> updateProduct(@PathVariable("id")  int id, @RequestBody Product product) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, product));
+	}
+	
+	//delete
+	@DeleteMapping(path = "products/{id}")
+	public ResponseEntity<Void> deleteById(@PathVariable("id")  int id) {
+		 productService.getProductById(id);
+		 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+}
+
+
+step 3: handle the exceptions: ex handler
+-------------------------------
+
+@RestControllerAdvice //ex handling
+public class ExHandlerController {
+
+	@ExceptionHandler(ProductNotFoundException.class)
+	public ResponseEntity<ErrorMessage> handle404(ProductNotFoundException ex) {
+		ErrorMessage errorMessage=new ErrorMessage();
+		errorMessage.setError(ex.getMessage());
+		errorMessage.setToContact("raj@oracle.com");
+		errorMessage.setTimeStamp(LocalDateTime.now());
+		errorMessage.setStatusCode(HttpStatus.NOT_FOUND.value());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+	}
+	
+	//generic handler
+	//@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorMessage> handle500(Exception ex) {
+		ErrorMessage errorMessage=new ErrorMessage();
+		errorMessage.setError("pls try after some time");
+		errorMessage.setToContact("raj@oracle.com");
+		errorMessage.setTimeStamp(LocalDateTime.now());
+		errorMessage.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+	}
+}
+
+
+
+
+step 3: server side validation
+-------------------------------
+
+step 3.1: put the validation jar in project
+step 3.2:
+	apply validation anno on dtos
+	
+	
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class Product  {
+	private Integer id;
+	
+	@NotNull(message = "name must not be empty")
+	private String name;
+	
+	@Range(message = "price should be in valid range", max = 200000, min=10)
+	private BigDecimal price;
+}
+
+step 3.3 : force spring boot to respect these ann : @Valid
+
+	@PostMapping(path = "products")
+	public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
+		Product productAddedToDb= productService.addProduct(product);
+		return ResponseEntity.status(HttpStatus.CREATED).body(productAddedToDb);
+	}
+	
+step 3.4: we have written a handle to handle 400
+--------------------------------------------
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorMessage> handle400(MethodArgumentNotValidException ex) {
+		
+		String errMessageString= ex.getBindingResult()
+				.getAllErrors()
+				.stream()
+				.map(x-> x.getDefaultMessage())
+				.collect(Collectors.joining(" ,"));
+				
+		
+		ErrorMessage errorMessage=new ErrorMessage();
+		errorMessage.setError(errMessageString);
+		errorMessage.setToContact("raj@oracle.com");
+		errorMessage.setTimeStamp(LocalDateTime.now());
+		errorMessage.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+	}
+	
+
+Spring boot data: rdbms vs NoSQL
+------------------
+jdbc --->low level api ----> JPA/Hibernate
+
+pre req videos:
+https://www.youtube.com/watch?v=yjRrnv_BAR8&list=PLv2-IhRmhbyRm6ro3IQXEF-B1pW-CXQAi&index=1&t=29s
+
+Spring boot : spring data (wrapper over jpa)
+----------------------------------------
+		it is providing you declartive programming in dao layer ---> repo 
+		
+		:) hey programmer dont write dao layer --> come to me --> spring data --> declartive dao layer
+		
+		spring data : rdbms , nosql
+		
+spring data + database 
+	
+h2 databse : in memory database ==> full learning with out the pain of installing db :)
+----------
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+Try configuration of spring profile 15min
+-------------------------------------
+jar -jar productapp --server.port=8090
+then profile
+
+jar -jar -Dspring.profiles.active=prod productapp 
+
+
+
