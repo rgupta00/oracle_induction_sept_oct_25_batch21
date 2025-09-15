@@ -1,0 +1,500 @@
+Distributed computing in java & JAX-WS 2.0
+___________________________________________
+	JAX WS
+	________
+	1. Hello World WS
+	2. Consuming an ws publically available
+	3. JAX-WS annotations
+	4. Using Interface Server side SEI
+	5. Using JAXB annotations
+	6. Handling faults
+	7. Hello world using tomcat
+	
+		
+	
+Intrduction to JAX-WS Overview
+___________________________
+
+	=> JAX-WS is a JEE specification for building message oriented /RPC oriented web services
+
+	=> Minimum coding , JAX-WS API hides the complexity form developer
+
+	=> JAX-WS 2.0 supports the Web Services Interoperability (WS-I) Basic Profile Version 1.1 
+
+	=> JAX-WS is also one of the foundations of web service interoperability Technologies (WSIT). 
+
+	=> RI of JAX-WS project Metro that also include Tango which handles the WSIT
+
+	=> Java Version 6 onwards JAX-WS can be used in Java SE 
+
+
+
+
+
+Approaches for WS Development
+________________________
+
+	1. bottom-up approach
+	____________________
+		Bottom-up approach: Start with Java Classes
+
+	2. top-down approach
+	 ______________________
+		Top-down approach: Start with WSDL
+
+
+
+
+	Hello World example
+	___________________
+
+	steps:
+		1. Creating our Web Service Endpoint
+		2. Creating the Web Service Client using wsimport command.
+
+
+	1. Creating Web Service Endpoint
+	com.demo
+
+	@WebService
+	public class Calculator {
+		@WebMethod
+		public int sum(int param1, int param2) {
+			return param1 + param2;
+		}
+
+		@WebMethod
+		public int multiply(int param1, int param2) {
+			return param1 * param2;
+		}
+	}
+
+
+
+
+	 Endpoint.publish("http://localhost:8080/hello-ws/CalculatorService", new Calculator());
+
+
+	http://localhost:8080/hello-ws/CalculatorService?wsdl
+
+	2. Creating WS client
+	
+		From src of client project 
+		wsimport -target 2.0 -keep http://localhost:8080/hello-ws/CalculatorService?wsdl
+
+		wsimport -target 2.0 -keep http://localhost:8080/demo/CalculatorService?wsdl
+
+
+
+	What is  wsimport ?
+		==> The wsimport command-line tool processes an existing WSDL file and generates 
+			the required portable support classes (SEI) for developing JAX-WS web service applications 
+
+		==>Essentially, it is going to automatically generate all of the class files involved with 
+		the SOAP, XML and communication aspects of our web service!
+
+
+  	    CalculatorService service = new CalculatorService();
+
+        //create proxy
+        Calculator proxy = service.getCalculatorPort();
+
+        int a = new Integer("22").intValue();
+        int b = new Integer("33").intValue();
+        
+        //invoke
+        System.out.println("Sum of the arguments = " + proxy.sum(a,b));
+	    System.out.println("Multiple of the arguments = " + proxy.multiply(a,b));
+
+
+
+	http://stackoverflow.com/questions/9601107/the-constructor-serviceurl-qname-webservicefeature-is-undefined
+
+
+
+
+
+	Now using @WebService annotation:
+	______________________________
+	
+	@WebService:  should be placed on an interface and implementation class
+	_________________________________________________________________________
+
+	name==> name of web service mapped to the name attribute of the wsdl:portType
+
+	serviceName==>actual name of published service, mapped to name wsdl:service 
+		element in WSDL document
+			(Default value is name of SEI implementation class)
+
+	targetNamespace==> Secifies the target namespace under which the service is defined.
+		(Default value is package name)
+
+ 	wsdlLocation==>  Specifies the URI at which the services WSDL contract is stored. 
+			(Default value is the URI at which the service is deployed)
+
+
+
+
+  	endpointInterface==>  Specifies the full name of the SEI that the 
+				implementation class implements
+				(This attribute is used in implementation class)
+
+	
+	portName=> The name of the endpoint at which the service is published and 
+		is mapped to the name attribute of the wsdl:port element 
+		in WSDL contract document
+		(Default value is the append Port to the name of the
+			 services implementation class.
+			This is used in implementation class).
+
+
+
+
+
+	More Annotations,Create an web service:
+	_______________________________________
+
+
+	@WebService(serviceName = "CalculatorWS")
+	public class Calculator {
+		@WebMethod
+		public int sum(@WebParam (name= "value1") int value1, @WebParam( name="value2" ) int value2) {
+			return value1 + value2;
+		}
+	}
+
+
+
+	Another example:
+	________________
+
+
+@WebService(name = "calapp", serviceName = "myCalService",
+ portName = "myCalAppPort", targetNamespace = "https://www.kronos.in/")
+public class CalculatorImpl{
+	
+	@WebResult(name = "addResult")
+	@WebMethod(operationName = "addMethod")
+	public int add(
+			@WebParam(name = "x", targetNamespace = "https://www.kronos.in/") int a,
+			@WebParam(name = "y") int b){
+		return a+b;
+	}
+	
+	@WebResult(name = "multiplyResult")
+	@WebMethod(operationName = "multiplyMethod")
+	public int multiply(
+			@WebParam(name = "x", targetNamespace = "https://www.kronos.in/") int a,
+			@WebParam(name = "y") int b){
+		return a*b;
+	}
+}
+
+
+
+
+
+
+	Another example:
+	________________
+
+
+	@WebService(name="ShoppingCartCatalog" , portName="ShoppingCartPort",
+ 	serviceName="ShoppingCartService", targetNamespace="http://www.shoppingcart.com")
+
+	public class ProductCatalog {
+
+	@WebMethod(action="getShoppingCartCategories", operationName="getShoppingCartCategoriesOperation")
+		public List<String> getProductCategories(){
+			List<String>list=new ArrayList<>();
+			list.add("laptop");
+			list.add("books");
+			list.add("games");
+			return list;
+		}
+	}
+
+
+
+
+
+
+
+	Using Interface: design to interface , Server side SEI
+	________________________________________________________
+
+
+	@WebService
+	public interface ProductCalegoriesInterface {
+		public abstract List<Product> getProductCategories();
+
+	}
+
+
+
+	@WebService(endpointInterface="com.shoppingcart.model.ProductCalegoriesInterface")
+	public class ProductCalegoriesInterfaceImpl implements ProductCalegoriesInterface{
+	
+		@WebResult(name="products")
+		@Override
+		public List<Product> getProductCategories() {
+			List<Product>list=new ArrayList<>();
+			list.add(new Product("121", "TV", 5555.7));
+			list.add(new Product("21", "Laptop", 25555.7));
+			list.add(new Product("121", "Mouse", 5.6));
+			return list;
+		}
+	
+	}
+
+
+
+	Using JAXB annotations	xml <--> java
+	_______________________________________
+
+
+	Create an POJO with annotations:
+
+
+	@XmlRootElement(namespace="https://www.kronos.in/")
+	@XmlType(propOrder={"id","name","price"})
+	@XmlAccessorType(XmlAccessType.FIELD)
+	
+	public class Product {
+		@XmlElement(name="p_name", nillable=false, required=true)
+		private String name;
+		@XmlElement(name="p_id", nillable=false, required=true)
+		private String id;
+		@XmlElement(name="p_price", nillable=false, required=true)
+		private double price;
+
+
+
+
+	//Dont forget to have default ctr in POJO class...
+	Create an web service:
+
+
+	@WebService
+	public class ProductCatalog {
+
+		@WebMethod
+		@WebResult(name="Product")
+		public List<Product> getProductCategories(){
+			List<Product>list=new ArrayList<>();
+			list.add(new Product("121", "TV", 5555.7));
+			list.add(new Product("21", "Laptop", 25555.7));
+			list.add(new Product("121", "Mouse", 5.6));
+			return list;
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+	Handling faults
+	________________
+
+	Create User defind exception:
+
+	public class InvalidInputException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+		private String errorDetails;
+
+		public InvalidInputException(String reason, String errorDetails) {
+			super(reason);
+			this.errorDetails=errorDetails;
+		
+		}
+		public String getFaultInfo(){
+			return errorDetails;
+		}
+	
+	}
+
+
+
+	Creating Web service:
+
+
+	@WebService
+	public class ShopInfo {
+
+		@WebMethod
+		@WebResult(name = "shopOutput")
+		public String getShopInfo(@WebParam(partName = "shopInput") String property)
+				throws InvalidInputException {
+			String response = null;
+			if ("shopName".equals(property))
+				response = "Mega Mart";
+			else if ("since".equals(property))
+				response = "2001";
+			else
+				throw new InvalidInputException("invalid input", property
+					+ " not found!");
+			return response;
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	Hello world using tomcat
+	___________________________
+https://www.codejava.net/java-ee/web-services/how-to-code-and-deploy-java-xml-web-services-jax-ws-on-tomcat
+
+<properties>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+
+<dependency>
+    <groupId>com.sun.xml.ws</groupId>
+    <artifactId>jaxws-rt</artifactId>
+    <version>2.3.2</version>
+</dependency>
+<dependency>
+	<groupId>javax</groupId>
+	<artifactId>javaee-web-api</artifactId>
+	<version>8.0</version>
+	<scope>provided</scope>
+</dependency>
+
+
+	<build>
+		<finalName>mvc5</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat9-maven-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	We are going to use JAX-WS RI (Metro) in Tomcat
+	https://jax-ws.java.net/
+
+	Steps: 
+
+	1. Create an dyanmic web project with tomcat in eclipse
+	2. Copy jar files in the lib (JAX-WS Ri)
+	3. Write Web service Endpoint and implemetation classes
+	4. write web.xml
+
+		listner-
+		com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+		Servlet-
+		 com.sun.xml.ws.transport.http.servlet.WSServlet
+
+	
+
+	<listener>
+		<listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>jax-ws</servlet-name>
+		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jax-ws</servlet-name>
+		<url-pattern>/req</url-pattern>
+	</servlet-mapping>
+
+
+
+	5. Write sun-jaxws.xml
+	6. Generate jaxb classes for input and output type using wsgen command
+	7. Deploy the application.
+
+
+	4. Create an WS and Server side SEI
+		com.demo
+
+
+	@WebService
+	public interface Calculator {
+		public int add(int a,int b);
+
+	}
+
+
+
+	@WebService(endpointInterface="com.demo.Calculator")
+		public class CalculatorImp implements Calculator {
+
+		@Override
+		public int add(int a, int b) {
+
+			return a + b;
+		}
+
+	}
+
+
+	sun-jaxws.xml
+	----------------
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+		version="2.0">
+		<endpoint name="Calculator" implementation="com.demo.CalculatorImp"
+			url-pattern="/req" />
+	</endpoints>
+
+
+
+
+
+
+
+
+	Consuming an ws publically available
+	______________________________________
+
+	consider an publically available WS:
+		http://www.webservicex.net/ws/WSDetails.aspx?CATID=12&WSID=64
+		WS to get country; taking IP as input!
+
+	Steps:
+	1. create an new project from src
+	2. issue command wsimport -keep http://www.webservicex.net/geoipservice.asmx?WSDL
+
+	3. Calling WS
+		GeoIPService ips=new GeoIPService();
+		GeoIPServiceSoap ipsSoap=ips.getGeoIPServiceSoap();
+
+		GeoIP ip=ipsSoap.getGeoIP("173.194.36.99");//ping google.com
+		System.out.println(ip.getCountryName());
+
+
+
+
+
+http://central.maven.org/maven2/com/sun/xml/ws/jaxws-ri/2.2.8/
+https://howtodoinjava.com/jaxb/jaxb-annotations/
+https://www.soapui.org/downloads/latest-release.html

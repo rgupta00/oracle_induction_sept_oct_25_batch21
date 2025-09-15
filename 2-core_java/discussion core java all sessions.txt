@@ -1,12 +1,22 @@
+syllabus:
+---------
+oracle sql and intro to pl/sql
+
 
 Core Java
+---------
+Java OO how if diff then c++
+java is PI
+java run on top of JVM (java viraul machine)
+
+C++ OO
 
 introduction:
 -----------
 Session 1: Java Basics & Thinking in Objects
     • What is Java, platform independence, JDK/JRE/JVM
     • Primitive variables, type casting, Operators: arithmetic, relational, logical, bitwise
-final, constants, and var (Java 10)
+final, constants, and var (Java 10)*
     • Control structures:
         ◦ if-else, switch
         ◦ Loops: while, do-while, for
@@ -70,10 +80,75 @@ how to achive abstraction?
 static method and data
 init block
 static init block
+
+
+
+
+
+
+
+
+what next?
+----------------
+use a : lightet relationship
+
+has a  (Association): compostion vs aggigration
+
+class Company{
+	private String companyName;
+	List<Employee> list=new LinkedList<>();
+
+}
+
+compostion (inner classes)
+---------------------
+dsa in java
+Node ------- LinkedList
+
+class LinkedList{
+
+	class Node{
+	
+	}
+
+
+}
+
+reusablity can be achive using compostion as well as well as using inheritance
+
+is a: inheritance purpose of inheritance
+--------------------
+reusablity
+
+subtitutablty
+
+extendabily
+
+
+
+
+
+
+
+
+
+
 relationship bw the objects
 any 2 thing is this world 
+
+inheritance and type of inheritnace
+
 visibity modifier
+
 concept of packages
+
+function overloading
+
+polymorphism
+
+run time polymorphism
+
+
 
 
 Type of relationship between the object?
@@ -197,8 +272,8 @@ how to create loose coupling and high cohesions
 
 
 
-Session-3
-----------
+core java day2
+----------------
 
 relation bw objects
 	has a

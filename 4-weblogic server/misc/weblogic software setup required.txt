@@ -1,0 +1,39 @@
+Weblogic 12c application server
+==================================
+tools:
+----------
+java 8 
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html
+
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html#license-lightbox
+
+
+eclipse eclipse-jee-2020-06-R-win32-x86_64
+https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-java-2020-06-R-win32-x86_64.zip
+
+
+
+weblogic 12c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html#license-lightbox
+
+
+weblogic 14c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html
+
+
+Uninstall WebLogic Server 14c (If Installed)
+----------------------------------------------
+If you've already installed WebLogic using this JAR, follow these steps to uninstall:
+
+Step 1: Locate Oracle Home
+Default path is usually like:
+
+C:\Oracle\Middleware\Oracle_Home
+Step 2: Run deinstall.cmd
+
+Navigate to:
+
+C:\Oracle\Middleware\Oracle_Home\oui\bin
+Run in Command Prompt (Admin):
+
+deinstall.cmd

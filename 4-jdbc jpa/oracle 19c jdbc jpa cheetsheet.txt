@@ -1,0 +1,326 @@
+Agenda : Jdbc, Intro to Maven, JPA ORM framework:
+------------------------------------------------
+
+What is jdbc? persistance 
+------------------------------
+
+api to connect to databse....
+
+ java app <---------------> databse
+ 
+ oracle 19c table data ---> java application
+ 
+ JSR (Java specification req)
+ vendor follow jsr
+	Jdbc: specification to connect to db
+	
+	vendor need to give me : connector
+	
+	driver load : maven repo
+	npm vs maven jar ko download kar 
+ 
+											oracle (vendor)
+											mysql
+	java application --> 					sql server
+											postgres
+											abc
+											
+
+
+
+	jar download
+	java project --> jar connect
+	
+	
+	table ? data?
+	
+	Statement- PrepareStatemet - callable Statement (I)
+	
+	Statement: sql injection
+			 performace :(
+			 
+			 
+	PrepareStatemet: sql injection X :)
+				pre compile set of quaries , :)
+				
+	callable Statement: called store procedure
+
+	
+	Get
+	--------
+	executeQuery(): rs (a pointer poiting to first rec)
+	
+	add/update/ delete
+	----------
+	executeUpdate() dont give rs , it give no of rows effected
+	
+Oracle 19c Jdbc & JPA Cheetsheet
+---------------------------------
+
+step 1: create table and insert some records
+--------------------------------------------
+CREATE TABLE product (
+    id     NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name   VARCHAR2(100),
+    price  BINARY_DOUBLE
+);
+
+INSERT INTO product (name, price) VALUES ('Laptop', 59999.99);
+INSERT INTO product (name, price) VALUES ('Smartphone', 24999.50);
+INSERT INTO product (name, price) VALUES ('Headphones', 1999.99);
+INSERT INTO product (name, price) VALUES ('Monitor', 8999.00);
+INSERT INTO product (name, price) VALUES ('Keyboard', 799.75);
+
+
+Connection details for jdbc:
+---------------------------
+
+		String url = "jdbc:oracle:thin:@localhost:1521:orcl"; // change if using PDB
+		String user = "hr";
+		String password = "hr";
+
+		try {
+			// Load Oracle JDBC Driver (optional in modern Java)
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			
+
+Step 2: download ojdbc8.jar and create jdbc hello world without maven
+---------------------------------------------------------------
+
+public class Demo {
+	public static void main(String[] args) {
+		String url = "jdbc:oracle:thin:@localhost:1521:orcl"; // change if using PDB
+		String user = "hr";
+		String password = "hr";
+
+		try {
+			// Load Oracle JDBC Driver (optional in modern Java)
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+
+			// Establish the connection
+			Connection conn = DriverManager.getConnection(url, user, password);
+			System.out.println(" Connected to Oracle HR schema");
+
+			// Query the employees table
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * from product");
+
+			// Print result
+			while (rs.next()) {
+				System.out.println(rs.getString("name") + " " + rs.getDouble("price"));
+			}
+
+			// Cleanup
+			rs.close();
+			stmt.close();
+			conn.close();
+			System.out.println("Connection closed.");
+
+		} catch (Exception e) {
+			System.err.println("Connection failed:");
+			e.printStackTrace();
+		}
+	}
+}
+
+
+	Type of statement:
+	================
+
+	Statement==>used to create conneciton object
+
+	PreparedStatement==>
+	used to execute precompiled  SQL statementand retrive data into RS
+	=> faster
+	=> safer from sql injection
+
+	CallableStatement==>used for calling stored procedure
+
+
+	executeQuery()		 vs		 executeUpdate();
+	-----------------------------------------------------------
+	retrun type is RS		return type is int
+	give u rs			give u no of rows effected
+	for gettting data		for updating/deleting/adding data
+	
+	
+	
+	insert records:
+	-------------
+	
+		stmt=con.prepareStatement
+			("insert into product(name ,price) values(?,?))");
+			stmt.setString(2, "keyboard");
+			stmt.setDouble(3, 1333.6);
+		stmt.executeUpdate();
+			
+		
+
+
+Maven?
+=========
+
+		
+Dao DTO pattern
+----------------
+	
+	
+Step 2: JDBC with maven:
+---------------------------
+
+step 1: configure maven to .m2 of ur system
+	mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle.database.jdbc -DartifactId=ojdbc8 -Dversion=19.3.0.0 -Dpackaging=jar
+	
+	
+	mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle.database.jdbc -DartifactId=ojdbc8 -Dversion=21.7.0.0 -Dpackaging=jar
+step 2: mvn configuration
+
+<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+</properties>
+	
+<dependencies>
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+</dependencies>
+
+
+
+Step 3: JPA with maven:
+-----------------------
+Step 1: configure dependencies
+
+<dependencies>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>4.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+	<!--	<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>6.4.4.Final</version>
+		</dependency>-->
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+
+step 2: create entity
+-------------------
+@Entity
+@Table(name = "product")
+public class Product {
+
+    @Id
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "price")
+    private String price;
+}
+
+
+step 3: crud operation
+---------------------
+	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("HR_PU");
+
+ 
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(product);
+        em.getTransaction().commit();
+        em.close();
+   
+    
+	
+        EntityManager em = emf.createEntityManager();
+        Employee emp = em.find(Product.class, id);
+        em.close();
+ 
+    
+	
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.merge(product);
+        em.getTransaction().commit();
+        em.close();
+    
+	
+        EntityManager em = emf.createEntityManager();
+        Employee product = em.find(Product.class, id);
+        if (product != null) {
+            em.getTransaction().begin();
+            em.remove(product);
+            em.getTransaction().commit();
+        }
+  
+
+    
+        EntityManager em = emf.createEntityManager();
+        List<Employee> list = em.createQuery("SELECT e FROM product e", product.class).getResultList();
+        em.close();
+        return list;
+    
+	
+	
+META-INF
+--------
+create persistence.xml in META-INF folder
+-------------------------------------------
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence 
+             https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+	version="3.0">
+
+	<persistence-unit name="HR_PU"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<class>com.demo.Product</class>
+
+		<properties>
+			<property name="jakarta.persistence.jdbc.driver"
+				value="oracle.jdbc.OracleDriver" />
+			<property name="jakarta.persistence.jdbc.url" 
+					value="jdbc:oracle:thin:@localhost:1521/orcl" />
+			<property name="jakarta.persistence.jdbc.user" value="hr" />
+			<property name="jakarta.persistence.jdbc.password" value="hr" />
+			<property name="eclipselink.logging.level" value="FINE" />
+		<!-- 	<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
+			<property name="eclipselink.ddl-generation" value="validate" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+
+			<property name="eclipselink.create-ddl-jdbc-file-name"
+				value="createDDL_ddlGeneration.jdbc" />
+		</properties>
+	</persistence-unit>
+</persistence>

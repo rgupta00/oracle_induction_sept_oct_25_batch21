@@ -1,0 +1,614 @@
+J2EE WITH Weblogic/Tocat
+=======================================
+* Introduction to Java EE, config tomcat with eclipse
+* Servlet 
+* JSP
+* Introduction to EJB
+* Weblogic arch, components and configuration
+* Configuration database jndi
+* Configuration JMS
+
+
+tools:
+----------
+java 8 
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html#license-lightbox
+
+
+eclipse eclipse-jee-2020-06-R-win32-x86_64
+https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-jee-2020-06-R-win32-x86_64.zip
+
+tomcat 9.x:
+-----------
+https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.107/bin/apache-tomcat-9.0.107-windows-x64.zip
+
+
+
+weblogic 12c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html#license-lightbox
+
+weblogic 14c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html
+
+
+Dont forget to configure jdk 8 (Weblogic 12c need java 8 and weblogic 14c works on java 11/java 17)
+
+
+
+
+What is Java EE?
+===============
+Java EE (Java Platform, Enterprise Edition) is a set of 
+specifications that extend Java SE to support enterprise applications:
+
+	Web applications
+	Distributed components (EJB)
+	REST/SOAP APIs
+	Transaction & Security
+	
+	Now known as Jakarta EE under the Eclipse Foundation (from Java EE 8 onward).
+
+Key Java EE Components
+------------------------
+Component						Description
+--------------------------------------------
+Servlet					Java class that handles HTTP requests
+JSP						HTML + embedded Java (view layer)
+EJB						Reusable server-side business logic components
+JPA						ORM for database access (Java EE standard)
+JAX-RS					For building RESTful APIs
+JAX-WS					For SOAP Web Services
+JTA						Java Transaction API
+CDI						Dependency injection in Java EE
+JSF						JavaServer Faces (MVC Web UI framework)
+
+
+Java EE Application Packaging
+-----------------------------
+File Type	Contains
+.war		Web app (Servlets + JSPs + HTML/JS)
+.ear		Enterprise app (WAR + EJB JAR + config)
+.jar		Reusable libraries, EJB modules
+
+
+3 things:
+----------
+jar file: Java ARchive
+war file: Web ARchive
+ear file: Enterprise ARchive ie for enterprise app	war + ejb project
+
+
+Servlet jsp Basics
+--------------------------
+*First Servlet Example, where it filts
+*Servlet life cycle
+*Understanding MVC arch
+*JSP view technologies, intro to jstl
+
+
+How to write a dynmic web application
+----------------------------------------
+servlet jsp applicatation
+
+add two numbers
+--------------
+Simple cal with servlet jsp:
+---------------------------------
+<form action="add" method="post">
+	Enter userName: <input type="text" name="x"/><br/>
+	Enter password: <input type="text" name="y"/><br/>
+	<input type="submit"/>
+</form>
+
+
+Book store application
+------------------------
+3 tier arch: mvc patterns
+
+controller layer --------------- dao layer 	-------------- database 
+servlet							data access object
+								CRUD operation
+								C: create
+								R: read
+								U: update
+								D: delete
+
+
+view layer
+jsp
+jstl (jsp std tag lib)
+
+
+
+Bookstore application with servlet jsp:
+-------------------------------------
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<table>
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>name</th>
+				<th>price</th>
+			</tr>
+		</thead>
+		<tbody>
+		<c:forEach var="product" items="${products}">
+			<tr>
+				<td><c:out value="${product.id }"/></td>
+				<td><c:out value="${product.name }"/></td>
+				<td><c:out value="${product.price }"/></td>
+			</tr>
+		</c:forEach>
+		</tbody>
+	</table>
+
+
+
+	<form action="ProductController.do" method="post">
+		<input type="text" name="id" /><br/>
+	  Enter name:<input type="text" name="name" />"/><br/>
+	  Enter price:<input type="text" name="price" /><br/>
+	  <input type="submit"/>
+	  
+	</form>
+
+
+
+
+
+<form action="ProductController.do" method="post">
+	<input type="text" name="id" value="<c:out value="${product.id }"/>"><br/>
+  Enter name:<input type="text" name="isbn" value="<c:out value="${product.name }"/>"/><br/>
+  Enter price:<input type="text" name="price" value="<c:out value="${product.price }"/>"/><br/>
+  <input type="submit"/>
+  
+</form>
+
+
+
+
+JAX RS with weblogic:
+---------------------
+What is JAX-RS?
+JAX-RS is a Java EE (now Jakarta EE) specification to build RESTful APIs easily using annotations.
+
+Key Annotations
+---------------------
+Annotation					Purpose
+@Path						Binds a class or method to a URI
+@GET, @POST, @PUT, @DELETE	Maps HTTP methods
+@Produces					Specifies response content-type
+@Consumes					Specifies expected request content-type
+@QueryParam, @PathParam		Extract query or path parameters
+@ApplicationPath			Defines the root URI of the REST app
+@PathParam					Extracts variable from the URL path
+
+
+@Path("/hello")
+public class HelloResource {
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String hello() {
+        return "Hello from built-in JAX-RS on WebLogic!";
+    }
+}
+
+@ApplicationPath("/api")
+public class MyApplication extends Application {
+    // No need to override anything
+}
+
+With XML configuration
+-------------------------
+<servlet>
+		<servlet-name>Jersey Web Application</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>com.demo</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Jersey Web Application</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+	
+
+
+
+
+Now introduce new Resource method
+---------------------------------
+@Produces({"application/xml", "application/json"})
+@Produces(value={MediaType.APPLICATION_JSON,})
+------------------------------------------------------
+
+@Path("/products")
+public class ProductResource {
+
+    private ProductDao dao = new ProductDaoImplUsingMap(); // service layer interface/impl
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Product> getAllProducts() {
+        return dao.getAll();
+    }
+
+    @GET
+    @Path("/{productId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Product getProductById(@PathParam("productId") int productId) {
+        return dao.getProductById(productId);
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Product addProduct(Product product) {
+        return dao.addProduct(product);
+    }
+
+    @PUT
+    @Path("/{productId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Product updateProduct(@PathParam("productId") int productId, Product product) {
+        product.setId(productId);
+        dao.updateProduct(productId, product);
+        return product;
+    }
+
+    @DELETE
+    @Path("/{productId}")
+    public void deleteProduct(@PathParam("productId") int productId) {
+        dao.deleteProduct(productId);
+    }
+}
+
+JAX WS with weblogic:
+---------------------
+What is JAX-WS?
+
+	JAX-WS (Java API for XML Web Services) is the Java standard to build SOAP-based 
+	web services using annotations like @WebService.
+	
+Hello world:
+------------
+Step 1: create pojo for calculator app
+
+@WebService
+public class Calculator {
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+}
+
+http://localhost:7001/CalculatorService?wsdl
+
+
+
+
+
+Step 2. Creating WS client
+-----------------------------
+		From src of client project 
+		wsimport -target 2.0 -keep http://localhost:7001/CalculatorService?wsdl
+
+	What is  wsimport ?
+		==> The wsimport command-line tool processes an existing WSDL file and generates 
+			the required portable support classes (SEI) for developing JAX-WS web service pplications 
+
+		==>Essentially, it is going to automatically generate all of the class files involved with 				
+		the SOAP, XML and communication aspects of our web service!
+
+
+  	    CalculatorService service = new CalculatorService();
+
+        //create proxy
+        Calculator proxy = service.getCalculatorPort();
+
+        int a = new Integer("22").intValue();
+        int b = new Integer("33").intValue();
+        
+        //invoke
+        System.out.println("Sum of the arguments = " + proxy.sum(a,b));
+	    System.out.println("Multiple of the arguments = " + proxy.multiply(a,b));
+
+
+
+
+
+
+
+Understanding EJB, Need of EJB
+-------------------------------------
+
+3 tier arch
+controller ----------------service ----------- dao layer	 db
+
+EJB : enterprise java bean and it contain the business logic
+	* validate a atm card
+	* crud opeation using ejb
+	* web service using ejb
+	
+EJB : "ejb container" is resposable for running the ejb code
+	jboss eap
+	wildfly
+	weblogic
+	
+	we live in our house
+	(ejb)			(containers)
+	
+
+	
+What is EJB?
+--------------
+
+	An EJB platform is for building portable, 
+	reusable and scalable business applications using the Java programming language. 
+	
+	EJB is a component or framework that lets you build enterprise Java applications 
+	without having to revent services such as transactions, 
+	security, automated persistence which allows you to to spend more time 
+	on the business logic than the infrastructure code.
+
+	EJB 3 is simpler and lighter than its previous versions, 
+	EJB 3 components are now more like Plain Old Java Objects (POJO) with special powers. 
+	There are three types of EJB components
+
+
+Where EJB fits?
+-------------------
+ service layer to provide business logic implemeations?
+ 
+ 
+Container services?
+----------------------
+ejb container vs web container?
+
+
+ * ejb container is reposible for manging the life cycle of ejb
+  init() service()  destroy() : servlet
+  ejb also have a life cycle
+  
+ * ejb container also provide u remote client communication?
+ 
+ * ejb container also provide something called "Depdendncy Injection" CDI (Context dependency injection)
+	Design pattern which help us to achive loose coupling?
+	
+ * state managment : stateful ejb vs stateless ejb
+ 
+ * connection pooling 
+ 
+ * messaging
+ 
+ * tx mgt
+ 
+ * concurrency support
+ 
+ * interceptor
+ 
+ *Asy support
+
+
+EJB Hello world Example
+----------------------------
+EJB types:
+	Session bean: business logic
+	synchronos
+		1. stateless
+		2. statefull
+		3. singleton
+		4. ayn ejbs
+		
+	
+	Entity bean   X (till only ejb 2 , ejb 3 it was removed)
+		JPA
+		
+	Message driven bean
+	 Asyn, producer and consumer
+	 app1 ---------	app2
+
+
+
+EJB hello world
+----------------------
+step 1: create a web application, create a servlet that will invoke ejb
+
+
+step 2: create interface for ejb
+@Local
+public interface AtmVerfifyLocal {
+	public boolean isValid(String cardNumber);
+}
+
+@Remote
+public interface AtmVerfifyRemote {
+	public boolean isValid(String cardNumber);
+}
+
+step 3: create ejb with BL
+
+@Stateful
+public class AtmVerfify implements AtmVerfifyRemote,AtmVerfifyLocal  {
+
+	@Override
+	public boolean isValid(String cardNumber) {
+		//Business logic write inside ejb
+		Integer val=Integer.parseInt(cardNumber);
+		
+		return val%2==0;
+	}
+
+}
+
+
+step 4: need to invoke ejb in servlet 
+	2 ways:
+		1. using dependency injection 				
+		 : push approach: ejb container will create the object of ejb and inject to the controller 
+		 
+		2. using jndi (java naming directory interface)
+		: pull approach:ejb container will create the object of ejb but controller need to pull it 
+
+
+Step 4 (a)
+---------------
+@WebServlet("/atmCardControlller")
+public class AtmCardControlller extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	@EJB
+	private AtmVerfifyRemote atmVerfifyRemote; //push approach
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		
+		PrintWriter out=response.getWriter();
+		out.print("atm card is valid or not?"+ atmVerfifyRemote.isValid("6465665656"));
+	}
+}
+
+Step 4 (b)
+--------
+using jndi:
+Java Naming and Directory Interface
+give a logical name to the ejb (so that we can call this easily)
+
+	java:global/atmcardapp/AtmVerfify!com.logic.AtmVerfifyRemote
+
+@WebServlet("/atmCardControlller2")
+public class AtmCardControlller2 extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	
+	private AtmVerfifyRemote atmVerfifyRemote; 
+	
+	
+	
+	//pull: we are pulling the instance of ejb from the container
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		try {
+			InitialContext initialContext=new InitialContext();
+			atmVerfifyRemote =(AtmVerfifyRemote)initialContext
+			.lookup("java:global/atmcardapp/AtmVerfify!com.logic.AtmVerfifyRemote");
+			
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		
+		PrintWriter out=response.getWriter();
+		out.print("atm card is valid or not?"+ atmVerfifyRemote.isValid("64656"));
+	}
+}
+
+
+Demo Life Cycle method
+-------------------------
+@PostConstruct
+@PreDestroy
+
+
+@Stateless
+public class AtmVerfify implements AtmVerfifyRemote,AtmVerfifyLocal  {
+
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("before creating the object of ejb");
+	}
+	@Override
+	public boolean isValid(String cardNumber) {
+		//Business logic write inside ejb
+		Integer val=Integer.parseInt(cardNumber);
+		
+		return val%2==0;
+	}
+
+	@PreDestroy
+	public void preDestory() {
+		System.out.println("this method is going to be called before preDestory");
+	}
+}
+
+
+
+
+
+
+Java 8 tomcat 9 Jax rs pom dependencies
+----------------------------------------
+pom.xml
+----------
+<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.glassfish.jersey</groupId>
+				<artifactId>jersey-bom</artifactId>
+				<version>${jersey.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+  <dependencies>
+  	     <dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+  </dependencies>
+<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat9-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/</path>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+

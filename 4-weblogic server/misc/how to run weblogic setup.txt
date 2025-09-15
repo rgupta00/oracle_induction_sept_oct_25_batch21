@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk1.8.0_202\bin\java.exe" -jar fmw_12.2.1.4.0_wls.jar ORACLE_HOME="C:\Weblogicdemo"

@@ -1,0 +1,484 @@
+Weblogic 12c/14c application server
+===================================
+step 1: download tools: use your own network ... disable vpn
+-----------------------------------------------------------------
+tools:
+----------
+java 8 
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html
+https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html#license-lightbox
+
+
+eclipse eclipse-jee-2020-06-R-win32-x86_64
+https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-java-2020-06-R-win32-x86_64.zip
+
+
+weblogic 12c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html#license-lightbox
+
+weblogic 14c
+https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html
+
+
+Dont forget to configure jdk 8 (Weblogic 12c need java 8 and weblogic 14c works on java 11/java 17)
+
+
+Introduction to WebLogic Server
+----------------------------------
+    • Owned by: Oracle Corporation
+	
+    • Type: Java EE Application Server (supports Servlet, JSP, EJB, JMS, JPA, etc.)
+	
+    • Use Case: Enterprise deployment platform for Java-based applications.
+	
+
+WebLogic Administrator 
+--------------------------
+Introduction
+-------------------------
+What is Oracle WebLogic Server 14c?
+	Oracle WebLogic Server 14c is a modern Java EE-compatible application server 
+	and the runtime foundation for Oracle Fusion Middleware, 
+	supporting enterprise applications, microservices, cloud-native deployments, and more.
+	
+Editions in 14c:
+--------------------
+    • Standard Edition (SE): For developers and small-scale deployments.
+    • Enterprise Edition (EE): SE + clustering + advanced diagnostics.
+    • WebLogic Suite: EE + Coherence + TopLink + enhanced scalability.
+
+Key Concepts in WebLogic 14c
+-------------------------------
+🔸 WebLogic Server Instance
+    • A JVM process that hosts your Java EE applications.
+    • Two types:
+        ◦ Admin Server: Central controller.
+        ◦ Managed Server: Runs business applications.
+		
+🔸 WebLogic Domain
+    • A logical container that includes:
+        ◦ 1 Admin Server
+        ◦ N Managed Servers
+        ◦ Services (JDBC, JMS, etc.)
+        ◦ Machines and optional clusters
+		
+🔸 Admin Server
+    • Special WebLogic instance for configuration and monitoring.
+    • Hosts the Admin Console (web-based GUI at http://localhost:7001/console).
+    • Should not host applications in production.
+	
+🔸 Managed Server
+    • Hosts deployed applications and their related resources (JDBC, JTA, JMS).
+    • Contacts Admin Server on startup to sync config.
+    • Can run independently after starting (MSI mode).
+	
+🔸 Cluster
+    • A group of Managed Servers with:
+        ◦ Same app deployed
+        ◦ Shared configuration
+    • Enables load balancing and failover.
+    • Often used with a hardware or software load balancer.
+	
+🔸 Node Manager
+    • A separate process used to remotely start/stop servers.
+    • Must be configured per machine.
+    • Used in combination with Admin Console or WLST.
+    • Two types: Java-based (cross-platform) and Script-based (Unix-only).
+	
+🔸 Machine
+    • A logical representation of a host machine (physical/VM).
+    • Required for using Node Manager and for clustering configuration.
+
+
+WebLogic Architecture Overview in simple language
+------------------------------------------------
+    • Domain: A logically related group of WebLogic Server resources.
+	
+    • Admin Server: Central control entity of a domain (only one per domain).
+	
+    • Managed Server: Hosts actual apps and resources.
+	
+    • Node Manager: Utility to control server instances remotely.
+	
+    • Cluster: Group of managed servers for load balancing & failover.
+	
+    • Machine: A logical representation of the physical computer (used with Node Manager).
+
+
+
+1. Domain
+----------------
+Real-life Analogy: A Housing Society
+Imagine a gated housing society:
+    • All buildings, security, gardens, electricity, and residents are part of one society.
+    • It is managed as one logical unit.
+	
+In WebLogic:
+    • A Domain is like that society.
+    • It contains everything: Admin Server, Managed Servers, configurations, deployments, etc.
+    • It's the highest-level structure in WebLogic.
+
+2. Admin Server
+---------------
+Real-life Analogy: Society Office / RWA President
+In your housing society:
+    • The society office (or Resident Welfare Association head) keeps full control.
+    • Handles all administration: security, maintenance, new resident entries, etc.
+	
+In WebLogic:
+    • The Admin Server is the control center of the domain.
+    • It manages configurations, deployments, and controls all Managed Servers.
+    • There's always only one Admin Server in a domain.
+
+3. Managed Server
+--------------------
+Real-life Analogy: Individual Residential Buildings
+Each building in the society:
+    • Has its own rooms (flats) where people live.
+    • Some have gyms, some have shops.
+
+In WebLogic:
+    • A Managed Server is where your actual applications run (like websites, APIs).
+    • You can have many managed servers.
+    • Admin Server controls them, but does not run applications itself (in most cases).
+
+4. Node Manager
+---------------
+Real-life Analogy: Remote Watchman with Master Keys
+Say each building has a watchman who can remotely open or close any building or flat:
+    • Can start/stop electricity remotely.
+    • Keeps track of status and reports to society office.
+	
+In WebLogic:
+    • Node Manager is a utility that starts/stops Admin or Managed Servers remotely.
+    • Helps in automated restarts, health monitoring, etc.
+    • Installed on each machine (server box) to control servers on that machine.
+
+5. Cluster
+---------------
+Real-life Analogy: Multiple Buildings with Same Facilities
+Imagine 3 buildings in the same society:
+    • All have gyms and shops.
+    • If gym in building A is full, you go to B or C.
+	
+In WebLogic:
+    • A Cluster is a group of Managed Servers doing the same job.
+    • Used for Load Balancing (spread users across servers).
+    • And for Failover (if one fails, others take over).
+Example: If 10,000 users hit your website, the load is split across all servers in the cluster.
+
+6. Machine
+----------
+Real-life Analogy: Physical Plots in the Society
+Every building (Managed Server) stands on some land/plot.
+That plot is a physical entity.
+
+In WebLogic:
+    • A Machine represents the physical or virtual hardware.
+    • Used mostly with Node Manager to say: “This server runs on this machine.”
+
+Summary Table for Quick Revision
+--------------------
+WebLogic Term			Real-Life Analogy				Role in WebLogic
+-----------------------------------------------------------------------
+Domain					Housing Society					Logical group of all WebLogic resources
+
+Admin Server			Society Office / President		Central controller of the domain
+
+Managed Server			Individual Residential 			Hosts and runs the real applications
+						Buildings
+
+Node Manager			Remote Watchman					Starts/stops servers remotely
+						 with Master Keys
+
+Cluster					Similar Buildings 				Group of managed servers 
+						with Same Facilities			for load balancing/failover
+						
+
+Machine					Physical Plot or Land				Represents hardware where server runs
+
+
+==================== WebLogic Architecture ====================
+                         +------------------+
+                         |   DOMAIN         |   <-- Like a Housing Society
+                         |------------------|
+                         |  Admin Server    |   <-- Like Society Office / President
+                         |  (Control Panel) |
+                         +--------+---------+
+                                  |
+             ---------------------------------------------
+            |                                           |
+    +-------------------+                     +-------------------+
+    | Managed Server 1  |   <-- Like Building 1  |   [Runs App A]  |
+    +-------------------+                     +-------------------+
+            |                                           |
+    +-------------------+                     +-------------------+
+    | Managed Server 2  |   <-- Like Building 2  |   [Runs App B]  |
+    +-------------------+                     +-------------------+
+            |                                           |
+    +-------------------+                     +-------------------+
+    | Managed Server 3  |   <-- Like Building 3  |   [Runs App A]  |
+    +-------------------+                     +-------------------+
+
+                         CLUSTER
+           (Managed Servers grouped together for
+              Load Balancing & High Availability)
+-------------------------------------------------------------
+                       NODE MANAGER
+      (Remote Watchman to Start/Stop Servers on Each Machine)
+
+     Machine A -------------> Controls Admin + MS1
+     Machine B -------------> Controls MS2
+     Machine C -------------> Controls MS3
+
+==============================================================
+
+
+
+
+
+
+
+Step 2: running weblogic setup:
+----------------------------------
+"C:\Program Files\Java\jdk1.8.0_202\bin\java.exe" -jar fmw_12.2.1.4.0_wls.jar ORACLE_HOME="C:\Weblogic"
+
+
+
+step 3: Creating a domain in weblogic 12c
+-----------------------------------
+Step 1.1 : go to the location 
+C:\Weblogic\oracle_common\common\bin
+and run config.cmd
+
+An configuration wizard will come up and flow as explained in doc
+
+
+
+
+Step 4: Start and access webLogic12c server administration console
+---------------------------------------------------------
+Go to the location 
+C:\Weblogic\user_projects\domains\domain1
+
+and start startWebLogic.cmd
+
+http://localhost:7001/console
+and logic with username password that you provided while installation
+weblogic
+webLogic1
+
+
+
+Step 5: configure eclipse plugin for weblogic
+------------------------------------------
+	dont use company internet and vpn
+	
+
+Help → Eclipse Marketplace → Search: “Oracle WebLogic Server Tools”
+oracle weblogic server tool
+
+Step 6: configure weblogic with eclipse ide
+-------------------------------------------
+Configure weblogic with eclipse provide weblogic home as : C:\Weblogic\wlserver
+
+
+Step 7: deploy and run hello world webapplication on weblogic
+
+
+
+Step 8: configure DataSource on Weblogic server JDBC datasource in Oracle Weblogic server
+--------------------------------------------------------------------------------------------
+
+Step 1: start weblogic server
+go to dir C:\Weblogic\user_projects\domains\domain1\bin
+
+and run startWebLogic.cmd
+
+step 2: login to weblogi server 
+http://localhost:7001/console
+
+step 3: create datasouce for mysql
+-----------------------------------
+services --> datasource--> new --> generic datasource-->
+
+name: jdbcDS
+jndi: bookapp/jdbcDS
+database type: mysql
+
+click next
+nothing to select here 
+click next
+again next
+
+
+now specify 
+dabase name: bookapp
+host name : localhost
+port : 3306
+username: root
+password: root
+
+
+test connection : successful
+
+note down: jdbc:mysql://localhost:3306/bookapp
+
+now click next 
+
+now we need to configure deploy on some server
+i want to deploy on admin server only select that and finish
+
+
+(you must have dataase named bookapp beforehand in mysql)
+
+
+
+Now check connection:
+---------------------
+public class HelloConn extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	private DataSource dataSource;
+
+	// Always start JNDI name with "java:comp/env/" in servlet
+	private static final String JNDI_LOOKUP_SERVICE = "java:comp/env/bookapp/jdbcDS";
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		try {
+			Context context = new InitialContext();
+			dataSource = (DataSource) context.lookup(JNDI_LOOKUP_SERVICE);
+			System.out.println("DataSource lookup successful");
+		} catch (NamingException e) {
+			throw new ServletException("JNDI lookup failed for " + JNDI_LOOKUP_SERVICE, e);
+		}
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		try (Connection conn = dataSource.getConnection()) {
+			if (conn != null) {
+				System.out.println("Connection obtained");
+				response.getWriter().append("DB Connection successful!\n");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.getWriter().append("DB Connection failed: ").append(e.getMessage());
+		}
+
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+}
+
+web.xml configuration (Recommended)
+---------------------------
+To let WebLogic inject JNDI correctly:
+
+<resource-ref>
+    <res-ref-name>bookapp/jdbcDS</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+</resource-ref>
+
+
+http://localhost:7001/yourapp/HelloConn
+Expected output:
+
+DB Connection successful!
+
+using Dependeny Injection:
+--------------------------
+    // Inject the DataSource directly
+    @Resource(name = "bookapp/jdbcDS")
+    private DataSource dataSource;
+	
+	
+
+JNDI vs DI – Difference Table
+------------------------------
+
+Feature	JNDI (Java Naming and Directory Interface)	
+---------------------------------------------					
+Definition	API to look up resources/services					
+		by name in a naming context
+		(e.g., InitialContext.lookup())	
+
+DI (Dependency Injection)
+---------------------------
+Technique where container injects 
+
+
+Summary
+----------
+JNDI = Pull model (you fetch the dependency manually).
+DI = Push model (the container provides it for you).
+
+
+
+
+step 8: Deploy Web project on Admin and managed Servers 
+------------------------------------------------------
+By default app is deployed to the admin server but we have 
+created 2 managed server while configure weblogic server let deploy application to those managed server
+
+right click weblogic --> publishing --> advance--> click + sign
+	-> add both the servers one by one --> apply and close
+	
+	
+restart weblogic server ..now app is deployed to admin and managed server too 
+
+admin server
+http://localhost:7001/mvc/HelloServlet
+
+managed server
+http://localhost:7003/mvc/HelloServlet
+
+it will not work we have to start managed server
+---------------------------------------------------
+go to C:\Weblogic\user_projects\domains\domain1\bin
+
+and startManagedWebLogic.cmd server1
+							(Your managed server name)
+							
+give username and password (weblogic weblogic1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+Weblogic deinstallatation process:
+-------------------------------
+
+1. Run WebLogic Uninstaller
+---------------------
+Navigate to the Oracle WebLogic installation directory:
+cd C:\Oracle\Middleware\Oracle_Home\oui\bin
+
+and run deinstall.cmd
+
+2. Manually Delete Remaining Files (Optional but Recommended) After uninstallation:
+-----------------------------------------------------------------------------
+Delete the WebLogic home and domain folders manually, like:
+
+C:\Oracle\Middleware
+
+Any domain folders like user_projects/domains
+
+3. Clean Environment Variables (If you set any)
+----------------------------------------------------
+Open System Properties → Advanced → Environment Variables.
+CLASSPATH entries for WebLogic
+
+
