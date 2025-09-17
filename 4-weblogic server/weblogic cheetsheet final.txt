@@ -9,6 +9,8 @@ https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.htm
 https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html#license-lightbox
 
 
+https://drive.google.com/file/d/1pHm0j5iyFD3cet3079s4OjSkvLYZNewG/view?usp=sharing
+
 eclipse eclipse-jee-2020-06-R-win32-x86_64
 https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-java-2020-06-R-win32-x86_64.zip
 

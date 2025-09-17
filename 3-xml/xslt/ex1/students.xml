@@ -6,4 +6,9 @@
         <lastname>Bell</lastname>
         <nickname>Garry</nickname>
     </student>
+        <student>
+        <firstname>raj</firstname>
+        <lastname>ku</lastname>
+        <nickname>gupta</nickname>
+    </student>
 </class>
