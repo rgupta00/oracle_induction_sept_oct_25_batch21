@@ -1,0 +1,70 @@
+Topic to discuss:
+==================
+	1. concept of test containers
+	2. flyway migration script
+	3. wiremock : mocking framework ..http calls
+
+kc: oauth2 servers: H2
+
+test containers
+=================
+https://testcontainers.com/
+
+https://medium.com/@anil.java.story/springboot-test-containers-mysql-e0350645d608
+
+Why we need test container?
+--------------------------------
+ Developers create unit tests to validate the behavior of individual components, 
+ isolating them from external dependencies such as file systems,
+ databases, message brokers, and third-party APIs. 
+ 
+ However, since many applications rely on these external components, 
+ developers write integration tests to ensure an application interacts
+ correctly with its dependencies in a more complete environment.
+
+ Integration testing can be challenging if developers rely on shared environments, 
+ mock systems, or manual configuration of dependencies, 
+ all of which can lead to brittle tests and undetected issues in production.
+ 
+ 
+
+What is test container?
+---------------------------
+	Testcontainers for Java is an open-source Java library that provides
+	lightweight, disposable containers as test fixtures, 
+	enabling developers to run real instances of databases, 
+	message brokers, web servers, and other dependencies during testing.
+	By leveraging Docker, Testcontainers ensures that tests run 
+	in isolated and consistent environments, independent of the host machine’s configuration.
+
+	Testcontainers integrates seamlessly with popular
+	testing libraries like JUnit and TestNG, 
+	making it easy for developers to write integration tests.
+	
+
+
+
+flyway
+======
+https://blog.jetbrains.com/idea/2024/11/how-to-use-flyway-for-database-migrations-in-spring-boot-applications/
+
+
+	Flyway is a tool that helps manage database schema migrations.
+	It's a popular, open-source, and flexible tool that can be used in many technology stacks. 
+	
+	How Flyway works
+		Flyway uses versioned SQL scripts to automate database changes 
+		It can handle many SQL databases, including Postgres 
+		Flyway can be integrated with many Java frameworks, such as Spring Boot 
+		It can be used to create and alter a database 
+		Flyway can be used to ensure that an application's schema evolves with its codebase 
+		
+	
+
+Wiremock
+------------	
+https://wiremock.org/
+https://wiremock.org/docs/spring-boot/
+
+
+

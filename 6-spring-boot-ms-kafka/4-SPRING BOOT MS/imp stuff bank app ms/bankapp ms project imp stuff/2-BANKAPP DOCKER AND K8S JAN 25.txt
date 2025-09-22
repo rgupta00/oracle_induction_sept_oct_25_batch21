@@ -1,0 +1,732 @@
+
+
+
+Removing all docker images window: use powershell
+docker images -a -q | % { docker image rm $_ -f }
+
+Step 1: create docker images of loans, cards and account ms and push to docker hub
+---------------------------------------------------------------------------------
+step 1.1: add to pom.xml:
+--------------------------
+	  <plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<from>
+						<image>openjdk:17-alpine</image>
+					</from>
+					<to>
+						<image>rgupta00/${project.artifactId}:v1</image>
+					</to>
+				</configuration>
+     </plugin>
+	 
+	 
+	 
+	 
+	 
+In case you are using Java 21:
+====================================	 
+<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<from>
+						<image>eclipse-temurin:21-jre</image>
+					</from>
+					<to>
+						<image>rgupta00/${project.artifactId}:v1</image>
+					</to>
+				</configuration>
+</plugin>
+
+step 1.2: create docker image:
+---------------------------
+mvn compile jib:dockerBuild
+
+step 1.3: push to docker hub
+-------------------------
+ docker push rgupta00/loans:v1
+
+
+step 1.4: run application using 
+---------------------------------
+docker run -d -p rgupta00/rgupta00/cards:v1
+
+
+
+
+step 1.5: create docker compose file:
+--------------------------------------
+services:
+  accounts:
+    image: "rgupta00/accounts:v1"
+    container_name: accounts-ms
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - busycoder
+  loans:
+    image: "rgupta00/loans:v1"
+    container_name: loans-ms
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - busycoder
+  cards:
+    image: "rgupta00/cards:v1"
+    container_name: cards-ms
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - busycoder
+networks:
+  busycoder:
+    driver: "bridge"
+
+-----------------------------------------
+Step 2: adding config server to the application:
+--------------------------------------------------
+Step 2.1 , 2.2 and 2.2 same as above
+
+step 1.5: create docker compose file:
+--------------------------------------
+services:
+  configserver:
+    image: "rgupta00/configserver:v2"
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    networks:
+      - busycoder
+
+  accounts:
+    image: "rgupta00/accounts:v2"
+    container_name: accounts-ms
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      SPRING_PROFILES_ACTIVE: default
+
+  loans:
+    image: "rgupta00/loans:v2"
+    container_name: loans-ms
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "loans"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      SPRING_PROFILES_ACTIVE: default
+
+  cards:
+    image: "rgupta00/cards:v2"
+    container_name: cards-ms
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "cards"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      SPRING_PROFILES_ACTIVE: default
+networks:
+  busycoder:
+    driver: "bridge"
+	
+
+-----------------------------------------
+Step 3: adding eureka server to the application:
+--------------------------------------------------
+Step 3.1 , 3.2 and 3.3 same as above
+
+step 3.4: create docker compose file:
+--------------------------------------
+services:
+  configserver:
+    image: "rgupta00/configserver:v3"
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - busycoder
+
+  eurekaserver:
+    image: "rgupta00/eurekaserver:v3"
+    container_name: eurekaserver-ms
+    ports:
+      - "8070:8070"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      configserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      SPRING_PROFILES_ACTIVE: default
+
+  loans:
+    image: "rgupta00/loans:v3"
+    container_name: loans-ms
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "loans"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+      SPRING_PROFILES_ACTIVE: default
+
+  cards:
+    image: "rgupta00/cards:v3"
+    container_name: cards-ms
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "cards"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+      SPRING_PROFILES_ACTIVE: default
+
+  accounts:
+    image: "rgupta00/accounts:v3"
+    container_name: accounts-ms
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+    networks:
+      - busycoder
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+      SPRING_PROFILES_ACTIVE: default
+
+networks:
+  busycoder:
+    driver: "bridge"
+	
+
+
+Micorservice k8s
+------------------
+
+
+k8s local setup using docker desktop and k8s dashboard
+--------------------------------------------------------
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+https://helm.sh/docs/intro/install/
+
+step 0: install kubectl
+step 1: enable k8s with docker desktop and update
+step 2: check commands
+config get-contexts
+kubectl config get-clusters
+
+kubectl config use-context docker-desktop
+Switched to context "docker-desktop".
+
+kubectl get nodes
+NAME             STATUS   ROLES           AGE     VERSION
+docker-desktop   Ready    control-plane   3m38s   v1.29.1
+
+
+Now we need to install helm
+------------------------------
+choco install kubernetes-helm
+
+helm version
+version.BuildInfo{Version:"v3.15.1", GitCommit:"e211f2aa62992bd72586b395de50979e31231829", GitTreeState:"clean", GoVersion:"go1.22.3"}
+
+installing dashboard:
+--------------------------
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+"kubernetes-dashboard" has been added to your repositories
+
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+*************************************************************************************************
+*** PLEASE BE PATIENT: Kubernetes Dashboard may need a few minutes to get up and become ready ***
+*************************************************************************************************
+
+Congratulations! You have just installed Kubernetes Dashboard in your cluster.
+
+To access Dashboard run:
+  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+NOTE: In case port-forward command does not work, make sure that kong service name is correct.
+      Check the services in Kubernetes Dashboard namespace using:
+        kubectl -n kubernetes-dashboard get svc
+
+Dashboard will be available at:
+  https://localhost:8443
+
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+Forwarding from 127.0.0.1:8443 -> 8443
+Forwarding from [::1]:8443 -> 8443
+
+
+Now we need to create sample user:
+
+https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+
+create a service account:
+---------------------------
+
+dashboard-adminuser.yaml
+--------------------------
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+  
+
+kubectl apply -f dashboard-adminuser.yaml
+
+
+
+Creating a ClusterRoleBinding
+-----------------------------
+dashboard-rolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+  
+kubectl apply -f dashboard-rolebinding.yaml
+
+Getting a Bearer Token for ServiceAccount
+------------------------------------------
+kubectl -n kubernetes-dashboard create token admin-user
+
+and provide to ui to login
+
+https://localhost:8443/
+
+now you can monitor all kubernetes resources easliy
+
+Microservice k8s yaml configuration files:
+------------------------------------------
+
+1_configserver.yml
+-----------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configserver-deployment
+  labels:
+    app: configserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configserver
+  template:
+    metadata:
+      labels:
+        app: configserver
+    spec:
+      containers:
+      - name: configserver
+        image: rgupta00/configserver:v3
+        ports:
+        - containerPort: 8071
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver
+spec:
+  selector:
+    app: configserver
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8071
+      targetPort: 8071
+
+
+
+2_configmaps.yml
+-----------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: busycoder-configmap
+data:
+  SPRING_PROFILES_ACTIVE: default
+  SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+  CONFIGSERVER_APPLICATION_NAME: configserver
+  EUREKA_APPLICATION_NAME: eurekaserver
+  ACCOUNTS_APPLICATION_NAME: accounts
+  LOANS_APPLICATION_NAME: loans
+  CARDS_APPLICATION_NAME: cards
+  GATEWAY_APPLICATION_NAME: gatewayserver
+
+
+
+3_eurekaserver.yml
+-----------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eurekaserver-deployment
+  labels:
+    app: eurekaserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eurekaserver
+  template:
+    metadata:
+      labels:
+        app: eurekaserver
+    spec:
+      containers:
+      - name: eurekaserver
+        image: rgupta00/eurekaserver:v3
+        ports:
+        - containerPort: 8070
+        env:
+        - name: SPRING_APPLICATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: EUREKA_APPLICATION_NAME
+        - name: SPRING_CONFIG_IMPORT
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_CONFIG_IMPORT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eurekaserver
+spec:
+  selector:
+    app: eurekaserver
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8070
+      targetPort: 8070
+
+
+
+
+
+4_cards.yml
+-----------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cards-deployment
+  labels:
+    app: cards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cards
+  template:
+    metadata:
+      labels:
+        app: cards
+    spec:
+      containers:
+      - name: cards
+        image: rgupta00/cards:v3
+        ports:
+        - containerPort: 9090
+        env:
+        - name: SPRING_APPLICATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: CARDS_APPLICATION_NAME
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_PROFILES_ACTIVE
+        - name: SPRING_CONFIG_IMPORT
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_CONFIG_IMPORT
+        - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cards
+spec:
+  selector:
+    app: cards
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+
+
+
+
+5_loans.yml
+-----------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loans-deployment
+  labels:
+    app: loans
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loans
+  template:
+    metadata:
+      labels:
+        app: loans
+    spec:
+      containers:
+      - name: loans
+        image: rgupta00/loans:v3
+        ports:
+        - containerPort: 8090
+        env:
+        - name: SPRING_APPLICATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: LOANS_APPLICATION_NAME
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_PROFILES_ACTIVE
+        - name: SPRING_CONFIG_IMPORT
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_CONFIG_IMPORT
+        - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loans
+spec:
+  selector:
+    app: loans
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+
+
+
+6_accounts.yml
+-----------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-deployment
+  labels:
+    app: accounts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounts
+  template:
+    metadata:
+      labels:
+        app: accounts
+    spec:
+      containers:
+      - name: accounts
+        image: rgupta00/accounts:v3
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_APPLICATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: ACCOUNTS_APPLICATION_NAME
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_PROFILES_ACTIVE
+        - name: SPRING_CONFIG_IMPORT
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: SPRING_CONFIG_IMPORT
+        - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+          valueFrom: 
+            configMapKeyRef:
+              name: busycoder-configmap
+              key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounts
+spec:
+  selector:
+    app: accounts
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+
+helm:
+--------
+https://helm.sh/docs/intro/using_helm/
+
+helm version
+helm ls
+helm search hub wordpress
+
+https://archive.eksworkshop.com/beginner/060_helm/helm_nginx/addbitnamirepo/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+
+helm uninstall happy-panda
+
+
+helm dependencies build
+
+
+helm template .

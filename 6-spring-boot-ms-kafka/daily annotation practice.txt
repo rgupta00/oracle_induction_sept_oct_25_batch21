@@ -1,0 +1,56 @@
+
+all spring boot annotation:
+--------------------------
+@Component
+	@RestController
+	@Controller
+	@Repository
+	@Service
+
+
+
+	
+@Configuration
+@ComponentScan(basePackages = {"com.productapp"})
+
+
+
+
+@Autowire
+
+
+
+
+@Primary
+@Qulifier
+
+@Profile
+	
+how to activate:
+-Dspring.profiles.active=dev
+
+
+Common spring excception:
+------------------------
+NoUniqueBeanDefinitionException- if i forget to apply @Primary
+NoSuchBeanDefinitionException: jab me @Repository bhul ...
+
+
+now anntation related to rest api:
+--------------------------------
+
+@RestController
+
+@RequestMapping(path="api")
+
+
+//get all products
+@GetMapping(path = "products")
+
+@PathVariable
+/
+
+@RequestParam: pagination
+
+
+

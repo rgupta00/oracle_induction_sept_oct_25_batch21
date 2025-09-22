@@ -240,8 +240,16 @@ Machine					Physical Plot or Land				Represents hardware where server runs
 
 Step 2: running weblogic setup:
 ----------------------------------
+java -jar nameofjarfile
+
 "C:\Program Files\Java\jdk1.8.0_202\bin\java.exe" -jar fmw_12.2.1.4.0_wls.jar ORACLE_HOME="C:\Weblogic"
 
+
+
+"C:\Program Files\Java\jdk-1.8\bin\java.exe" -Djava.io.tmpdir=C:\weblogictemp\wls_tmp -D64 -jar fmw_12.2.1.4.0_wls.jar ORACLE_HOME="C:\Weblogic"
+
+
+java -Djava.io.tmpdir=C:\Users\YourUserName\wls_tmp -D64 -jar fmw_12.2.1.4.0_wls.jar
 
 
 step 3: Creating a domain in weblogic 12c

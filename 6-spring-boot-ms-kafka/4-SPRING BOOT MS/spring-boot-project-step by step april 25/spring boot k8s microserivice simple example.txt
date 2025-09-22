@@ -1,0 +1,83 @@
+Spring boot Microservice Example with k8s
+==================================================
+
+Step 1: run spring boot projects without docker
+
+Step 2: do nessary changes for docker
+
+Step 3: Create and push Spring boot impages with Build pack:
+-------------------------
+ 
+	3.1. Add the configuration in the pom.xml
+
+			  <plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<image>
+							<name>rgupta00/${project.artifactId}:v1</name>
+						</image>
+					</configuration>
+				</plugin>
+				
+	3.2. Run the maven command from the location where pom.xml is visible
+	mvn spring-boot:build-image
+
+	3.3
+	docker push rgupta00/couponservice
+	docker push rgupta00/productservice
+	
+	3.4
+	check if images are push correctly
+	
+step 4: run docker comopose and check application is working
+
+
+step 5: create k8s configuration file and explore them
+
+step 6: create kind cluster
+-----------------------------
+cls.yaml
+----------------
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: dev-cluster
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30288 #coupon-app
+    hostPort: 30288
+    protocol: TCP
+  - containerPort: 30287 #mysql
+    hostPort: 30287
+    protocol: TCP
+  - containerPort: 30289 #product service
+    hostPort: 30289
+    protocol: TCP
+- role: worker
+- role: worker
+
+
+	Type of services
+	------------------
+	* clusterIP (within)
+	* NodePort (External)
+	* Load balancer(External)
+	
+	
+ kind create cluster --config cls.yaml
+ 
+ to delete cluster:
+  kind delete cluster --name dev-cluster
+  
+ 
+ docker ps	
+
+ get all notes in the cluster
+ -------------------------
+ kubectl get nodes
+
+  
+ now run 
+ kubectl apply -f .
+

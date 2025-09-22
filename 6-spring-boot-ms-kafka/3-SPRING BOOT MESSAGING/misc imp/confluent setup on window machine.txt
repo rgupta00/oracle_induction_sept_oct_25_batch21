@@ -1,0 +1,68 @@
+CONFLUENT KAFKA SETUP ON WINDOW:
+==================================
+https://www.youtube.com/watch?v=mdcIdzYHFlw
+
+step 1: install wsl2 on window machine
+
+step 2: install ubuntu 22.04
+
+step 2.1: install java 17 and check 
+ sudo apt-get update
+
+
+step 3: download CONFLUENT into window system and copy to ubuntu to install it
+https://www.confluent.io/installation/
+https://packages.confluent.io/archive/7.7/confluent-7.7.0.tar.gz?_gl=1*1g8e74*_gcl_aw*R0NMLjE3MjUwODczODIuQ2owS0NRancyOFcyQmhDN0FSSXNBUGVycmNKQ3NpanlCVmVxenF6Wm1nT0hMY3liY2tMMjVuS2s3SFJxUms3SWR2ajRfOV84VWlmOHdoNGFBc1JVRUFMd193Y0I.*_gcl_au*MTEzMTExMTg0OC4xNzI1MDgxNzc5LjEwNTQzNzQ0MjQuMTcyNTA4NzM4OC4xNzI1MDg3Mzg5*_ga*MjAzNjIyOTEwMi4xNzI1MDgxNzc5*_ga_D2D3EGKSGD*MTcyNTA4NzM4MS4yLjEuMTcyNTA4ODU3MC42MC4wLjA.&_ga=2.123523851.1850592795.1725081779-2036229102.1725081779&_gac=1.228916462.1725087382.Cj0KCQjw28W2BhC7ARIsAPerrcJCsijyBVeqzqzZmgOHLcybckL25nKk7HRqRk7Idvj4_9_8Uif8wh4aAsRUEALw_wcB
+
+
+step 4: copy CONFLUENT to ubuntu file system:
+
+ll /mnt/
+cp /mnt/c/confkafka/confluent-7.7.0.tar .
+
+now do ls to check and untar the download folter
+tar -zxvf confluent-7.7.0.tar
+
+step 5: set the home enviornment for the same:
+
+vim .profile file to add:
+export CONFLUENT_HOME=/home/raj/confluent-7.7.0
+export PATH=$PATH:$CONFLUENT_HOME/bin  
+
+then restart linux terminal 
+
+
+step 6: open the file
+vim /home/raj/confluent-7.7.0/etc/kafka/server.properties
+
+and change some configuration:
+
+all ip:
+listeners=PLAINTEXT://0.0.0.0:9092
+
+change:
+advertised.listeners=PLAINTEXT://localhost:9092
+
+uncomment:
+listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+
+Step 7:start confluent plateform
+
+confluent local services start
+
+step 8: go to browser:
+http://localhost:9021/clusters
+
+step 9: create a topic:
+create a topic test-topic
+
+step 10: create producer and consumers
+
+go to terminal
+kafka-console-producer --topic test-topic --broker-list localhost:9092
+kafka-console-consumer --topic test-topic --bootstrap-server localhost:9092 --from-beginning
+
+step 11: cleanup
+confluent local services stop
+confluent local destroy
+

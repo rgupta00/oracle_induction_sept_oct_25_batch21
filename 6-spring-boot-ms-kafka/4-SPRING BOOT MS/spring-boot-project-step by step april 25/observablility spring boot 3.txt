@@ -1,0 +1,249 @@
+Observablility using graphan stack
+----------------------------------
+
+What is Observability?
+---------------------------
+	Observability is the process of understanding the internal state of the application 
+	with the help of different indicators such as Logs, Metrics, and Tracing information.
+
+	Log matrix and traces
+	------------------
+	Log: application logs
+	
+	matrix: jvm statistics, thread count, Heap memory etc
+	
+	Traces: distributed tracking
+		help to traces application flow from A -> B
+		
+		
+	https://www.ibm.com/think/topics/observability
+
+
+
+Grafana Stack comprises about 3 softwares:
+----------------------------------------
+	Grafana: 
+		Tool that helps to monitor and visualize the metrics of our application.
+		
+		Users can visualize the metrics by building different dashboards and can use 
+		different kinds of charts to visualize the metrics. 
+		We can also configure alerts to be notified whenever a metric reaches a certain required threshold.
+
+	Prometheus:
+		Scraping matrix
+		
+		To collect metrics, we will be using Prometheus, 
+		a metrics aggregation tool.
+
+	Loki: 
+			is a Log Aggregation tool that receives the logs from our application
+			and indexes the logs to be visualized using Grafana.
+			
+			Loki: aggrigate logs of application for logging
+			
+			https://signoz.io/blog/loki-vs-elasticsearch/
+
+	Tempo: 
+			Tempo: simpilar to zipkin to distributed tracing
+			is used as a distributed tracing tool, which can track requests that span across different systems.
+			
+
+
+
+	We will see how to implement Observability for a sample loan processing 
+	system built with Spring Boot 3 using the Grafana Stack
+	
+	
+	
+Step 1:Let's start with implementing logging in our application
+---------------------------------------------------
+
+Step 1.1: To send our application logs to Loki, we have to add the below 
+dependency to the pom.xml of both loan-service and fraud-service.
+
+ <dependency>
+        <groupId>com.github.loki4j</groupId>
+        <artifactId>loki-logback-appender</artifactId>
+        <version>1.3.2</version>
+    </dependency>
+	
+Step 1.2: define a logback-spring.xml file inside the src/main/resources which contains
+ necessary information about how to structure our logs and where to send the logs 
+
+logback-spring.xml
+-----------------
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <springProperty scope="context" name="lokiUrl" source="loki.url"/>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${lokiUrl}</url>
+        </http>
+        <format>
+            <label>
+                <pattern>application=${appName},host=${HOSTNAME},level=%level</pattern>
+            </label>
+            <message>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </message>
+            <sortByTime>true</sortByTime>
+        </format>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LOKI"/>
+    </root>
+</configuration>
+
+
+Note: dont forget to mentioned in the application.properties file of each projects
+-----------------------------------------------------------------------------------
+loki.url=http://localhost:3100/loki/api/v1/push
+
+Step 2: Metrics
+	Metrics can be any kind of measurable information about our application like JVM statistics,
+	 Thread Count, Heap Memory information, etc. To collect metrics of our application,
+	 we need to first enable Spring Boot Actuator in our project by adding the below dependency:
+	
+step 2.1:
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+step 2.2:
+	To expose the metrics of our application, Spring Boot uses Micrometer to collect metrics, 
+	and by adding the below dependency we can configure Micrometer to
+	expose an endpoint that can be scraped by Prometheus.
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
+step 2.3:
+The next step is to add some properties to our application.yml file.
+
+management.endpoints.web.exposure.include=health, info, metrics, prometheus
+management.metrics.distribution.percentiles-histogram.http.server.requests=true
+management.observations.key-values.application=loan-service
+
+
+step 2.4: put prometheus config in docker compose file
+
+step 2.5: understand prometheus.yml file
+	Under the global field, we defined the scrape and evaluation interval as 2s.
+	In the scrape_configs section, we have 3 jobs, 
+	one for prometheus, 
+	loan-service, and fraud-detection service. 
+	
+	Notice that to scrape the loan-service and fraud-detection services we defined the URL 
+	of both the services and the metrics path as - /actuator/prometheus
+	
+	
+	
+Distributed Tracing using Tempo
+---------------------------------
+	Now let implement Distributed Tracing using Tempo. 
+	
+	NOte : Prior to Spring Boot 3, we used to add the Spring Cloud Sleuth dependency
+	to add distributed tracing capabilities to our application, but from Spring Boot 3, 
+	Spring Cloud Sleuth is no longer needed and this is replaced by the Micrometer Tracing Project.
+	
+	
+Step 1.1: 
+	To add the support, add the below dependencies:
+	
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.reporter2</groupId>
+			<artifactId>zipkin-reporter-brave</artifactId>
+		</dependency>
+		
+	Note: 
+		micrometer-tracing-bridge-brave is the dependency that does all
+		the magic and adds distributed tracing for our application. 
+		
+		Whereas zipkin-reporter-brave will export the tracing information to Tempo.
+		
+		We can also use other tracing implementation like OpenTelemetry -
+		micrometer-tracing-bridge-otel dependency instead of 
+		Brave - micrometer-tracing-bridge-brave
+		
+		
+step 1.2: in order to trace the calls to the database
+--------------------------------------------------
+
+		<dependency>
+			<groupId>net.ttddyy.observation</groupId>
+			<artifactId>datasource-micrometer-spring-boot</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		
+	 step 1.3: apply @Observed on the repo layer
+	 
+	 step 1.4: define bean
+	 
+		 @Configuration
+		public class ObservationConfig {
+			@Bean
+			ObservedAspect observedAspect(ObservationRegistry registry) {
+				return new ObservedAspect(registry);
+			}
+		}
+
+	step 1.5:it need 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		
+		
+	Micrometer Tracing will only send 10% of the traces it generates to Tempo, 
+	just to avoid overwhelming it with a lot of requests. 
+	We can set it to 100% by adding the below property to our application.yml file
+
+	step 1.6:
+		management.tracing.sampling.probability=1.0
+
+	step 1.7:
+		Configure Tempo using docker, by configure into  docker-compose.yml file
+		
+	step 1.8:
+		 configure a file called tempo.yml file to store the necessary settings to be used in Tempo.
+		 
+		 
+		 
+
+Running Grafana
+------------------------
+	let run Grafana using Docker. 
+	After all, this is what brings all the services like Tempo, Loki, and Prometheus together and
+	visualizes the information produced by our services.
+	
+	step 1.1: configure graphana in docker compose file
+	
+	step 1.2: define the data sources from which it needs to gather the information to visualize, 
+	for that let's create a file called datasources.yml
+	
+	
+	
+Now Explore and try to get desired output:
+-----------------------------------------
+http://localhost:3000
+
+	Toggle menu ---> 'Explore'
+		Under the dropdown select - 'Loki' and 
+		run the query with your desired parameters, 
+		e.g.: select the application label as - loan-service.
+
+	
+
+	

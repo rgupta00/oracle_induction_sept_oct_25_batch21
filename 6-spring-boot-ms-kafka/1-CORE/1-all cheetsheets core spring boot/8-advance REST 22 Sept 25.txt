@@ -1,0 +1,1074 @@
+Spring boot patch request:
+------------------------
+Patch vs Put:
+---------------
+ PATCH is generally more efficient and appropriate than PUT when you're updating only 1 or 2 fields, 
+ but performance gain is minor unless you're dealing with large objects or high-frequency requests.
+
+Updated PATCH Endpoint to Update Only Price
+---------------------------------------
+@PatchMapping(path = "/products/{productId}/price")
+public Product updateProductPrice(@PathVariable int productId, @RequestBody Map<String, Object> updates) {
+    if (updates.containsKey("price")) {
+        double price = Double.parseDouble(updates.get("price").toString());
+        return productService.updatePrice(productId, price);
+    } else {
+        throw new IllegalArgumentException("Price field is required for patching.");
+    }
+}
+
+service layer:
+---------
+public Product updatePrice(int productId, double newPrice) {
+    Product existing = productRepository.findById(productId)
+        .orElseThrow(() -> new RuntimeException("Product not found"));
+
+    existing.setPrice(newPrice);
+    return productRepository.save(existing);
+}
+
+how to invoke:
+-------------
+PATCH 
+http://localhost:8080/products/101
+/products/101/price
+
+Content-Type: application/json
+{
+  "price": 599.99
+}
+
+
+Aspect						PUT									PATCH
+-----------------------------------------------------------------------
+Intent			Full object replacement					Partial update (only specified fields)
+Payload			Requires the entire object				Requires only fields to update
+Bandwidth		Heavier payload (full object)			Lighter payload (partial)
+Risk of Loss	May overwrite fields unintentionally	Only affects specified fields
+Semantics		Idempotent (usually)					May or may not be idempotent
+Usage in REST	Less ideal for partial update			Ideal for partial update
+
+
+Performance Considerations
+Factor						Why PATCH Can Be Better
+----------------------------------------------
+Less Payload				Only sends changed fields → less data over network
+Less Processing			Your app logic only updates one field instead of replacing the whole object
+Database IO				If you avoid re-saving unchanged fields, DB load is reduced
+Network Efficiency		Smaller request = faster transmission, esp. in mobile or high-latency environments
+
+
+When to Use PATCH vs PUT
+------------------------
+Scenario											Use
+----------------------------------------------------------
+Update entire product (all fields)					PUT
+Update just price or name							PATCH
+Replace a resource with a new one					PUT
+Modify part of resource (e.g., change status)		PATCH
+
+
+
+Final Recommendation
+----------------------------
+For partial updates, like changing only the price or status, use PATCH:
+It's semantically correct
+It reduces bandwidth
+It simplifies client-side logic
+
+
+
+
+
+HTTP Methods and Idempotency
+---------------------------------------
+Method					Idempotent?		Description
+---------------------------------------------------
+GET						Yes				Same request = same result, no change to server state
+DELETE					Yes				Deleting the same resource repeatedly has same result (resource is gone)
+PUT						Yes				Replaces resource with same data — doing it again has no further effect
+POST 					No				Each request usually creates something new (e.g., new ID) or triggers a side-effect
+PATCH				   Not guaranteed	Depends on implementation
+
+Why PATCH is “May or May Not Be Idempotent”
+-----------------------------------------------
+PATCH is defined as "a partial update to a resource", but:
+	It can be idempotent if applying the same patch multiple times has the same result.
+	It is non-idempotent if each application accumulates changes or has side effects.
+
+
+Examples of PATCH Behavior
+--------------------------
+Idempotent PATCH
+-------------------
+PATCH /products/101
+{
+  "price": 599.99
+}
+If this always sets the price to 599.99 (regardless of current price), it's idempotent.
+
+Non-Idempotent PATCH
+---------------------
+PATCH /products/101
+{
+  "priceIncrement": 10
+}
+
+PUT vs PATCH in this Context
+--------------------------
+	PUT /products/101 with full product replaces the whole object → always idempotent.
+	
+	PATCH /products/101 to update "price" is often idempotent if implemented carefully, 
+	but the spec allows it to be non-idempotent, so you can't always assume it.
+	
+Rule of Thumb
+------------
+	Always treat POST as non-idempotent
+	Assume PATCH is not idempotent unless you design it to be
+	Design PATCH APIs to be idempotent when possible (set value, not increment/change it)
+	Use PUT for full replacements and PATCH for surgical field updates
+
+
+
+HTTP Methods with Standard Response Codes
+---------------------------------------------------------------------
+Method	Idempotent	Common Use				Typical HTTP Status Codes
+--------------------------------------------------------------------
+GET		Yes			Read data			200 OK – resource found
+										404 Not Found – resource missing
+										
+POST	No			Create or trigger	201 Created – resource created
+										202 Accepted – async processing
+										400 Bad Request – invalid input
+										409 Conflict – duplicate entry
+										
+PUT		Yes			Full update/replace	200 OK – update successful
+										204 No Content – update, no response body
+										404 Not Found – resource doesn't exist
+										400 Bad Request – validation failed
+										
+PATCH	⚠️ Depends	Partial update		200 OK – update successful
+										204 No Content – update, no body
+										404 Not Found – resource not found
+										400 Bad Request – invalid input
+										
+DELETE	 Yes							Remove resource	200 OK – deleted, with message
+										204 No Content – deleted, no body
+										404 Not Found – resource missing
+
+Explanation of Common Status Codes
+----------------------------------
+Code	Meaning			When to Use
+200 	OK				Request succeeded, with response body	GET, PUT, PATCH, DELETE
+201 	Created	New 	resource created	POST only (with Location header)
+204 	No Content		Request succeeded, no body	PUT, PATCH, DELETE when no response data
+400		Bad Request		Client-side input error	Invalid input (e.g., missing required field)
+404 	Not Found		Resource does not exist	Common in GET, PUT, PATCH, DELETE
+409 	Conflict		Resource already exists / version clash	Duplicate POST, concurrent PUT/PATCH
+
+Examples by Method
+-----------------------
+GET /products/101
+✅ 200 OK: Found
+❌ 404 Not Found: Doesn't exist
+
+POST /products
+-------------
+✅ 201 Created: Product created
+❌ 409 Conflict: Duplicate SKU
+
+PUT /products/101
+-------------------
+✅ 200 OK: Updated successfully
+✅ 204 No Content: Updated, no return
+❌ 404 Not Found: Product missing
+
+
+PATCH /products/101
+-------------------
+✅ 200 OK or 204 No Content: Partial update successful
+❌ 400 Bad Request: Invalid field
+❌ 404 Not Found: Product doesn't exist
+
+DELETE /products/101
+-----------------------
+✅ 204 No Content: Deleted
+❌ 404 Not Found: Already gone
+
+
+Industry Best Practices
+-------------------------------
+	Use 201 Created for POST + include Location header with URI of the new resource.
+	Use 204 No Content for successful updates or deletes when no response body is needed.
+	Avoid returning 200 OK with empty body — prefer 204.
+	Standardize your API error model using 400/404/409 where appropriate with meaningful error messages.
+	
+
+
+give me controller code for 409 Conflict – duplicate entry
+---------------------------------------------------------
+Trying to create a product that already exists (e.g., based on a unique constraint like name or SKU).
+
+Step-by-Step: 409 Conflict on Duplicate Entry
+---------------------------------------------
+
+@RequestMapping("/products")
+public class ProductController {
+
+    @Autowired
+    private ProductService productService;
+
+    @PostMapping
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        try {
+            Product saved = productService.create(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (DuplicateProductException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);  // HTTP 409
+        }
+    }
+}
+
+ProductService.java
+---------------------
+public class ProductService {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    public Product create(Product product) {
+        Optional<Product> existing = productRepository.findByName(product.getName());
+        if (existing.isPresent()) {
+            throw new DuplicateProductException("Product with name '" + product.getName() + "' already exists.");
+        }
+        return productRepository.save(product);
+    }
+}
+
+
+Custom Exception: DuplicateProductException.java
+-----------------------------------------------
+public class DuplicateProductException extends RuntimeException {
+    public DuplicateProductException(String message) {
+        super(message);
+    }
+}
+
+Optional Global Exception Handler (Cleanest Approach)
+------------------------------------------------------
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DuplicateProductException.class)
+    public ResponseEntity<String> handleDuplicateProduct(DuplicateProductException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+}
+
+Sample JSON Request in Postman
+-------------------------------
+{
+  "name": "MacBook Air M3",
+  "price": 999.99
+}
+If a product with that name already exists, you’ll get:
+
+Response
+---------------
+409 Conflict
+
+"Product with name 'MacBook Air M3' already exists."
+
+
+
+Richerson maturity model in depht 
+---------------------------------------
+
+	Rrdson Maturity Model (RMM) is a well-known model to evaluate RESTful maturity of web services, 
+	
+Richardson Maturity Model (RMM) – Overview
+	------------------------------------------
+	Created by Leonard Richardson, this model defines 4 levels of REST maturity:
+
+	Level	Description	Key Focus
+	Level 0	Single endpoint, uses only POST	RPC-style / Tunneling
+	Level 1	Introduces multiple endpoints (resources)	Resource-based URLs
+	Level 2	Adds proper HTTP methods (GET, POST...)	Verb correctness
+	Level 3	Adds HATEOAS (Hypermedia links)	Discoverability
+
+
+Level 0 – “Swamp of POX” (Plain Old XML/JSON over HTTP)
+---------------------------------------------------
+
+Key Characteristics:
+------------------------
+	Only one endpoint (e.g., /api)
+	Uses only one HTTP method (typically POST)
+	Operation is specified inside the request body
+	Ignores HTTP verbs and status codes
+	Behaves like a Remote Procedure Call (RPC), not REST
+
+Request Payload looks like this:
+----------------------------------
+Edit
+{
+  "operation": "createProduct",
+  "data": {
+    "name": "iPhone 15",
+    "price": 89999.00
+  }
+}
+
+What’s wrong?
+------------------
+	Doesn't use RESTful URIs or HTTP verbs
+	Treats HTTP as a transport layer only
+	No resource orientation
+
+Level 0 Example in Spring Boot
+--------------------------------
+
+Controller – One Single Endpoint
+-------------------------------
+@RestController
+@RequestMapping("/api") // One endpoint for all actions
+public class ProductController {
+
+    @PostMapping
+    public ResponseEntity<?> process(@RequestBody OperationRequest request) {
+        switch (request.getOperation()) {
+            case "createProduct":
+                return ResponseEntity.ok(productService.create(request.getData()));
+            case "getProduct":
+                return ResponseEntity.ok(productService.getById((Integer) request.getData().get("id")));
+            default:
+                return ResponseEntity.badRequest().body("Unknown operation");
+        }
+    }
+}
+
+
+OperationRequest.java
+----------------------
+public class OperationRequest {
+    private String operation;
+    private Map<String, Object> data;
+
+    // Getters & Setters
+}
+
+Sample Request
+---------------
+
+POST /api
+Content-Type: application/json
+
+{
+  "operation": "createProduct",
+  "data": {
+    "name": "Gunika Watch",
+    "price": 999.0
+  }
+}
+
+Why This is Level 0?
+----------------------
+	All actions happen at /api
+	All requests are POST
+	Operation type is inside the body (not HTTP verb or URL)
+	Not leveraging HTTP semantics
+
+
+
+
+Transitioning to Level 1
+-----------------------------
+Introduce resources and separate URIs like:
+
+	/products
+	/products/{id}
+	Still uses only POST for everything (even GET/DELETE)
+
+	POST /products/getById
+	POST /products/deleteById
+	
+	Still not RESTful—URLs improve, but verbs still misused.
+
+
+
+Level 2 – Proper REST
+-----------------------
+Use:
+
+Resources: /products
+
+	HTTP Verbs:
+	POST /products → create
+	GET /products/101 → read
+	PUT /products/101 → full update
+	PATCH /products/101 → partial update
+	DELETE /products/101 → delete
+
+
+Spring Boot Controller for Level 2
+-------------------------------------
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+
+    @PostMapping
+    public Product create(@RequestBody Product p) { ... }
+
+    @GetMapping("/{id}")
+    public Product getById(@PathVariable int id) { ... }
+
+    @PutMapping("/{id}")
+    public Product update(@PathVariable int id, @RequestBody Product p) { ... }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id) { ... }
+}
+
+
+Level 3 – HATEOAS (Hypermedia as the Engine of Application State)
+-------------------------------------------------------------
+Adds links in response to guide client to next action.
+Makes API self-discoverable.
+
+Sample Response with HATEOAS (Level 3)
+-----------------------------------
+{
+  "id": 101,
+  "name": "iPad Air",
+  "price": 59999,
+  "_links": {
+    "self": { "href": "/products/101" },
+    "update": { "href": "/products/101" },
+    "delete": { "href": "/products/101" }
+  }
+}
+
+Spring Boot HATEOAS Example
+Using spring-boot-starter-hateoas:
+------------------------------------------
+@GetMapping("/{id}")
+public EntityModel<Product> getProduct(@PathVariable int id) {
+    Product product = productService.getById(id);
+    return EntityModel.of(product,
+        linkTo(methodOn(ProductController.class).getProduct(id)).withSelfRel(),
+        linkTo(methodOn(ProductController.class).delete(id)).withRel("delete")
+    );
+}
+
+
+Summary Table
+----------------
+Level		URL Structure	HTTP Methods	Hypermedia		RESTful?
+------------------------------------------------------------------------
+0			/api			POST only			❌			❌
+1			/products		POST only			❌			🚫 Partial
+2			/products/1		GET, POST...		❌			✅
+3			/products/1		GET, POST...		✅ _links	✅ Full
+
+
+Real-World Tip
+---------------------
+Even many real APIs stop at Level 2, and that's fine.
+----------------------------------------------------
+	Level 0 is good for legacy or tightly coupled systems
+	Level 1 improves URL clarity
+	Level 2 is where most REST APIs should aim
+	Level 3 (HATEOAS) is great for hypermedia-based clients, but not essential for most web/mobile apps
+
+
+
+What is a Hypermedia-Based Client?
+------------------------------------
+	A hypermedia-based client is one that:
+	Does not hardcode all endpoint URLs.
+	Discovers what actions are possible by following hyperlinks provided in the API response.
+	Treats the server response like a webpage — where you navigate by following the links the server provides.
+
+Analogy: Web Browser
+Think of how you use a browser:
+
+	You start at https://news.com
+	You don’t know the URL of every article.
+	You just click links ("Read more", "Next", "Previous", etc.)
+	A hypermedia-driven API client behaves similarly:
+	It starts from a root resource (/api)
+	It finds actionable links in the response: like self, update, delete, add-item-to-cart
+
+Traditional REST vs Hypermedia
+----------------------------------
+❌ Traditional REST (Level 2)
+Client hardcodes URLs and knows what to call:
+----------------------------------------------
+	GET /products/101
+	DELETE /products/101
+	PATCH /products/101
+	The client must "know" what actions are allowed.
+
+✅ Hypermedia-Driven REST (Level 3)
+----------------------------
+Client gets a response like:
+------------------------------
+{
+  "id": 101,
+  "name": "Gunika Watch",
+  "price": 2999.0,
+  "_links": {
+    "self": { "href": "/products/101" },
+    "update": { "href": "/products/101" },
+    "delete": { "href": "/products/101" },
+    "related": { "href": "/products?category=watches" }
+  }
+}
+The client now:
+---------------------
+	Reads available actions from _links
+	Decides what to do based on what the server offers, not what it assumes
+	This enables loose coupling and makes it easier to evolve APIs without breaking clients.
+
+Why Use Hypermedia-Based Clients?
+-----------------------------
+Benefit							Explanation
+---------------------------------------------
+Dynamic Navigation				Client discovers allowed actions from response
+State Awareness					Server can show only valid next steps (e.g., cancel only if not shipped)
+Decouples Client & Server		Client doesn’t hardcode logic for endpoints
+Easier to Evolve APIs			You can change URLs or flow without breaking clients
+Security and Control			Server controls what clients can do in current context
+
+
+
+
+
+
+
+Spring Boot + HATEOAS Example (Level 3)
+-----------------------------------------
+Controller Example
+---------------------
+@GetMapping("/{id}")
+public EntityModel<Product> getProduct(@PathVariable int id) {
+    Product p = productService.getById(id);
+
+    return EntityModel.of(p,
+        linkTo(methodOn(ProductController.class).getProduct(id)).withSelfRel(),
+        linkTo(methodOn(ProductController.class).updateProduct(id, null)).withRel("update"),
+        linkTo(methodOn(ProductController.class).deleteProduct(id)).withRel("delete")
+    );
+}
+
+
+@GetMapping("/products/{id}")
+public EntityModel<Product> getProduct(@PathVariable int id) {
+    Product product = productService.findById(id);
+    return EntityModel.of(product,
+        linkTo(methodOn(ProductController.class).getProduct(id)).withSelfRel(),
+        linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products")
+    );
+}
+
+Response JSON
+----------------
+{
+  "id": 101,
+  "name": "Gunika Watch",
+  "price": 2999.0,
+  "_links": {
+    "self": { "href": "http://localhost:8080/products/101" },
+    "update": { "href": "http://localhost:8080/products/101" },
+    "delete": { "href": "http://localhost:8080/products/101" }
+  }
+}
+
+
+What Are Machine Clients?
+-----------------------
+Machine Clients are applications or services (not humans or UIs) that consume REST APIs.
+
+Examples include:
+---------------------
+Machine 				Client Type	Example
+Backend service			A Java microservice calling another microservice
+Integration engine		MuleSoft, Apache Camel, Spring Integration
+Script or CLI tool		Python script that consumes an API
+AI/automated agent		Software bots (e.g., Jenkins, ChatOps bots, RPA) that act on links
+
+Why HATEOAS Is Good for Machine Clients
+--------------------------------------
+	In HATEOAS (Hypermedia as the Engine of Application State), 
+	instead of hardcoding endpoint URLs, the client discovers actions via links.
+
+Example:
+
+Instead of hardcoding:
+-----------------
+DELETE /api/orders/101
+
+The client sees:
+-----------------
+{
+  "id": 101,
+  "status": "PENDING",
+  "_links": {
+    "approve": { "href": "/api/orders/101/approve" },
+    "cancel":  { "href": "/api/orders/101/cancel" }
+  }
+}
+
+The machine client reads _links.cancel.href and invokes it.
+
+In Machine Clients:
+------------------------------
+Aspect						Benefit of HATEOAS
+Decoupled URLs				Client doesn’t hardcode logic (like /cancel)
+Self-discovery				Client gets list of next valid actions
+Less breaking changes		API evolves without breaking clients
+Dynamic workflow control	Based on current state, not static routes
+
+Why Not Angular/React?
+-----------------------
+	In Angular (UI), you often already know what actions are available because:
+	You render a button saying “Cancel Order”
+	You already know the route /api/orders/{id}/cancel
+	So HATEOAS adds unnecessary complexity for frontends.
+	But for a Spring Boot microservice client, HATEOAS helps build smart and adaptive APIs.
+
+
+Summary
+
+Concept					Description
+------------------------------------
+Machine Client			Backend systems, scripts, bots consuming REST APIs
+HATEOAS Role			Provides discoverable actions, especially useful when logic is dynamic
+UI Clients (Angular)	Often know exact routes and state — don’t need hypermedia overhead
+
+
+
+What is an ETag (Entity Tag)?
+------------------------------
+ETag is a part of HTTP caching and concurrency control.
+
+It is a unique identifier (like a fingerprint) for a specific version of a resource. 
+The server assigns this ID (typically a hash or version string) to represent the current state of a resource.
+
+WHY is ETag Needed?
+---------------------
+	Improve Performance: 
+		Avoid sending the entire resource over the network if it hasn’t changed.
+	Concurrency Control: 
+		Prevent overwriting data if someone else modified it in the meantime (similar to optimistic locking).
+	Efficient Frontend Handling: 
+		Angular/React can use it to avoid stale data or unnecessary re-rendering.
+
+
+
+Difference: 	ETag 			vs 						Server-side Cache
+---------------------------------------------------------------------------------------
+Feature			ETag (Client-side)								Server-side Cache
+Stored where	On the client (browser/cache)					On the server (Redis, Guava, etc.)
+Primary use		Avoid re-fetching unchanged resources			Avoid recomputing/regenrating resource
+Triggered by	If-None-Match or If-Match HTTP header			Explicit cache rules / configuration
+Resource state 	tracking	Yes (via version or hash)			Not always
+Saves network?	✅ Yes											❌ No (only saves backend compute time)
+Saves DB/CPU work?	❌ No (data still fetched to generate ETag)	✅ Yes
+
+Spring Boot ETag Implementation (GET)
+--------------------------------------
+Controller with ETag + If-None-Match
+------------------------------------
+@GetMapping("/products/{id}")
+public ResponseEntity<Product> getProduct(@PathVariable int id,
+    @RequestHeader(value = "If-None-Match", required = false) String ifNoneMatch) {
+
+    Product product = productService.findById(id);
+    if (product == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    // Create a hash/version
+    String currentETag = Integer.toHexString(product.hashCode());
+
+    // Check if client's ETag matches
+    if (ifNoneMatch != null && ifNoneMatch.equals(currentETag)) {
+        // Client has latest version; no need to send body again
+        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).eTag(currentETag).build();
+    }
+
+    // Send full body with ETag
+    return ResponseEntity.ok().eTag(currentETag).body(product);
+}
+
+
+How to Test with Postman
+---------------------------
+1. First Call (GET)
+URL: GET http://localhost:8080/products/1
+
+Response:
+------------
+200 OK
+ETag: "3b2f9d10"
+Body: { product JSON... }
+
+2. Second Call (GET with ETag)
+------------------
+Set Header:
+If-None-Match: "3b2f9d10"
+
+Response:
+-----------
+304 Not Modified
+(no body)
+
+
+
+Performance Benefits
+-------------------------------------------------------------------------
+Scenario					Without ETag		With ETag
+--------------------------------------------------------------------------
+First Load					Full resource			Full resource
+Repeat load without changes	Full resource again		304 Not Modified (no body) 
+PATCH after stale read		Overwrites silently		412 Precondition Failed 
+
+Pro Tips
+-----------
+You can store a version/timestamp in DB (e.g. product.getVersion() or updatedAt) to use for ETag.
+
+Add a @Version field in JPA Entity if using optimistic locking:
+@Version
+private int version;
+
+Format ETag with quotes: "123abc" per HTTP spec.
+
+You can create strong ETags using:
+
+
+Summary
+---------------------------------------------												
+Aspect							ETag Use
+-------------------------------------------------
+Avoid bandwidth			GET + If-None-Match → 304 Not Modified
+Prevent overwrite		PUT/PATCH + If-Match → 412 Precondition Failed
+Frontend sync			Angular/React check for staleness easily
+Spring Boot				Use .eTag() on ResponseEntity
+
+
+
+Spring's async request handling
+-------------------------------
+What Is the Problem?
+--------------------------
+In a traditional Spring MVC application:
+----------------------------------------
+
+@GetMapping("/longTask")
+public String doWork() {
+    Thread.sleep(5000); // long processing
+    return "Done";
+}
+This method is synchronous, meaning:
+------------------------------------------
+	Each HTTP request is handled by a Tomcat worker thread.
+	The thread stays busy (blocked) for the entire 5 seconds.
+	If you get 200 concurrent requests, all 200 threads are blocked.
+	Once the thread pool is exhausted, new requests are queued or rejected (HTTP 503).
+
+What Does Callable (or Async) Do?
+------------------------------------
+@GetMapping("/longTask")
+public Callable<String> longRunningTask() {
+    return () -> {
+        Thread.sleep(5000);
+        return "Done after 5 seconds";
+    };
+}
+
+Concept:
+-------
+	Callable tells Spring: “Don’t process this on the servlet thread.”
+	It wraps the business logic into a background task.
+	The servlet thread is released immediately and is free to serve other requests.
+	Once the task is done, the result is sent back to the client asynchronously.
+
+Key Benefits of Async
+------------------------------
+Feature					Synchronous					Asynchronous
+---------------------------------------------------------------------
+Thread usage			Servlet thread busy			Servlet thread released
+Scalability				Poor with blocking ops		Much better
+Suitable for			Short tasks	Long-running, 	I/O-bound tasks
+Performance under load	Degrades quickly			More resilient
+
+What Happens Internally in Tomcat and Spring?
+-------------------------------------
+Let’s break it step by step:
+
+1. Spring DispatcherServlet Receives Request
+	When a request hits /longTask, DispatcherServlet sees that the controller returns a Callable.
+
+2. Async Context Started (Servlet 3.0 Feature)
+	Servlet container (Tomcat) starts an AsyncContext.
+
+	The request is marked async.
+
+	The servlet thread is returned to the pool immediately.
+
+	request.startAsync();
+	
+3. Callable Task is Submitted to Spring’s TaskExecutor
+
+	Spring has a configurable thread pool 
+	(default: SimpleAsyncTaskExecutor or you can define a TaskExecutor bean).
+
+	The Callable runs in a background thread.
+
+	executor.submit(callableTask);
+	
+4. Once Callable Finishes
+	Spring uses the AsyncContext to resume the original request.
+	The response is written using the background thread.
+	Spring notifies DispatcherServlet to render view or send response.
+
+5. Timeouts, Error Handling
+	If task takes too long, you can handle timeouts.
+	If an exception occurs, error handler is invoked.
+
+
+What’s the Effect on Tomcat’s Thread Pool?
+--------------------------------------------
+	Tomcat Thread Pool:
+	Default: maxThreads = 200 (depends on server config).
+
+	In synchronous mode:
+	200 concurrent requests → 200 busy threads.
+
+	Any more → blocked or rejected.
+
+	In async mode:
+
+	Servlet thread handles only request + response orchestration.
+	Background thread does the heavy work.
+	Tomcat stays lightweight and responsive.
+
+
+Thread 				Involvement 							Summary
+----------------------------------------------------------------------------
+Stage				Thread Used								Description
+Request Received	Servlet thread (Tomcat)					Starts AsyncContext
+Task Processing		Background thread (from TaskExecutor)	Does actual work
+Response Rendering	Background thread						Writes response, completes async
+
+Example Scenario
+-------------------
+You have a /generateReport endpoint that calls:
+
+	DB for large dataset (2s)
+	Calls third-party API (2s)
+	Applies heavy business logic (2s)
+
+	Total = 6 seconds.
+
+	Synchronous: 1 thread blocked for 6 seconds × N requests.
+	Asynchronous: Servlet thread free; background threads scale better.
+
+
+How It Improves Performance?
+------------------------------
+Reduced Thread Blocking
+	Async ensures that I/O-bound or CPU-heavy tasks do not block servlet threads.
+	Allows more concurrent users with same hardware.
+
+Thread Pool Segregation
+	Tomcat threads are for request dispatching.
+	Background threads (Spring TaskExecutor) handle heavy work.
+
+Higher Throughput
+	Under high load, async keeps the system responsive and scalable.
+	Less chance of thread starvation.
+
+
+Other Async Mechanisms in Spring MVC
+---------------------------------------------------------------
+Type						Use Case				Benefit
+-------------------------------------------------------------
+Callable<T>					Simple async task						Lightweight, good for controller
+
+WebAsyncTask<T>				Adds timeout/error callbacks			More control
+
+DeferredResult<T>			Async processing from other sources 	Complete response later
+							(e.g., Kafka, MQ)
+							
+SseEmitter 					Server-sent events / stream data	Push data to client over time
+ResponseBodyEmitter	
+
+
+
+
+Example: Custom Executor
+----------------------------
+@Configuration
+public class AsyncConfig implements AsyncConfigurer {
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(100);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("async-task-");
+        executor.initialize();
+        return executor;
+    }
+}
+
+Conclusion
+--------------------
+Spring MVC Async using Callable:
+
+	Decouples request thread from processing thread.
+	Relies on Servlet 3.0 async support.
+	Helps avoid bottlenecks in high-latency, I/O-heavy endpoints.
+	Offloads work to custom thread pools → improves concurrency and scalability.
+
+
+
+
+
+
+
+Rate Limiting in Spring Boot (via Filters or Interceptors)
+-----------------------------------------------------
+What is Rate Limiting?
+	Rate limiting is the process of restricting the number of requests a 
+	client can make to your application in a given time window.
+
+Goals:
+--------------
+	Protect APIs from abuse, DDoS, brute force attacks.
+	Ensure fair usage among users.
+	Prevent resource exhaustion (CPU, DB, memory).
+	Comply with third-party API rate contracts.
+
+Key Concepts
+-----------------
+Term					Meaning
+---------------------------------------
+Client Identity			Typically IP address, User ID, API Key
+Limit					Max number of allowed requests (e.g., 100 per minute)
+Window					Timeframe in which limit applies (e.g., 60 seconds)
+Burst					Allowing short spikes in traffic beyond steady limit
+Throttle				Temporarily slow down responses (instead of rejecting)
+
+
+
+Where to Apply Rate Limiting?
+--------------------------------
+
+1. Filters (Servlet API Level)
+-----------------------------
+	Executes before Spring MVC Controller.
+	Best for cross-cutting concerns (security, logging, etc).
+	Use OncePerRequestFilter to apply once per request.
+
+2. Interceptors (Spring MVC Level)
+--------------------------------------
+	Executes after request is mapped to a controller.
+	Can access request handler metadata.
+	Good for user-specific logic or custom headers.
+
+
+Basic Example: IP-based Rate Limiting using Filter
+---------------------------------------------
+@Component
+public class RateLimitingFilter extends OncePerRequestFilter {
+
+    private final Map<String, AtomicInteger> ipTracker = new ConcurrentHashMap<>();
+    private final int LIMIT = 100;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String clientIp = request.getRemoteAddr();
+        AtomicInteger count = ipTracker.computeIfAbsent(clientIp, k -> new AtomicInteger(0));
+        
+        if (count.incrementAndGet() > LIMIT) {
+            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value()); // 429
+            response.getWriter().write("Too many requests. Please try again later.");
+            return;
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
+
+
+Problems with This Naive Implementation
+---------------------------------------------
+Problem	Explanation
+Memory Leak	ipTracker grows indefinitely. No TTL or cleanup.
+No Time Window	We count requests, but never reset every minute.
+No Persistence	Lost on app restart.
+Not Distributed	Doesn’t work across multiple instances.
+ Not Scalable	Can’t handle millions of IPs or users efficiently.
+
+
+
+Real-World Solutions
+------------------------
+Let’s fix the problems using better libraries/tools:
+
+Option 1: Bucket4J (Java Token Bucket Algorithm)
+------------------------------------------------
+	Open-source library for in-memory or Redis-based rate limiting.
+	Works with Spring filters, interceptors, or gateways.
+	Supports burst control, refill intervals, and adaptive rate limits.
+
+
+@Component
+public class RateLimitFilter extends OncePerRequestFilter {
+
+    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String ip = request.getRemoteAddr();
+
+        Bucket bucket = buckets.computeIfAbsent(ip, this::newBucket);
+
+        if (bucket.tryConsume(1)) {
+            filterChain.doFilter(request, response);
+        } else {
+            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+            response.getWriter().write("Rate limit exceeded");
+        }
+    }
+
+    private Bucket newBucket(String key) {
+        Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
+        return Bucket4j.builder().addLimit(limit).build();
+    }
+}
+
+
+Bucket4J Internals
+-------------------------
+	Uses Token Bucket Algorithm.
+	Each user has a “bucket” filled with tokens (e.g., 10 tokens per minute).
+	Every request consumes 1 token.
+	Tokens are refilled gradually or in bursts.
+
+
+Option 2: Redis-backed Rate Limiting
+-------------------------------
+Why Redis?
+	Redis is fast (in-memory).
+	It supports atomic counters with expiration.
+	Works across distributed systems (multiple app instances).

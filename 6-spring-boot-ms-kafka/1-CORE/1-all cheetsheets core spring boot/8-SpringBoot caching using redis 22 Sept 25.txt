@@ -1,0 +1,161 @@
+Spring boot Redis cache:
+________________________
+
+10. caching
+_____________
+1. In memory cache
+-------------------
+
+step 1: configuration of cache
+
+@Configuration
+@EnableCaching
+public class CachingConfig {
+	@Bean
+	public CacheManager cacheManager(){
+		ConcurrentMapCacheManager cacheManager=new ConcurrentMapCacheManager("products");
+		return cacheManager;
+		
+	}
+}
+
+
+Step 2: applying cache annotations on service layer
+---------------------------------------------
+@Slf4j
+@Service
+@Transactional
+public class ProductServiceImpl implements ProductService {
+
+	
+	@Cacheable(value="products")
+	@Override
+	public List<Product> findAll() {
+		//
+	}
+
+	@Cacheable(value="products", key = "#id")
+	@Override
+	public Product getById(int id) {
+		//
+	}
+
+	@CachePut(value="products", key="#result.id")
+	@Override
+	public Product addProduct(Product product) {
+		//
+	}
+
+	@CachePut(value="products", key="#result.id")
+	@Override
+	public Product updateProduct(int id, Product product) {
+		//
+	}
+
+	@CacheEvict(value="products", key="#id")
+	@Override
+	public Product deleteProduct(int id) {
+		//
+	}
+
+	@CacheEvict(value="products", allEntries=true)
+	@Override
+	public void evictCache() {
+		log.info("cache is cleared...");
+	}
+
+}
+
+
+redis & redis cache
+===================
+ What is Redis?
+	Redis (Remote Dictionary Server) is an open-source,
+	in-memory data structure store used as a database, cache, and message broker.
+
+	It supports data structures like strings, hashes, lists, sets, sorted sets, etc.
+
+ Why Use Redis for Caching?
+		Ultra-fast data access due to in-memory storage.
+
+	Reduces database load and improves application performance.
+
+	Ideal for read-heavy applications.
+
+
+Redis with Spring Boot
+-----------------------
+step 0: docker compose configuration
+
+docker-compose.yml
+---------------------
+services:
+  redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+	  
+	  
+Step 1: add dependencies
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+
+step 2: configure cache
+----------------------
+spring:
+  application:
+    name: productappv1
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+	  
+
+	Common Use Cases
+	---------------
+		Caching database queries
+		Storing session data
+		Rate limiting
+		Leaderboards, real-time analytics
+
+	Benefits
+	--------
+	High performance
+	Scalability
+	Persistence option (if needed)
+	Pub/Sub capabilities
+
+
+https://www.javatpoint.com/redis-tutorial
+
+What is redis Usage ?
+-----------------
+	Database
+	Cache
+	Message broker
+	
+Can be used with different languages
+
+
+
+Redis as Cache?
+------------------
+spring:
+  application:
+    name: productappv1
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+

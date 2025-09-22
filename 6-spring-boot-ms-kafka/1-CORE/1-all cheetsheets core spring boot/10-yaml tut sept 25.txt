@@ -1,0 +1,187 @@
+
+YAML Ain’t Markup Language
+---------------------------
+	This is a recursive acronym, humorously indicating that YAML
+	is not a traditional markup language like XML or HTML.
+
+	Originally, it stood for "Yet Another Markup Language", but the creators later changed it 
+	to emphasize that YAML is focused on data serialization, not document formatting.
+
+New Name (Current Meaning):
+-------------------------------
+YAML Ain’t Markup Language
+	Focuses on data structure representation, making it ideal for configuration files, 
+	especially in tools like Spring Boot, Kubernetes, Docker Compose, Ansible, etc.
+
+
+Why to perfer yaml file configuration?
+---------------------------------
+why many developers prefer YAML for Spring Boot configuration.
+
+Feature				application.yml				 	application.properties
+--------------------------------------------------------------------------
+Readability			Cleaner, more hierarchical			Flat and repetitive
+
+Nested structures	Elegant and indentation-based		Verbose and dotted keys
+
+Profiles			Profile blocks can 					Profile-specific files required 
+					be structured better				(application-dev.properties)
+															
+Lists/Arrays		Easy to define lists				Needs manual indexing
+
+Duplication			Less repetitive						More key repetition
+
+Visual grouping		Human-friendly, block-structured	Harder to scan large configs
+Scalability			Preferred for microservices 		Can become messy as config grows
+					& cloud-native apps	
+			
+			
+understanding yaml for java dev point of view:
+-------------------------------------------------
+spring:
+  application:
+    name: bankapp
+account:
+  message: "welcome to productapp account manager"
+  contactDetails:
+    name: "raj"
+    email: "rgupta.mtech@gmail.com"
+  onCallSupport:
+    - 54645464556
+    - 75765777677
+
+YAML Element					Java Equivalent	Type
+--------------------------------------------------------
+spring.application.name			String name		String
+account.message					String message	String
+account.contactDetails			Map<String, String> or POJO	Map or ContactDetails class
+account.onCallSupport			List<Long>	ArrayList or List
+
+contactDetails: like a POJO or a Map<String, String>
+-----------------------------------------------
+Example in Java:
+
+
+@ConfigurationProperties(prefix = "account")
+public class AccountConfig {
+
+    private String message;
+    private ContactDetails contactDetails;
+    private List<Long> onCallSupport;
+
+    // Getters and Setters
+    public static class ContactDetails {
+        private String name;
+        private String email;
+        // Getters and Setters
+    }
+}
+And annotate your config class with:
+-------------------------------------
+@Configuration
+@EnableConfigurationProperties(AccountConfig.class)
+
+
+
+practice to map to java object is it useful to pracitce
+---------------------------------------------
+
+
+Map this YAML to Java object
+-------------------------
+user:
+  name: Ekta
+  age: 30
+  
+public class User {
+    private String name;
+    private int age;
+}
+
+Given this YAML, create the Java POJO
+-------------------------------------
+database:
+  url: jdbc:mysql://localhost:3306/testdb
+  username: test
+  password: test123
+  
+public class Database {
+    private String url;
+    private String username;
+    private String password;
+}
+
+Intermediate-Level
+-------------------
+customers:
+  - name: Rajeev
+    age: 45
+  - name: Keshav
+    age: 25
+	
+@Configuration
+@ConfigurationProperties(prefix = "")
+public class CustomerConfig {
+    private List<Customer> customers;
+
+    // Getter & Setter
+}
+
+Map nested structure
+-----------------------
+email:
+  smtp:
+    host: smtp.mail.com
+    port: 587
+    credentials:
+      username: admin
+      password: secret
+
+@Component
+@ConfigurationProperties(prefix = "email.smtp")
+public class EmailConfig {
+    private String host;
+    private int port;
+    private EmailCredentials credentials;
+}
+
+public class EmailCredentials {
+    private String username;
+    private String password;
+}
+
+Advanced-Level
+----------------------------
+Map environment-based configuration
+
+yaml
+--------
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+account:
+  message: "Dev environment"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+account:
+  message: "Production environment"
+
+
+
+
+
+
+
+
+
+

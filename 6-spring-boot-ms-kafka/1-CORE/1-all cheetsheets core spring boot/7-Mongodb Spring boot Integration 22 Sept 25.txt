@@ -1,0 +1,316 @@
+
+Getting started with mongodb:
+----------------------------
+
+What is MongoDB?
+--------------
+	MongoDB is a high-performance NoSQL database where each 
+	database has collections which in turn has documents. 
+	
+	Each document has a different number of fields, size, content, and is 
+	stored in a JSON-like format (i.e. Binary JSON (BSN)
+	
+	The documents in MongoDB doesn’t need to have a schema defined beforehand. 
+	Instead, the fields (i.e. records) can be created on the go
+	
+	Data model available within the MongoDB allows developers to represent the 
+	hierarchical relationships, store arrays, and other more complex structures easily
+	
+	This NoSQL solution often comes with embedding, auto-sharding, 
+	and onboard replication for better scalability and high availability
+	
+Why MongoDB?
+-----------
+	As a NoSQL type database, MongoDB stores the data in the form of a document.
+	Thus, MongoDB offers more flexibility
+	
+	This database supports search by field-name, range queries, and the regular expressions. 
+	
+	It often provides queries to return the particular fields inside the documents
+	MongoDB offers indexes to improve the search performance within the NoSQL database
+	To offer horizontal scalability, MongoDB uses sharding by splitting the 
+	data across the many MongoDB occurrences
+	
+	Replication: MongoDB can give high availability with the replica sets
+
+
+docker-compose.yml
+---------------
+version: '4'
+services:
+  mongodb:
+    image: mongo:7.0.5
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: product-service
+	  
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+    ports:
+      - "3316:3306"
+
+Creating collections, document, storing data etc:
+__________________________________________
+
+show dbs 		// List all databases
+use rajdb 		//Switches to inventory
+show collections  	//List all tables in the current selected database
+
+Creating collections, document, storing data etc
+__________________________________________
+
+	use rajdb;	// create as well switch to rajdb
+
+
+RDBMS 	MongoDB
+-------------------
+Table 	<--->	Collection
+Column 	<--->	Key
+Value 	<--->	Value
+Records/Rows<--->Document/Object
+
+
+how to drop databse?
+--------------------
+use rajdb;
+db.dropDatabase();
+
+
+how to delete collection?
+------------------------
+db.students.drop();
+
+
+Creating collections, document, storing data etc
+--------------------------------------------
+user rajdb;
+db.students.insertOne({Name: "Akshay", Marks: 500})
+db.students.insertOne({"name":"ram","age":12}};
+db.students.insertOne({"name":"ram","age":13}};
+
+list students:"
+db.students.find();
+db.students.find().preety();
+
+
+add some records:
+
+
+db.students.insertOne({"name":"ram","age":12}};
+db.students.insertOne({"name":"ram","age":13}};
+
+db.stduents.insertMany([
+	{
+		"name":"ram",
+		"age" :1
+	},
+		{
+		"name":"shyam",
+		"age" :7
+	},
+		{
+		"name":"sita",
+		"age" :6
+	},
+		{
+		"name":"naresh",
+		"age" :12
+	},
+		{
+		"name":"umesh",
+		"age" :13
+	}
+]);
+
+
+Embedded documents in mongodb:
+----------------------------
+updating records with idCards 
+
+db.students.updateOne({"name":"ram"},{$set:{idCards:{hasPanCard:false, hasAdhaarCard:true}}});
+db.students.find({name: "ram"})
+
+adding hobbies to everyone:
+-------------------------
+db.students.updateMany({},{$set :{hobbies:['dancing','cooking']}})
+
+count all student with hobbies dancing
+-------------------------------------
+db.students.find({"hobbies":'cooking'}).count();
+
+
+find student has hasAdhaarCard: true
+---------------------------------
+db.students.find({'idCards.hasAdhaarCard':true})
+
+
+
+
+CRUD opeation:
+------------------
+create :
+insertOne(data, options)
+insertMany(data,options)
+
+Read:
+find(filter, options)
+findOne(filter, options)
+
+
+update:
+updateOne(filter, data, options)
+updateMany(filter, data, options)
+replaceOne(filter, data, options)
+
+delete:
+deleteOne(filter, options)
+deleteMany(filter, options)
+
+
+Read operations:
+===============
+find vs findOne
+---------------
+find : give all document in one go
+findOne: will give first doc in the order that we have inserted
+
+
+db.student.find(): provide first 20 elements and return cursor "pointer"
+db.student.findOne(): dont return cursor
+
+how to user cursor:
+--------------------
+db.students.find().count();
+
+db.students.find().forEach(x=>{})
+db.students.find().forEach(x=>{printjson(x)})
+db.students.find().limit(2)
+
+db.student.findOne().count(): give error
+
+find student less then 12:
+----------------------------
+db.students.find({age: {$lt:12}})
+lt, gt, gte etc
+
+age bw 5 to 12:
+--------------
+db.students.find({age: {$gt:5, $lt:12}})
+
+
+
+create operation:
+==================
+
+insertOne(data, options)
+insertMany(data,options)
+
+db.student.insertMany([{},{},{}])
+
+
+update opeation:
+=================
+updateOne(filter, data, options)
+-------------------------------
+db.students.updateOne({name:"ram"},{$set: {age: 15}})
+
+
+updateMany(filter, data, options)
+--------------------------------
+db.students.updateMany({age:12},{$set: {age: 15}})
+
+
+Note: if isEligiable property is missing it will add it:
+
+db.students.updateMany({age:13},{$set: {isEligiable: false}})
+
+db.students.updateMany({age:{$gte:14}},{$set: {isEligiable: false}})
+
+replaceOne(filter, data, options)
+
+
+
+delete opeation:
+================
+deleteOne(filter, options)
+db.students.deleteOne({ name: "Somya" })
+deleteMany(filter, options)
+db.students.deleteMany({age: 13})
+
+Note: will delete all documents
+db.students.deleteMany({})
+
+To delete all records : db.students.remove()
+
+Projection Operation: getting selected columns:
+---------------------------------
+Note: it will take id by default
+db.students.find({},{name:1})
+
+
+Note: it i dont want id
+db.students.find({},{name:1, _id: 0})
+
+Note: Mongodb ObjectId()
+-------------------
+	db.emp.insert({_id:10, "EmployeeName" : "Smith"})
+
+	=> By default when inserting documents in the collection,
+	if you don't add a field name with the _id in the field name, 
+	then MongoDB will automatically add an Object id field.
+
+	=> Why do we need the ObjectId field? 
+		MongoDB uses this as the primary key for the collection so that 
+		each document can be uniquely identified in the collection.
+
+	=> If we want mongodb dont create  _id Field when the collection is created and 
+	if you want to specify your own id as the _id of the collection, then you need to 
+		explicitly define this while creating the collection
+
+
+	Help 
+	-------
+	db.collection.help()	
+		Eg: db.employees.help()  
+
+	db.collection.function.help()
+		db.employees.find().help()  
+		
+
+
+
+
+choose dependencies: web, devtools, mongo
+step 1: Dao layer
+____________________
+
+@Document(collection = "products")
+public class Product {
+    @Id
+    private String id;
+    private String name;
+    private BigDecimal price;
+    private String category;
+    
+}
+
+
+@Repository
+public interface ProductRepo extends MongoRepository<Product, Integer> {
+    public List<Product> findByName(String name);
+}
+
+
+step 5: application.properties
+___________________
+server.servlet.context-path=/empapp
+server.port=8080
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=mongodb
+spring.data.mongodb.repositories.enabled=true
