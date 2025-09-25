@@ -1,6 +1,6 @@
 Kafka Notes – Developer Friendly Version
 ----------------------------------------
-	Introduction to Kafka (with analogies)
+	Introduction to Kafka 
 	Kafka Installation (Windows/Linux)
 	Kafka CLI commands
 	Kafka + Spring Boot Hello World

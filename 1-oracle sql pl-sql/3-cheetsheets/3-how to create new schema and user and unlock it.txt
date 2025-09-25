@@ -1,3 +1,29 @@
+what we did tue?
+--------------
+how to create database schema for our project?
+------------------------------------------------
+bankapp schema creation done
+
+spring boot :RAD tools
+microservice aka distributed application
+spring mvc, lombok, devtools, spring jdbc(JdbcTemplate), spring jpa, spring data 
+
+what today?
+spring rest full demo
+spring boot logging
+spring boot documentation open api
+spring boot caching
+spring boot schedule process
+spring boot how to connection to js framework
+spring boot  monolith bank application
+
+kafka arch
+spring boot  kafka
+asy comm bw 2 application
+order---- shipping
+
+
+
 case employee mgt system
 case study --> erd --> table design
 boat
@@ -21,11 +47,19 @@ SELECT BANNER FROM V$VERSION WHERE BANNER LIKE 'Oracle%';
 
 
 step2:
+CREATE USER  bankapp123 IDENTIFIED BY bankapp123;
+
 CREATE USER emp123 IDENTIFIED BY emp123;
 
 step 3:
 2. Grant basic privileges to allow login and object creation
 ----------------------------------------------------------
+GRANT CONNECT, RESOURCE TO bankapp123;
+
+GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE TO bankapp123;
+
+
+
 GRANT CONNECT, RESOURCE TO emp123;
 
 GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE TO emp123;
@@ -36,11 +70,16 @@ step 4. (Optional but recommended) Allow unlimited tablespace usage
 ---------------------------------------------------------------
 -- Required if the user is creating large objects or many tables
 
+ALTER USER bankapp123 QUOTA UNLIMITED ON USERS;
+
 ALTER USER emp123 QUOTA UNLIMITED ON USERS;
 
 step 5. (Optional but JDBC-friendly) Unlock the user if required
 ---------------------------------------------------------------
 This is just for confirmation; newly created users are unlocked by default
+
+
+ALTER USER bankapp123 ACCOUNT UNLOCK;
 
 ALTER USER emp123 ACCOUNT UNLOCK;
 
@@ -51,6 +90,12 @@ Ensure the USERS tablespace exists and is the default tablespace for new users.
 
 You can specify a default tablespace and temporary tablespace like this:
 ------------------------------------------------------------------
+CREATE USER bankapp123 IDENTIFIED BY bankapp123
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA UNLIMITED ON users;
+
+
 CREATE USER emp123 IDENTIFIED BY emp123
 DEFAULT TABLESPACE users
 TEMPORARY TABLESPACE temp

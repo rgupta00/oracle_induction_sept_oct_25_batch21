@@ -566,6 +566,23 @@ UserInterface.PRODUCT_DELETE_SUCCESS=product added successfully
 
 Service.PRODUCT_NOT_EXISTS=Product not exist
 
+in case of oracle:
+------------------
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+		
+spring.datasource.url=jdbc:oracle:thin:@localhost:1521/orcl
+spring.datasource.username=hr
+spring.datasource.password=hr
+
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+
+spring.jpa.hibernate.ddl-auto=update
+
+
 
 in case of h2 database :
 ---------------------
@@ -1115,22 +1132,119 @@ public class InfoDto {
 
 Spring boot loging customization:
 _____________________________________
+In Spring Boot 3.x, the default logging framework is Logback.
+
+Here’s the breakdown:
+	Spring Boot uses Spring Boot Logging, which is basically a thin bridge that routes 
+	logging calls to the SLF4J (Simple Logging Facade for Java) API.
+
+	By default, SLF4J is bound to Logback.
+
+This means:
+	You write logs using Logger from SLF4J (org.slf4j.Logger).
+	Under the hood, Logback handles the actual logging (formatting, levels, appenders, etc.).
 
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter</artifactId>
-    <exclusions>
-        <exclusion>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		
 
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-log4j2</artifactId>
-</dependency>
+log4j2-spring.xml
+-------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+
+    <Appenders>
+        <File name="FILE" fileName="logfile.log" append="true">
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n"/>
+        </File>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.productapp.controller" level="info" additivity="false">
+            <AppenderRef ref="FILE"/>
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
+
+understanding it:
+------------------
+Element-by-element explanation:
+-------------------------------
+
+%-5p
+-------
+	p = log level (e.g., INFO, DEBUG, ERROR).
+	-5 = left-align the text in a 5-character field.
+	Example: INFO (with a trailing space to align with longer ones like ERROR).
+	Output: INFO , DEBUG, ERROR
+---------------------------------
+|
+
+	Just a literal separator for readability in logs.
+	You could use commas, tabs, or anything here.
+
+%d{yyyy-MM-dd HH:mm:ss}
+	----------------------------
+	d = timestamp of the logging event.
+	Inside {} is the date-time format (Java SimpleDateFormat style).
+	Example: 2025-09-24 11:32:15
+
+	Output: 2025-09-24 11:32:15
+
+| [%t]
+-------
+	t = name of the thread that logged the message.
+	It is wrapped in [] to make logs easier to read.
+	Example: [main], [http-nio-8080-exec-1]
+
+%C{2}
+-----
+	C = fully qualified class name (FQCN).
+	{2} = only show the last 2 segments of the package/class.
+	If class = com.busycoder.productapp.service.ProductService,
+	%C{2} → service.ProductService
+
+	Helps keep logs shorter than printing the whole package.
+
+(%F:%L)
+---------
+	F = source file name.
+	L = line number inside that file where the log was called.
+	Example: (ProductService.java:42)
+
+	Performance note: %F and %L require analyzing the stack trace → they slow logging. Usually not recommended in production (only for debugging).
+
+- %m
+	m = the actual log message passed in logger.info("...").
+	Example: - Product created successfully
+
+%n
+	Newline character at the end of the log entry.
+	Ensures each log is printed on a new line.
+
+📌 Example log line with this pattern
+INFO  | 2025-09-24 11:32:15 | [main] service.ProductService (ProductService.java:42) - Product created successfully
 
 
 spring boot logging:
@@ -1268,6 +1382,22 @@ Advantages of API-First Approach
 
 step 1: download api.yaml from the last step
 step 2: configure 
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.10</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.productapp</groupId>
+	<artifactId>productappv1</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>productappv9</name>
+	<description>Demo project for Spring Boot</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -1275,29 +1405,85 @@ step 2: configure
 		<maven.source.compiler>${java.version}</maven.source.compiler>
 		<maven.target.compiler>${java.version}</maven.target.compiler>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.5.0</version>
+			<version>2.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-			<version>2.5.0</version>
+			<version>2.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
 			<version>0.2.6</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.12.1</version>
@@ -1310,14 +1496,15 @@ step 2: configure
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.2.0</version>
+				<version>7.4.0</version>
 				<executions>
 					<execution>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api.yaml</inputSpec>
+							<inputSpec>
+								${project.basedir}/src/main/resources/api.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<packageName>com.productapp</packageName>
 							<apiPackage>com.productapp.api</apiPackage>
@@ -1332,11 +1519,30 @@ step 2: configure
 								<useSpringController>true</useSpringController>
 								<interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8</dateLibrary>
-								<additionalModelTypeAnnotations>
-									@lombok.Setter
-									@lombok.Getter
-								</additionalModelTypeAnnotations>
+								<modelAnnotations>@lombok.Data</modelAnnotations>
 							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>
+									${project.build.directory}/generated-sources/openapi/src/main/java
+								</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
@@ -1344,6 +1550,7 @@ step 2: configure
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.4.10</version> <!-- ✅ must match parent -->
 				<configuration>
 					<excludes>
 						<exclude>
@@ -1356,7 +1563,20 @@ step 2: configure
 		</plugins>
 	</build>
 
+
+</project>
+
+
+
 Step 3: maven build, the code is generated.
+
+Step 4:
+
+@RestController
+public class ProductController implements ProductControllerApi {
+
+   
+}
 
 
 10. caching
@@ -1680,3 +1900,33 @@ spring.jpa.hibernate.ddl-auto=update
 
 
 
+
+
+
+<!-- SLF4J API -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>2.0.9</version>
+</dependency>
+
+<!-- Log4j2 Implementation for SLF4J -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j2-impl</artifactId>
+    <version>2.21.0</version>
+</dependency>
+
+<!-- Log4j2 Core -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.21.0</version>
+</dependency>
+
+<!-- Optional: Log4j2 API (used by core and other libs) -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.21.0</version>
+</dependency>
