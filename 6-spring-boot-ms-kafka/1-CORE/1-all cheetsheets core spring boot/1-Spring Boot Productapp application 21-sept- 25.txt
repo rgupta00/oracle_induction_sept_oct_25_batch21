@@ -1724,6 +1724,7 @@ info.app.java.source=11
 info.app.java.target=11
 info.app.name=spring booot actuator
 
+management.info.env.enabled=true
 management.endpoint.info.enabled=true
 management.endpoint.health.enabled=true
 
