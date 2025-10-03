@@ -1,0 +1,1190 @@
+Java Script Tutorial Cheetsheet final
+======================================
+Agenda:
+------------
+
+Classical JS:
+--------------------
+	Basics of javascript
+	javascript functions
+	javascript oo
+	DOM processing
+	Form validation
+	javascript regular expression
+
+
+
+Basics of javascript
+--------------------
+	=> java sript procedural ,object based client side scripting language
+	=> everything is object
+	=> DOM(way to represent data in the form of tree
+	=> data type : no , boolean, string ,objects
+
+
+JS hello World
+-------------
+
+	<BODY>
+		First java script code<br>
+		<SCRIPT type="text/javascript" >
+		//Java script single line comment
+		alert("Hello java script");
+		/* java script script
+			multi-line comment */
+		</SCRIPT>
+	</BODY>
+	</HTML>
+
+
+
+In case browser do not support js
+-------------------------------
+
+	<SCRIPT type="text/javascript" >
+	<!
+ 	alert("Hello java script") 
+	--> 
+	</SCRIPT>
+
+	<NOSCRIPT>
+		Java script is not supported
+	</NOSCRIPT>
+
+
+External JS file
+---------------
+	<HTML><HEAD><BODY> 
+		<SCRIPT type="text/javascript SRC="jsfile.js">
+	</SCRIPT>
+	</BODY>
+	</HTML>
+
+
+jsfile.js
+---------
+	alert("Hello");
+
+
+basic stuff
+-----------
+	document.write(Number.MAX_VALUE+"<br/>");
+	document.write(Number.MIN_VALUE+"<br/>");
+
+escape char
+-----------
+
+	var str="here are some escape char \"\'\\\t\n";
+	document.write(str);
+
+
+JavaScript Data Types (with Examples)
+------------------------------
+1. Primitive Data Types
+These are immutable and passed by value.
+
+a. Number
+--------
+let age = 30;
+let price = 99.99;
+console.log(typeof age);   // "number"
+
+
+b. String
+------------
+let name = "Alice";
+console.log(typeof name);  // "string"
+
+
+c. Boolean
+----------
+let isActive = true;
+console.log(typeof isActive);  // "boolean"
+
+d. Undefined
+----------
+let notAssigned;
+console.log(typeof notAssigned);  // "undefined"
+
+e. Null
+----------
+let value = null;
+console.log(typeof value);  // ⚠️ "object" (this is a JS quirk)
+
+
+f. Symbol (ES6+)
+-----------
+let sym = Symbol("id");
+console.log(typeof sym);  // "symbol"
+
+ Symbol is a primitive data type that provides unique, immutable identifiers. 
+ Its key use case is to define property keys that won’t clash with other keys, even accidentally.
+ 
+ 
+g. BigInt (ES11+)
+------------
+let big = 1234567890123456789012345678901234567890n;
+console.log(typeof big);  // "bigint"
+
+
+
+2. Non-Primitive (Reference) Data Types
+Passed by reference.
+
+
+a. Object
+------------
+let person = { name: "Bob", age: 25 };
+console.log(typeof person);  // "object"
+
+b. Array
+-------------
+let scores = [10, 20, 30];
+console.log(typeof scores);      // "object"
+console.log(Array.isArray(scores)); // true
+
+c. Function
+------------------
+function greet() {
+  return "Hello!";
+}
+console.log(typeof greet);  // "function"
+
+
+
+
+
+Some String manipulation
+------------------------
+
+let str = " JavaScript is fun! ";
+
+console.log(str.trim());                   // "JavaScript is fun!"
+console.log(str.toUpperCase());           // " JAVASCRIPT IS FUN! "
+console.log(str.includes("Script"));      // true
+console.log(str.indexOf("is"));           // 12
+console.log(str.slice(1, 11));            // "JavaScript"
+console.log(str.replace("fun", "awesome"));// " JavaScript is awesome!
+
+
+
+	var first_str="first string";
+	var sec_str="second string";
+	var combined=first_str+sec_str;
+	document.write(combined+"<br/>");
+	document.write(combined.substring(6, 12)+"<br/>");
+	document.write(combined.charAt(combined.length-1));
+
+	var str_var="5":
+	var num_val=10;
+	var total=num_val+str_var;
+	var nul_total=nul_total*str_var;
+
+	document.write(total+"<br/>");
+	document.write(nul_total);
+	var total=num_val+Number(str_var);
+
+	document.write(total+"<br/>");
+
+
+
+
+float manupulation
+-----------------
+	var float_var=3.1415954646564542432;
+	var float_str=float_var.toFixed(5);
+	document.write(float_str+"<br/>");
+	document.write(typeof(float_str)+"<br/>");
+
+	var num1,num2;
+	num1=5;
+	num2=10;
+	document.write("Is 5>10"+(num1>num2)+"<br/>");
+	document.write("Is 5>=10"+(num1>=num2)+"<br/>");
+	document.write("Is 5<10"+(num1<num2)+"<br/>");
+	document.write("Is 5<=10"+(num1<=num2)+"<br/>");
+	document.write("Is 5==10"+(num1==num2)+"<br/>");
+	document.write("Is 5!=10"+(num1>num2)+"<br/>");
+
+
+	check basic operators etc.......
+	such as && ||  ! 
+
+
+
+JS basic programming
+-------------------
+	if .....else
+	switch
+	looping
+
+
+
+Arrays
+------
+	var vehicles=new Array("car","bus","van");
+
+	document.write("the sec item is :"+vehicles[1]+"<br/>");
+	for(i in vehicles)
+	{
+		document.write(vehicles[i]+"<br/>");
+
+	}
+
+	var someArray=new Array();
+	someArray[0]="foo";
+	someArray[1]="bar";
+	someArray[2]=36;
+
+	for(i in someArray){
+		document.write(someArray[i]);
+	}
+
+
+
+
+	var someArray2=new Array("raj","212 delhi",45);
+	var someArray3=["foo","31 delhi",50];
+	someArray4=someArray.concat(someArray2);
+	for(i in someArray4){
+		document.write(someArray4[i]+"<br/>");
+	}
+
+
+	var numList=[2,8,1,7,6,5,3,4];
+	document.write("Sort array:"+ numList.sort()+"</br>");
+	document.write("spliced array"+numList.splice(0,3)+"</br>");
+	document.write("After splice"+numList+"</br>");
+	
+	
+Removing Elements from an Array
+--------------------------------
+
+pop() – Removes from end
+---------------------
+let week = ["sun", "mon", "tue", "wed"];
+week.pop();       // removes "wed"
+alert(week);      // Output: sun,mon,tue
+
+
+shift() – Removes from beginning
+-------------------------
+let nums = [3, 4, 5, 6];
+nums.shift();     // removes 3
+alert(nums);      // Output: 4,5,6
+
+Modifying Array with splice()
+----------------------------------
+array.splice(startIndex, deleteCount, item1, item2, ...)
+
+Replace 1 item
+--------------------
+let nums = [3, 4, 5, 6];
+nums.splice(2, 1, 10);      // Replace index 2 (5) with 10
+alert(nums);               // Output: 3,4,10,6
+
+Remove 1 item
+-----------------
+let nums = [3, 4, 5, 6];
+nums.splice(2, 1);          // Remove index 2 (5)
+alert(nums);               // Output: 3,4,6
+
+Add multiple items
+--------------------
+let nums = [3, 4, 5, 6];
+nums.splice(1, 2, 11, 12, 13);  // Remove 2 items from index 1 (4,5) and add 11,12,13
+alert(nums);                   // Output: 3,11,12,13,6
+
+
+
+
+
+
+2D array
+---------
+
+
+	var multiArray=[[1,2,3,4,5],[6,7,8,9,10]];
+	document.write(multiArray[1][3]);
+	document.write("</br>");
+	for(var i=0;i<multiArray.length;i++)
+		{
+		for(var j=0;j<multiArray[i].length;j++)
+			{
+			document.write(multiArray[i][j]+" ");
+			}
+		document.write("</br>");
+		}
+
+
+function in js
+-------------
+
+define in addfun.js file
+------------------------
+	function addThese(numberOne,numberTwo){
+		var total=numberOne+numberTwo;
+		return total;
+	}
+	
+put inside head tag
+-------------------
+		<script language="javascript" src="addfun.js"></script>
+
+
+calling function
+------------------
+	document.write(addThese(49,33));
+
+
+
+Another example:
+------------------
+	function addMany(a,b,c,d,e,f)
+	{
+		var i=1;
+		var sum=1;
+		document.write("argument length"+arguments.length+"<br/>");
+		while(i<arguments.length)
+		{
+			sum=sum+arguments[i];
+			i++;
+		}
+		document.write("sum of arguments"+sum);
+	}
+
+	addMany(1, 2, 3);
+
+
+
+No function overloading is possible in js
+------------------------------------------
+	<body>
+		<script type="text/javascript">
+			display("hello");
+			display();
+
+			function display(x)
+			{
+				if(x==null)
+				x="Greetings";
+				alert(x) ;
+			}
+
+			function display(){
+				alert("Greet") ;
+			}
+		</script>
+	</body>
+
+
+
+Local and Global variables
+-----------------------
+	=> All the variables that are not explicitly declared are global
+	=> variable declared with "var" are local
+
+
+	<html><head>
+	<script>
+		total=0;
+		function sum(){
+			y=20;
+			var x=10;
+			total=x+y;
+		}
+
+		function display(){
+			sum();
+			alert(total);
+			alert(y);
+			alert(x);
+		}	
+
+	</script></head><body>
+
+	<script>
+		display();
+	</script>
+	</body></html>
+
+
+	
+DOM processing
+=================
+	The DOM is the Document Object Model, a tree-like structure of all HTML elements.
+	
+	JavaScript uses the DOM to read, modify, and interact with the webpage.
+	
+	DOM is an API for valid HTML and well-formed XML documents 
+	
+	It is a way in which elements of HTML, XHTML and XML can be parsed, 
+			accessed and modified
+			
+	JavaScript provides API for DOM using which we can access HTML elements
+
+	Node:
+	--------
+
+		==> Every element/tag is considered as a NODE
+		==> A DOM tree can be built using the nodes
+
+	Example:
+
+		<html>
+			<head>
+   				<title>DOMtree</title>
+			 </head>
+
+			<body>
+  				<p> Hi</p>
+  			</body>
+		</html>
+
+
+
+
+		html
+		  |
+	-----------------
+	|			|
+	head		body
+	|			|
+	title		p
+	|			|
+	DOMtree		Hi
+
+
+
+
+Selecting Elements
+-------------------
+ getElementById()
+ -------------------
+
+<p id="demo"></p>
+<script>
+  document.getElementById("demo").innerText = "Hello using getElementById";
+</script>
+
+querySelector() — CSS selector style
+-----------------------------
+
+<p class="info">Text</p>
+<script>
+  document.querySelector(".info").innerText = "Hello using querySelector";
+</script>
+
+C. querySelectorAll() — for multiple elements
+-----------------------------------
+<ul>
+  <li class="item">One</li>
+  <li class="item">Two</li>
+</ul>
+<script>
+  const items = document.querySelectorAll(".item");
+  items.forEach(el => el.style.color = "blue");//functional programming
+</script>
+
+
+
+
+Changing Content and HTML
+-------------------------------
+
+textContent vs innerHTML
+--------------------
+
+<div id="content"></div>
+<script>
+  document.getElementById("content").textContent = "<b>Hello</b>";  // shows as plain text
+  document.getElementById("content").innerHTML = "<b>Hello</b>";   // renders as bold
+</script>
+
+
+Styling Elements with JS
+----------------------------
+
+Using style property
+--------------------
+
+<p id="styleMe">Style me</p>
+<script>
+  document.getElementById("styleMe").style.color = "green";
+  document.getElementById("styleMe").style.fontSize = "24px";
+</script>
+
+	
+
+
+Event Handling
+----------------
+
+addEventListener()
+-----------------
+<button id="clickBtn">Click Me</button>
+<script>
+  document.getElementById("clickBtn").addEventListener("click", () => {
+    alert("Button was clicked!");
+  });
+</script>
+
+
+Example 2:
+-----------
+<p id="hoverText">Hover over me!</p>
+
+<script>
+document.getElementById("hoverText").addEventListener("mouseover", function() {
+  this.innerText = "Mouse is over me!";
+});
+</script>
+
+
+Example 3:
+-----------
+<input type="text" id="inputBox" placeholder="Type something">
+
+<script>
+document.getElementById("inputBox").addEventListener("keydown", function(event) {
+  console.log("Key pressed:", event.key);
+});
+</script>
+
+
+
+DOM Exmple
+-------------
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Change DOM Content</title>
+  <script>
+    function change() {
+      const name = prompt("Enter your name", "");
+      const food = prompt("Enter your favourite food", "");
+
+      const container = document.getElementById("sec");
+
+      // Clear existing content
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+
+      // Create new <p> elements
+      const p1 = document.createElement("p");
+      p1.textContent = "Name: " + name;
+
+      const p2 = document.createElement("p");
+      p2.textContent = "Food: " + food;
+
+      // Append to div
+      container.appendChild(p1);
+      container.appendChild(p2);
+    }
+
+    window.onload = change; // Run after page loads
+  </script>
+</head>
+<body>
+  <div id="sec">
+    <p>Name: XXXX</p>
+    <p>Food: YYYY</p>
+  </div>
+</body>
+</html>
+
+
+
+
+
+Object orientation in javasrcript
+================================
+JavaScript is prototype-based but supports object-oriented programming through:
+
+	Object literals
+	Constructor functions
+	Prototypes
+	ES6 Classes
+	
+object creation in js:
+-----------------------
+
+1. Object Creation: Basic Literal Style
+--------------------------------------
+var myObj={};
+console.log(myObj);
+
+
+adding properties:
+--------------
+var myObj={"name":"raja",
+       "age":30,
+       "address":{
+           "street":"a 2",
+           "city":"delhi"
+       }
+
+
+
+
+2. Object Creation via Property Assignment:
+--------------------------------------
+    var emp1={};
+    emp1.name="ekta";
+     emp1.address="delhi";
+     emp1.city="delhi";
+     emp1.salary=45000;
+
+
+     var emp2={};
+     emp2.name="raj";
+     emp2.address="delhi";
+     emp2.city="delhi";
+     emp2.salary=49000;
+     
+
+
+    console.log(emp1);
+    console.log(emp2);
+
+
+3. Factory Function (Non-constructor Way):
+--------------------------------------
+     function createEmp(name, address, city, salary){
+         var newObj={};
+         newObj.name=name;
+         newObj.address=name;
+         newObj.city=name;
+         newObj.salary=name;
+         return newObj;
+     }
+
+     var emp3=createEmp("raja","kn","delhi",5000);
+    
+    console.log(emp3);
+
+
+4. Constructor Function (Traditional OOP)
+-----------------------------------------
+
+Javascript provide shortcut to create object : constructor function
+
+in above code first line and last line is common
+ var newObj={};	// create object
+return newObj; //returing object
+
+Javascript provide syntex we can skip first and list line: constructor mode, just apply new
+	before creating object
+
+ var emp3="new" createEmp("raja","kn","delhi",5000);
+
+
+
+
+function createEmp(name, address, city, salary){
+         //var this={};
+         this.name=name;
+         this.address=name;
+         this.city=name;
+         this.salary=name;
+        // return this;
+     }
+
+  var emp3=new createEmp("raja","kn","delhi",5000);
+    
+
+
+Constructor vs non constructor way difference:
+---------------------------------------------
+//NOTE: 1. must apply new keyword
+	if you are not calling js function with new in constructor mode then 
+	it will not return anything and op is undefined
+
+	2. Calling a regular function in constructor mode still works
+
+
+	3. Coding convension: write constructor start with capital letter
+
+
+
+
+
+5. Prototype Inheritance (Memory Efficient)
+----------------------------------------
+Understanding prototype:
+-----------------------
+	What if i am looking for common behaviour for all classes created with new keyword
+	If i don't apply "prototype" every object is with own copy of display method!
+
+	
+	  function Emp(name){
+            this.name=name;
+            this.display=function(){
+                console.log(this.name);
+            }
+        }
+        
+
+        var emp1=new Emp('raja');
+        var emp2=new Emp('amit');
+
+        emp1.display();
+        emp2.display();
+
+	console.log(emp1.display === emp2.display); //  false (two different function instances)
+
+	Each instance (emp1, emp2) has its own copy of the display() function — leading to memory inefficiency.
+
+	console.log(e1.display === e2.display); //  true (shared function)
+
+	Now, display() is shared among all instances via the prototype chain 
+	 better memory usage and proper use of JavaScript's prototype system.
+
+
+how to force js to add display() method to the prototype object:
+-------------------------------------------
+	
+	Emp.prototype.display=function(){
+		console.log(this.name);
+	}
+
+	var e1=new Emp('raj');
+	var e2=new Emp('sumit');
+
+	e1.display();
+	e2.display();
+
+
+
+Prototype Chain Visualization:
+-----------------------
+emp1
+  ↓ [[Prototype]]
+Emp.prototype
+  ↓ [[Prototype]]
+Object.prototype
+  ↓ [[Prototype]]
+null
+
+
+// Constructor function
+function Emp(name) {
+    this.name = name;
+}
+
+// Add method to Emp prototype
+Emp.prototype.display = function () {
+    console.log("Name:", this.name);
+};
+
+// Add method to Object prototype
+Object.prototype.sayHello = function () {
+    console.log("Hello from Object prototype!");
+};
+
+// Create an instance
+const emp1 = new Emp("Raj");
+
+// Method from Emp.prototype
+emp1.display();      // Output: Name: Raj
+
+// Method from Object.prototype
+emp1.sayHello();     // Output: Hello from Object prototype!
+
+// Default method from Object.prototype
+console.log(emp1.toString()); // Output: [object Object]
+
+// Confirm the prototype chain
+console.log(Object.getPrototypeOf(emp1) === Emp.prototype); // true
+console.log(Object.getPrototypeOf(Emp.prototype) === Object.prototype); // true
+console.log(Object.getPrototypeOf(Object.prototype) === null); // true
+
+
+
+
+
+
+
+
+Example: Object orientation in javasrcript
+--------------------------------------------
+	<SCRIPT type="text/JavaScript">
+
+	function Person(name,eid)
+	{
+		this.name=name;
+		this.eid=eid;
+	}
+
+	Person.prototype.display = function()
+	{
+		alert(this.name+ "("+ this.eid+")");
+	}
+
+	Person.prototype.change = function(name)
+	{
+		this.name=name;
+	}
+
+	p=new Person("Ram",100);
+	p.display();
+	p.change("Ramakrishna");
+	p.display();
+
+	</SCRIPT>
+
+
+
+
+6. Modern ES6 Class Syntax (Preferred Today)
+----------------------------------------
+
+class Person {
+  constructor(name, eid) {
+    this.name = name;
+    this.eid = eid;
+  }
+
+  display() {
+    console.log(`${this.name} (${this.eid})`);
+  }
+
+  change(newName) {
+    this.name = newName;
+  }
+}
+
+const p = new Person("Ram", 100);
+p.display();            // Ram (100)
+p.change("Ramakrishna");
+p.display();            // Ramakrishna (100)
+
+
+
+
+
+Note : function decleration vs function expression:
+--------------------------------------------------
+Function Declaration vs Expression
+
+Function Declaration (hoisted)
+-------------------------------
+greet(); // Works
+
+function greet() {
+  console.log("Hello from declaration");
+}
+
+
+Function Expression (not hoisted)
+--------------------------------
+
+// greet(); Error: Cannot access before initialization
+
+const greet = function () {
+  console.log("Hello from expression");
+};
+
+greet(); // works
+
+
+
+
+
+Ways of Calling Functions (Understanding this)
+-----------------------------------------
+A. Global Context (non-strict)
+-------------------------------
+
+function foo() {
+  console.log(this); // window (in browser)
+}
+foo();
+
+
+B. Method Call on Object
+----------------------
+const obj = {
+  name: "JS",
+  greet: function () {
+    console.log("Hello", this.name); // 'this' refers to obj
+  }
+};
+obj.greet();
+
+
+C. Constructor Call
+-------------------
+
+function Foo() {
+  this.value = 42;
+  console.log(this); // new object created by 'new'
+}
+new Foo();
+
+
+
+
+Form validation
+---------------
+
+Attempt 1:
+--------------
+
+	create form:
+	------------
+	<form action="#" method="get">
+
+		Enter name:<input type="text" name="name" id="nameId"/><br/>
+		Enter password:<input type="text" name="pass" id="passId"/><br/>
+		<input type="submit" onclick="return validate();">
+	</form>
+
+
+	validate:
+	------------
+
+		function validate(){
+
+			var name=document.getElementById("nameId").value;
+			var pass=document.getElementById("passId").value;
+			
+			if(name==""){
+				alert("name is blank");
+				return false;
+			}
+				
+			if(pass==""){
+				alert("pass is blank");
+				return false;
+			}
+			
+			return true;
+
+
+	}
+
+
+
+Attempt 2:
+--------------
+
+
+<form action="#" method="get">
+
+		<table>
+			<tr>
+				<td>Enter name:</td>
+				<td><input type="text" name="name" id="nameId" /></td>
+				<td><label id="nameMsg"></label></td>
+			</tr>
+
+			<tr>
+				<td>Enter password:</td>
+				<td><input type="text" name="password" id="passwordId" /></td>
+				<td><label id="passwordMsg"></label></td>
+			</tr>
+
+			<tr>
+				<td><input type="submit" onclick="return validate();" /></td>
+
+			</tr>
+		</table>
+
+
+	</form>
+
+
+function validate(){
+   let name =document.getElementById("nameId").value;
+   let pass =document.getElementById("passwordId").value;
+
+   if(name==""){
+       document.getElementById("nameMsg").innerHTML="Enter name";
+       document.getElementById("nameMsg").style.color="red";
+       return false;
+   }else if(pass==""){
+    document.getElementById("passwordMsg").innerHTML="Enter password";
+    document.getElementById("passwordMsg").style.color="red";
+    return false;
+}
+return true;
+}
+
+
+
+Now we want to validate phone and email:
+-------------------------------------
+ 	<tr>
+            <td>Enter phoneno </td>
+            <td><input type="text" name="phoneno" id="phoneno"/> </td>
+            <td><label id="phonenoMsg"></label></td>
+        </tr>
+  
+        <tr>
+            <td>Enter email id </td>
+            <td><input type="text" name="emailid" id="emailId"/> </td>
+            <td><label id="emailidMsg"></label></td>
+        </tr>
+  
+
+
+
+Basics of regular ex in javascript
+------------------------------------
+regex :validation
+
+basics of reg expression
+----------------------
+	==> A regular expression is a series of codes used  to describe a series of characters
+
+	==>Just like you surround strings with quotes, 
+		you surround a regex with slashes /
+
+	// var regPat = /[0-9]{1,5}\s[A-Z]{2}\b[a-z]{2,}/
+	767 RA tarun
+
+	// String that starts with 1 to 5 Numbers, a space, 2 Uppercase letters, Word Boundary, 2 or 
+	more lowercase char.......
+
+Basic Syntax ^ and $
+-------------------------------------
+ ^ ===> indicate the beginning of the string
+ $===>  is used to mark the end
+
+
+[] used to define set of characters that may match
+-------------------------------------------------------------------------
+
+[12345] 		// Matches "1" and "3", but not "a" or "12"
+[1-5] 			// Same as the previous example
+[a-z] 			// Matches any lowercase letter (from the English alphabet)
+[0-9a-zA-Z] 		// Matches any letter or digit
+
+[^  ]  ==> invert the meaning
+-------------------------------------
+[^a-zA-Z]		// Matches anything except a letter
+
+
+The characters ?, +, and * 
+============================
+	? ===> “the preceding character is optional”, 			optinal
+	+ ====> “one or more of the previous character”			1 to m
+	* ====> means “zero or more of the previous character”.		0 to m
+
+
+bana*na	
+banaaaaaaaana	
+banaaana
+
+// Matches "banana" and "banna",
+		// but not "banaana".
+
+bana+na	// Matches "banana" and "banaana",
+		// but not "banna".
+
+banana
+
+bana*na	// Matches "banna", "banana", and "banaaana",
+		// but not "bnana".
+
+^[a-zA-Z]+$ // Matches any string of one or more
+	   // letters and nothing else.
+
+	
+( ) ====> used to group strings together to apply ?, +, or * to them as a whole
+----------------------------------------------------------------------------------
+ba(na)+na  // Matches "banana" and "banananana",
+	// but not "bana" or "banaana".
+
+
+
+
+
+using the pipe (|) character to separate them.
+-----------------------------------------------------
+^(ba|na)+$		// Matches "banana", "nababa", "baba",
+		 	// "nana", "ba", "na", and others.
+
+
+Some special code for matching one char
+------------------------------------------
+\n // A newline character
+\r // A carriage return character
+\t // A tab character
+\b // A word boundary (the start or end of a word)
+\B // Anything but a word boundary
+\d // Any digit (same as [0-9])
+\D // Anything but a digit (same as [^0-9])
+\s // Single whitespace (space, tab, newline, etc.)
+\S // Single nonwhitespace
+\w // A "word character" (same as [A-Za-z0-9_])
+\W // A "nonword character" (same as [^A-Za-z0-9_])
+
+Using Regular Expressions In JavaScript
+--------------------------------------
+
+creating regex in javascript
+var myRE = /regexp/;
+
+
+reg for ^(ba|na)+$	
+------------------------
+var myRE = /^(ba|na)+$/;
+
+
+
+ g (for global) and i (for ignore case) 
+ ---------------------------------------
+ By default javascript regular expressions are case sensitive and only search for 
+ the first match in any given string. 
+
+adding the g (for global) and i (for ignore case) modifers after the second /, 
+you can make a regular expression search
+for all matches in the string and ignore case,
+ respectively. Here are a few example regular expressions.
+
+	test1 Test2 TEST3
+/Test[0-9]+/ 			“Test2” only
+/Test[0-9]+/i 			“test1” only
+/Test[0-9]+/gi 			“test1”, “Test2”, and “TEST3”
+
+
+Match()
+----------------
+	=> match() takes a regular expression as a parameter and returns an array of all the matching strings
+	 found in the string under consideration. 
+
+	=> If no matches are discovered, then match() returns false. 
+
+	=> Reg ex for 10 digit mobile no  number 
+
+	^[2-9]{2}[0-9]{8}$
+
+
+670000000
+
+function checkPhoneNumber(phoneNo) {
+	var phoneRE = /^[6-9]{2}[0-9]{8}$/;
+	if (phoneNo.match(phoneRE)) {
+	return true;
+	} else {
+	alert( "The phone number entered is invalid!" );
+	return false;
+	}
+}
+
+
+
+<body>
+	<script type="text/javascript">
+	checkPhoneNumber("9958543988")
+	</script>
+</body>
+
+
+
+
+https://codeburst.io/javascript-wtf-is-es6-es8-es-2017-ecmascript-dca859e4821c
+

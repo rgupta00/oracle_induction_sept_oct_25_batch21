@@ -1,0 +1,779 @@
+Node.js Discussion
+-------------------
+
+What is Node.js?
+	Node.js is an open-source, cross-platform, back-end JavaScript runtime environment 
+	that runs on the V8 engine and executes JavaScript code outside a web browser.
+
+	Node.js uses an event-driven, single-threaded, non-blocking I/O model.
+	
+	Developed by Ryan Dahl in 2009 under MIT License.
+	
+	Provides a cross-platform runtime environment for JavaScript.
+	
+	Lightweight and ideal for data-intensive, real-time applications 
+	running across multiple devices.
+
+	Applications of Node.js
+		Web network applications
+		Video streaming sites which are I/O intensive
+		SPA (Single Page Applications)
+		JSON API-based applications
+
+	Features of Node.js
+		Asynchronous, event-driven I/O helps handle concurrent requests efficiently.
+
+Hello World Example:
+--------------
+
+node first.js
+---------------
+
+let colors = ['red', 'blue', 'green'];
+for (let c of colors) {
+    console.log(c);
+}
+
+Types of Modules in Node.js
+-------------------------
+	Built-in: http, fs, streams, buffer, events, url, os, path, etc.
+	3rd-party: nodemon, mocha, chai, mongoose, etc.
+	Custom Modules: Our own defined modules.
+
+Custom Module Example
+-----------------
+
+maths.js
+----------
+function add(a, b) {
+    return a + b;
+}
+function diff(a, b) {
+    return a - b;
+}
+function mul(a, b) {
+    return a * b;
+}
+console.log(add(2, 5));
+
+
+second.js
+----------
+require('./maths')
+console.log('hello')
+
+
+// console.log(add(2,5)); // Error: add is not defined
+
+
+
+Exporting Functions from One Module to Another
+---------------------------------------------
+Exporting Single Function (maths.js)
+-------------------------------------
+function add(a, b) {
+    return a + b;
+}
+module.exports = add;
+
+Using in second.js
+-------------------------
+const addfun = require('./maths');
+console.log('hello');
+console.log(addfun(2, 5));
+
+
+Exporting Multiple Functions
+-----------------------
+
+maths.js
+--------
+function add(a, b) {
+    return a + b;
+}
+function diff(a, b) {
+    return a - b;
+}
+function mul(a, b) {
+    return a * b;
+}
+
+// Option 1
+module.exports = { add, diff, mul };
+
+// Option 2
+// module.exports = {
+//   add: add,
+//   diff: diff,
+//   mul: mul
+// };
+
+
+second.js
+---------------
+const mathsObs = require('./maths');
+console.log('hello');
+console.log(mathsObs.add(2, 5));
+
+
+Using exports directly — Example: circle.js
+----------------------------------------
+
+var PI = Math.PI;
+
+exports.area = function (r) {
+  return PI * r * r;
+};
+
+exports.circumference = function (r) {
+  return 2 * PI * r;
+};
+
+second.js
+----------
+var circle = require('./circle.js');
+var area = circle.area(4);
+console.log('The area of a circle of radius 4 is ' + area);
+
+
+
+
+
+
+
+File Writing
+-----------------
+const fs = require('fs');
+const data = 'Hello World!';
+
+fs.writeFile('test.txt', data, function (err) {
+  if (err) return console.log(err);
+  console.log('Hello World > test.txt');
+});
+console.log('testing');
+
+File Reading
+--------------
+fileread.js
+-------------
+const fs = require('fs');
+
+fs.readFile('test.txt', 'utf8', function (err, data) {
+  if (err) return console.log(err);
+  console.log(data);
+});
+
+
+Synchronous File Reading
+-------------------------
+
+const fs = require('fs');
+console.log('file reading starting');
+const data = fs.readFileSync('test.txt');
+console.log(data.toString());
+console.log('file reading finished');
+
+
+
+filereadwrite.js
+-----------------
+
+const fs = require('fs');
+const srcPath = "text1.txt";
+const savPath = "text2.txt";
+
+fs.readFile(srcPath, 'utf8', function (err, data) {
+  if (err) throw err;
+
+  fs.writeFile(savPath, data, function (err) {
+    if (err) throw err;
+    console.log('complete');
+  });
+});
+
+
+Creating Hello World Server
+---------------------------
+
+server.js
+---------
+
+const http = require("http");
+
+const srvr = http.createServer(function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello World\n');
+});
+
+srvr.listen(8081);
+console.log('Server running at http://127.0.0.1:8081/');
+
+
+
+killall -9 node
+
+npm install -g nodemon
+
+nodemon ./server.js
+
+
+
+
+Connecting with MySQL
+-----------------------
+npm init
+npm install mysql2
+
+const mysql = require('mysql2');
+
+const conn = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "ora123"
+});
+
+conn.connect(err => {
+  if (err) throw err;
+  console.log('connected');
+});
+
+
+
+Read All Records
+-------------------
+conn.query("SELECT * FROM emp_table", (err, result) => {
+  if (err) throw err;
+  result.forEach(row => console.log(JSON.stringify(row)));
+  conn.end();
+});
+
+
+Search Records
+-------------
+const selectQuery = "SELECT * FROM emp_table WHERE name LIKE '%raj%'";
+conn.query(selectQuery, (err, result) => {
+  if (err) throw err;
+  result.forEach(row => console.log(JSON.stringify(row)));
+  conn.end();
+});
+
+
+
+Insert Record
+----------------
+const insertQuery = "INSERT INTO emp_table(id, age, name) VALUES('122', 22, 'amit')";
+conn.query(insertQuery, (err, result) => {
+  if (err) throw err;
+  console.log('inserted');
+  conn.end();
+});
+
+
+
+
+Insert Multiple Records
+-------------------------
+const insertQuery = "INSERT INTO emp_table(id, age, name) VALUES ?";
+const records = [
+  ['46', '32', 'foo'],
+  ['499', '32', 'foo']
+];
+conn.query(insertQuery, [records], (err, result) => {
+  if (err) throw err;
+  console.log('inserted multiple rec');
+  conn.end();
+});
+
+
+Search Using Escaped Parameters
+----------------------------------
+const id = '122';
+const selectQuery = 'SELECT * FROM emp_table WHERE id=' + mysql.escape(id);
+conn.query(selectQuery, (err, result) => {
+  if (err) throw err;
+  console.log(JSON.stringify(result));
+  conn.end();
+});
+
+
+
+
+Delete Record
+----------------
+const id = '46';
+const deleteQuery = 'DELETE FROM emp_table WHERE id=' + mysql.escape(id);
+conn.query(deleteQuery, (err, result) => {
+  if (err) throw err;
+  console.log(JSON.stringify(result));
+  console.log(result.affectedRows);
+  conn.end();
+});
+
+
+Update Record
+----------------
+const id = '3';
+const newAge = 27;
+const updateQuery = 'UPDATE emp_table SET age=' + mysql.escape(newAge) + ' WHERE id=' + mysql.escape(id);
+conn.query(updateQuery, (err, result) => {
+  if (err) throw err;
+  console.log(result.affectedRows);
+  conn.end();
+});
+
+
+
+
+
+Node.js with Express
+-----------------------
+	Express.js is a minimal and flexible Node.js web application framework for building single-page,
+	multi-page, and hybrid web apps.
+
+Standard backend framework in MEAN stack:
+--------------------------------------
+	MEAN Stack:
+	MongoDB – NoSQL Database
+	Express.js – Web framework
+	Angular – Frontend MVC
+	Node.js – Runtime
+
+
+getting started:
+--------------
+npm init -y
+npm install express
+
+
+
+Installing Nodemon
+--------------------
+ npm install -g --force nodemon
+
+
+Express Hello World
+-------------------
+demo.js
+---------
+const express = require('express');
+const app = express();
+
+app.get('/', function(req, res){
+    res.send('express js working!!')
+}).listen(4000);
+
+console.log('server is running');
+
+
+nodemon demo.js
+
+Express Routes Example
+----------------------
+
+app.get('/', (req, res) => res.send('express js working!!'));
+app.get('/home', (req, res) => res.send('home'));
+app.get('/about', (req, res) => res.send('about'));
+app.get('/admin', (req, res) => res.send('admin'));
+app.get('/foo*bar', (req, res) => res.send('admin'));
+app.post('/postdemo', (req, res) => res.send('post'));
+
+
+Router Parameters
+------------------
+app.get('/customers/:custId/orders/:orderId', (req, res) => {
+    res.send(req.params);
+});
+
+
+// URL: /user/000000?gender=male
+app.get('/user/:id', (req, res) => {
+    const query = req.query;   // { gender: "male" }
+    const params = req.params; // { id: "000000" }
+});
+
+
+
+
+
+Middleware & Route Handlers
+-----------------------
+Middleware functions are functions that have access to the request (req), response (res), 
+and the next middleware function (next) in the request-response cycle.
+
+Syntax:
+--------
+app.use((req, res, next) => {
+  console.log('Middleware called');
+  next(); // Pass control to the next handler
+});
+
+Hello world example:
+------------------
+//Custom middleware (executes before every route)
+app.use((req, res, next) => {
+  console.log(' Middleware called -', req.method, req.url);
+  next(); // hand over to next middleware or route handler
+});
+
+// Simple route
+app.get('/', (req, res) => {
+  res.send('👋 Hello, Express + Middleware!');
+});
+
+// Start server
+app.listen(3000, () => {
+  console.log('Server running at http://localhost:3000');
+});
+
+
+
+
+
+
+Use Cases:
+---------
+	Logging
+	Authentication & Authorization
+	Parsing request body (e.g., express.json())
+	Handling CORS
+	Error handling
+
+Types of Middleware:
+-------------------------
+	Application-level: app.use()
+	Router-level: bound to an instance of express.Router()
+	Built-in: like express.json(), express.static()
+	Error-handling: has 4 params (err, req, res, next)
+
+
+Global Middleware
+-------------------
+const checkUrl = (req, res, next) => {
+    console.log('current route is ' + req.originalUrl);
+    next();
+};
+
+app.use(checkUrl);
+
+
+Middleware with Array of Handlers
+-------------------------------------
+const callback1 = (req, res, next) => {
+    console.log('callback 1');
+    next();
+};
+
+const callback2 = (req, res, next) => {
+    console.log('callback 2');
+    next();
+};
+
+app.get('/home', [callback1, callback2], (req, res) => res.send('home'));
+
+
+Middleware on Specific Routes Using Router
+-----------------------------------------
+
+const router = express.Router();
+const checkUrl = require('./middleware');
+
+router.get('/login', checkUrl, (req, res) => res.send('login'));
+router.get('/admin', checkUrl, (req, res) => res.send('admin'));
+
+app.use('/', router);
+
+
+Middleware in Separate File
+--------------------
+middleware.js
+-------------------
+module.exports = function(req, res, next){
+    console.log('current route is ' + req.originalUrl);
+    next();
+}
+
+server.js
+-----------
+const checkUrl = require('./middleware');
+router.get('/login', checkUrl, (req, res) => res.send('login'));
+Sending HTML Page
+
+app.get('/about', (req, res) => {
+    res.sendFile(__dirname + '/about.html');
+});
+
+
+
+
+MEAN stack:
+--------------
+What is the MEAN Stack?
+MEAN = MongoDB + Express.js + Angular + Node.js
+
+It’s a full-stack JavaScript framework used to build modern web applications using one language 
+— JavaScript on both frontend and backend.
+
+
+MEAN Stack Overview
+-----------------------------
+Component					Role
+------------------------------------
+MongoDB						NoSQL database (stores JSON-like data)
+Express.js					Web framework for Node.js (backend APIs)
+Angular						Frontend framework (UI)
+Node.js						Runtime to run JS on the server
+
+
+how to install mongoddb:
+--------------------
+https://www.youtube.com/watch?v=1LiZRYzgM2o&t=3s
+
+mongodb download
+https://www.mongodb.com/try/download/community
+
+
+
+mongosh (MongoDB Shell)
+https://www.mongodb.com/try/download/shell
+
+
+checking version:
+----------------------
+>mongod --version
+
+output:
+---------
+db version v7.0.16
+
+Build Info: {
+    "version": "7.0.16",
+    "gitVersion": "18b949444cfdaa88e30b0e10243bc18268251c1f",
+    "modules": [],
+    "allocator": "tcmalloc",
+    "environment": {
+        "distmod": "windows",
+        "distarch": "x86_64",
+        "target_arch": "x86_64"
+    }
+}
+
+optional :
+ide for mongodb:
+-------------------
+mongdb compass
+
+
+Short into to mongodb
+-----------------------
+RDBMS 	MongoDB
+---------------
+Table 	<--->	Collection
+Column 	<--->	Key
+Value 	<--->	Value
+Records/Rows<--->Document/Object
+
+
+Creating collections, document, storing data etc:
+------------------------------------------
+
+show dbs 		// List all databases
+use rajdb 		//Switches to inventory
+show collections  	//List all tables in the current selected database
+
+Creating collections, document, storing data etc
+__________________________________________
+
+	use rajdb;	// create as well switch to rajdb
+
+	inserting record
+	_____________
+	db.employees.insert({empName:"ekta", age:"36", salary:"60000"})
+	db.employees.insert({empName:"raj",email:"r@r.com", age:"36", salary:"60000"})
+	db.employees.insert({empName:"ravi",email:"r@r.com", age:"36", salary:"60000"})
+	db.employees.insert({empName:"ravi",email:"r@r.com", age:"39", salary:"60500", add:"delhi"})
+
+	showing all the records
+	_____________________
+	db.employees.find()	// Equivalent to show all
+
+	update:
+	_________
+	db.employees.update({empName:"raj"},{$set:{salary:"90400"}})
+
+	Update: db.employees.updateMany({empName:"raj"},{$set:{salary:"90400"}})
+
+	
+	find:
+	_________
+	findAll: db.employees.find();
+
+	findAnParticularEmployeee: db.employees.find({empName:"amit"})
+
+	finding one collection: db.employees.dav.findOne()
+	
+	delete:
+	_________
+	delete: db.employees.remove({empName:"raj", "email" : "r@r.com"})
+
+	To delete all records from a table, uses db.tablename.remove()
+
+	Help help  All available commands
+	______
+
+	db.help()  Shows help on db
+
+	db.collection.help()	
+		Eg: db.employees.help()  
+
+	db.collection.function.help()
+		db.employees.find().help()  
+		
+		
+Angular<--------> Express <------> mongodb
+		Nodejs		   mongoose	
+
+
+
+crud application: book application
+-----------------------------------
+how to write curd application
+
+step1: databasse 
+
+use rajdb33;	
+steps 1: create databse and collections
+Book2
+book1s
+
+db.books.insert({
+    title: 'java head first',
+    author: 'katthy',
+    category: 'java'
+})
+
+db.books.insert({
+    title: 'spring in action',
+    author: 'foo',
+    category: 'spring'
+})
+
+db.books.insert({
+    title: 'MEAN in action',
+    author: 'bar',
+    category: 'bar'
+})
+
+db.books.find();
+
+
+
+configuration with npm
+-------------------------
+npm init -y
+
+npm install express mongoose cors
+
+
+
+Complete code:
+-----------
+
+Book.model.js
+----------------
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+var BookSchema = new Schema({
+  title: String,
+  author: String,
+  category: String
+});
+
+module.exports = mongoose.model('Book', BookSchema);
+
+
+app.js
+----------
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const Book = require('./Book.model');
+
+const app = express();
+const port = 8080;
+const dbURI = 'mongodb://localhost:27017/rajdb33'; // Better to specify port
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Connect to MongoDB using modern promise-based approach
+mongoose.connect(dbURI)
+  .then(() => console.log('MongoDB connected...'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('happy to be here');
+});
+
+// Get all books
+app.get('/book', async (req, res) => {
+  try {
+    const books = await Book.find({});
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.json(books);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Get book by ID
+app.get('/book/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    res.json(book);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Add new book
+app.post('/book', async (req, res) => {
+  try {
+    const newBook = new Book(req.body);
+    const savedBook = await newBook.save();
+    res.json(savedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Update book
+app.put('/book/:id', async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      { $set: { title: req.body.title } },
+      { new: true, upsert: true }
+    );
+    res.json(updatedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Delete book
+app.delete('/book/:id', async (req, res) => {
+  try {
+    const deletedBook = await Book.findByIdAndDelete(req.params.id);
+    res.json(deletedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});

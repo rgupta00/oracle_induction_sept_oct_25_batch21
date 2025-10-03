@@ -1,0 +1,299 @@
+What next:
+intro to jquery, knockout js and OJET
+
+jQuery
+__________
+the prime purpose of jQuery is simplification of DOM processing.
+
+jQuery is JS
+----------------
+jQuery is a fast and concise JavaScript Library that 
+simplifies HTML document traversing, event handling, 
+animating, and Ajax interactions for rapid web development. 
+
+
+jQuery is designed to change the way that 
+you write JavaScript.
+
+
+ jQuery Syntax looks like this
+_______________________________
+ $('selector').action()
+
+ there are three main types of selectors in jQuery 
+     1. element selector
+     2. id selector
+     3. class selector
+
+     1. Element selector -  This is an example of element selector which clicks on all p
+     $('p').click();
+
+     2. Id selector - this is an example of id selector
+     $('#second').click();
+
+     3. Class selector - this is an example of id selector
+     $('.odd').click();
+
+     other selectors
+     $('*').click() // clicks on all the elements
+     $('p.odd').click() // clicks on all the elements
+     $('p:first').click() // clicks on all the elements
+
+
+
+Step 1: download jQuery:
+--------------------
+https://jquery.com/download/
+
+Ex:
+----
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <script src="js/jquery-3.7.1.js"></script>
+    <!-- <script src="js/myjQuery.js"></script> -->
+
+    <p>If you click on me, I will disappear.</p>
+    <p>Click me away!</p>
+    <p>Click me too!</p>
+
+    <script>
+        $(document).ready(function () {
+            $("p").click(function () {
+                $(this).hide();
+            });
+        });
+
+    </script>
+</body>
+
+</html>
+
+
+
+AJAX example with jQuery:
+--------------------
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <script src="js/jquery-3.7.1.js"></script>
+    <!-- <script src="js/myjQuery.js"></script> -->
+
+    <div id="div1">
+        <h2>Let jQuery AJAX Change This Text</h2>
+    </div>
+
+    <button>Get External Content</button>
+
+
+    <script>
+        $(document).ready(function () {
+            $("button").click(function () {
+                $("#div1").load("demo_test.txt");
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+Note:
+-----
+ jQuery load() method is a powerful AJAX method
+
+ What it does?
+ --------------
+	$(selector).load(URL,data,callback);
+
+	The load() method loads data from a server and puts the returned data into the selected element.
+
+	$("#div1").load("demo_test.txt");
+
+
+
+ Much better code:
+ ----------------
+<body>
+    <script src="js/jquery-3.7.1.js"></script>
+    <!-- <script src="js/myjQuery.js"></script> -->
+
+    <div id="div1">
+        <h2>Let jQuery AJAX Change This Text</h2>
+    </div>
+    <button>Get External Content</button>
+    <script>
+        $("button").click(function () {
+            $("#div1").load("demo_test.txt", function (responseTxt, statusTxt, xhr) {
+                if (statusTxt == "success")
+                    alert("External content loaded successfully!");
+                if (statusTxt == "error")
+                    alert("Error: " + xhr.status + ": " + xhr.statusText);
+            });
+        });
+
+    </script>
+</body>
+
+
+ get from server:
+ ------------
+
+$("button").click(function(){
+    $.get("demo_test.asp", function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+});
+
+
+fetching json and printing
+-----------------------------
+json_data.json
+---------------
+{
+   "p1": { 
+           "name": "Satish",
+		          "age":   25,
+		          "company": "hcl"
+         },
+ 
+ 
+   "p2": {
+           "name": "Kiran",
+		          "age":   28,
+		          "company": "blackrock"   
+         }			 		 		 
+}
+
+my_script.js
+---------------
+<body>
+    <script src="js/jquery-3.7.1.js"></script>
+    <ul></ul>
+
+    <div id="div1">
+        <h2>Let jQuery AJAX Change This Text</h2>
+    </div>
+    <button>Get External Content</button>
+    <script>
+        $("button").click(function () {
+            $.getJSON("json_data.json", function (obj) {
+                $.each(obj, function (key, value) {
+                    $("ul").append("<li>" + key + ": " + value.name + ", " + value.age + ", " + value.company + "</li>");
+                });
+            });
+        });
+    </script>
+</body>
+
+
+
+
+
+Use Case: Auto-Search Customer Name Using Spring Boot + jQuery AJAX
+-------------------------------------------------------------------------
+	Objective
+		When the user types a name (or part of it), jQuery will send a request to the Spring Boot backend using AJAX, 
+
+		
+Backend: Spring Boot Setup
+------------------------------
+1. Hello Controller
+---------------------
+
+@Entity
+public class Employee {
+	@Id
+	@GeneratedValue
+	private int id;
+	private String name;
+	private double salary;
+}
+@Repository
+public interface EmployeeRepo extends JpaRepository<Employee, Integer>{
+
+    @Query("Select e from Employee e where e.name like %:name%")
+    List<Employee> findEmployee(@Param("name") String name);
+}
+
+
+
+
+@RestController
+public class EmployeeController {
+
+	@Autowired
+	private EmployeeRepo employeeRepo;
+	
+	@GetMapping(path = "employees")
+	public String hello(@RequestParam(name = "name") String name) {
+		System.out.println("hello ..." + name);
+		return "hello " + name;
+	}
+}
+
+insert some records:
+-------------------
+		employeeRepo.save(new Employee("raj", 56000.00));
+		employeeRepo.save(new Employee("rajiv", 56000.00));
+		employeeRepo.save(new Employee("rajesh", 56000.00));
+		employeeRepo.save(new Employee("ekta", 56000.00));
+		employeeRepo.save(new Employee("keshav", 56000.00));
+		employeeRepo.save(new Employee("gun", 56000.00));
+		employeeRepo.save(new Employee("gunika", 56000.00));
+		
+		
+		
+
+Frontend: index.html
+----------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Search</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+	<input type="text" id="name" placeholder="Type customer name">
+	<div id="load"></div>
+
+	<script>
+		$(document).ready(function() {
+			$("#name").on("keyup", function() {
+				let name = $(this).val();
+
+				$.ajax({
+					url : "/employees",
+					type : "GET",
+					data : {
+						name : name
+					},
+					success : function(data) {
+						$("#load").html(data); // Replace previous content
+					}
+				});
+			});
+		});
+	</script>
+
+</body>
+</html>
+

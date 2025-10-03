@@ -1,0 +1,640 @@
+Modern JavaScript Async Programming
+===================================
+Topics includes:
+-----------------
+	Callbacks (sync & async)
+	Callback hell
+	Promises
+	Chaining & error handling
+	Async/Await
+	Fetch API with AJAX
+	Advanced Promise methods (all, race, allSettled)
+
+Callbacks – Sync & Async
+--------------------------
+What is a Callback?
+	A callback is a function passed as an argument 
+	to another function to be “called back” later.
+
+Example:
+---------
+
+function greet(name, callback) {
+  console.log("Hello " + name);
+  callback();
+}
+
+function bye() {
+  console.log("Goodbye!");
+}
+
+greet("Rajeev", bye);
+
+
+
+
+Asynchronous Callback Example:
+-----------------------------
+console.log("Start");
+
+setTimeout(() => {
+  console.log("Inside setTimeout");
+}, 1000);
+
+console.log("End");
+
+
+Calculator with Callback
+-----------------------
+const multiply = (a, b) => a * b;
+const add = (a, b) => a + b;
+
+function calculator(n1, n2, operationCallback) {
+  if (typeof operationCallback === "function") {
+    return operationCallback(n1, n2);
+  }
+}
+
+console.log(calculator(2, 3, multiply)); // 6
+
+
+Callback Hell & Why We Need Promises
+-----------------------------------
+Callback Hell (Pyramid of Doom)
+---------------------
+
+setTimeout(() => {
+  console.log("Task 1");
+  setTimeout(() => {
+    console.log("Task 2");
+    setTimeout(() => {
+      console.log("Task 3");
+    }, 1000);
+  }, 1000);
+}, 1000);
+
+Hard to maintain, scale, and debug.
+
+
+
+
+Promise Basics & Lifecycle
+--------------------------
+What is a Promise?
+A Promise is an object representing the eventual completion or failure of an async operation.
+
+Promise Lifecycle:
+-----------------
+	pending
+	fulfilled (resolved)
+	rejected
+	
+	
+	
+Creating a Promise: 
+----------------------
+
+Ex: let ur kid promise to clean the room....
+
+let promiseToCleanTheRoom=new Promise(function(resolved, reject){
+	//cleanning the room
+
+	let isClean=false;
+	if(isClean){
+		resolved('clean');
+	}else{
+		reject('not clean');
+	}
+
+});
+
+promiseToCleanTheRoom.then(function(fromResolve){
+	console.log('the room is '+ fromResolve);
+}).catch(function(fromReject){
+	console.log('the room is '+ fromReject);
+});
+
+
+With arrow function:
+--------------------
+
+promiseToCleanTheRoom.then(fromResolve=>console.log('the room is '+ fromResolve)).catch(fromReject=>
+	console.log('the room is '+ fromReject)
+);
+
+
+
+Promise Chaining & Error Handling
+----------------------------------
+Now consider :
+	if kid clean the room ==> remove the garbage ==> then win the ice cream
+
+
+function cleanRoom() {
+  return Promise.resolve("Cleaned Room");
+}
+
+function removeGarbage(previousTask) {
+  return Promise.resolve(previousTask + " → Garbage Removed");
+}
+
+function winIceCream(previousTask) {
+  return Promise.resolve(previousTask + " → Won Ice Cream");
+}
+
+cleanRoom()
+  .then(removeGarbage)
+  .then(winIceCream)
+  .then((result) => console.log("Finished:", result))
+  .catch((err) => console.error(err));
+
+
+Example : rejecting job
+----------------------
+function cleanRoom() {
+  return Promise.resolve("Cleaned Room");
+}
+
+function removeGarbage(previousTask) {
+  // simulate error condition
+  if (!previousTask.includes("Cleaned")) {
+    throw new Error("Room is not clean yet!");
+	// return Promise.reject(new Error("Room is not clean yet!"));
+  }
+  return Promise.resolve(previousTask + " → Garbage Removed");
+}
+
+function winIceCream(previousTask) {
+  return Promise.resolve(previousTask + " → Won Ice Cream");
+}
+
+cleanRoom()
+  .then(removeGarbage)
+  .then(winIceCream)
+  .then((result) => console.log("Finished:", result))
+  .catch((err) => console.error("Caught Error:", err.message));
+
+
+
+
+
+
+.finally() usage
+----------------------
+
+new Promise((resolve, reject) => {
+  setTimeout(() => resolve("Done"), 1000);
+})
+  .then(console.log)
+  .catch(console.error)
+  .finally(() => console.log("Always runs"));
+  
+  
+  
+  
+async/await – Writing Promises Like Synchronous Code
+------------------------------------------------------
+async returns a promise
+---------------------
+
+async function getData() {
+  return "Hello";
+}
+getData().then(console.log); // Hello
+
+await waits for promise to resolve
+---------------------------------
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function demo() {
+  console.log("Start");
+  await wait(2000);
+  console.log("End after 2 sec");
+}
+demo();
+
+
+Example with await on custom functions
+----------------------------------
+
+const add = (a, b) =>
+  new Promise((resolve) => setTimeout(() => resolve(a + b), 1000));
+
+async function calc() {
+  let result = await add(10, 20);
+  result = await add(result, 30);
+  console.log("Final result:", result);
+}
+calc();
+
+
+
+
+How Promise Chaining Works 
+----------------------------
+Example:
+
+function step1() {
+  return new Promise((resolve) => setTimeout(() => resolve("Step 1"), 1000));
+}
+
+function step2(data) {
+  return new Promise((resolve) => setTimeout(() => resolve(data + " → Step 2"), 1000));
+}
+
+function step3(data) {
+  return new Promise((resolve) => setTimeout(() => resolve(data + " → Step 3"), 1000));
+}
+
+step1()
+  .then(step2)
+  .then(step3)
+  .then(console.log)
+  .catch(console.error);
+  
+ 
+Promise Chaining Works 
+--------------------
+ 
+✅ Works well for a few steps
+❌ Gets hard to read with nested logic
+❌ Harder to trace errors in .then()
+❌ Each .then() creates a new scope
+
+Same Code Using async/await
+----------------------------
+async function runSteps() {
+  try {
+    const res1 = await step1();
+    const res2 = await step2(res1);
+    const res3 = await step3(res2);
+    console.log(res3);
+  } catch (err) {
+    console.error("Error occurred:", err);
+  }
+}
+runSteps();
+
+
+Example:
+--------
+
+Let’s assume each function returns a promise with a setTimeout internally.
+-------------------------------------------------------------------------
+function boilWater() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Boiled water");
+      resolve();
+    }, 1000);
+  });
+}
+
+function addTeaLeaves() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Added tea leaves");
+      resolve();
+    }, 1000);
+  });
+}
+
+function waitTwoMins() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Waited 2 mins");
+      resolve();
+    }, 2000);
+  });
+}
+
+function strainTea() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Strained tea");
+      resolve();
+    }, 1000);
+  });
+}
+
+function serve() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Served tea");
+      resolve();
+    }, 1000);
+  });
+}
+
+
+Using Promises:
+---------------
+boilWater()
+  .then(() => addTeaLeaves())
+  .then(() => wait(2 mins))
+  .then(() => strainTea())
+  .then(() => serve())
+  .catch((err) => console.log("Spilled tea!"));
+  
+  
+  
+  
+  
+Using Async/Await:
+------------------- 
+
+async function makeTea() {
+  try {
+    await boilWater();
+    await addTeaLeaves();
+    await wait(2 * 60 * 1000);
+    await strainTea();
+    await serve();
+  } catch (e) {
+    console.log("Spilled tea!");
+  }
+}
+
+
+if one operation need to wait for another do not it is synchronos 
+----------------------------------------------------------------
+	At first glance — Yes, it looks synchronous.
+	But under the hood — No, it’s still asynchronous.
+
+Let explain clearly and deeply.
+------------------------------
+Synchronous vs Asynchronous — Key Difference
+
+Feature						Synchronous						Asynchronous (Promise/.then/await)
+----------------------------------------------------------------------------------------
+Execution Flow			Step-by-step, blocking			Step-by-step, but non-blocking
+Main Thread Behavior		Locked until task finishes		Main thread continues; tasks handled later
+Underlying Mechanism		Normal function stack			Event loop, task queue, Web APIs
+
+Let’s Take an Example
+----------------------------
+Synchronous (Blocking):
+------------------------
+function boilWater() {
+  console.log("Boiling water...");
+  sleep(5000); // blocks for 5 sec
+  console.log("Water boiled");
+}
+
+	In this:Main thread is blocked for 5 seconds
+	Nothing else can happen during that time
+	Truly synchronous
+
+Asynchronous (Non-Blocking but Ordered):
+----------------------------------------
+function boilWater() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Water boiled");
+      resolve();
+    }, 5000);
+  });
+}
+
+Now:boilWater() returns immediately
+The rest of the code continues to run
+After 5 seconds, the callback runs (thanks to the event loop)
+
+
+
+Even though addTeaLeaves() starts only after boilWater() resolves in:
+boilWater().then(() => addTeaLeaves())
+
+It’s not synchronous, because:
+	The waiting happens outside the main thread
+	It doesn't block your UI or event listeners
+
+
+Analogy: Synchronous vs Asynchronous Cooking
+---------------------------------------------
+Synchronous:
+You’re alone. You boil water. You stand still and stare at it till it boils.
+Only then you move to the next step.
+
+Asynchronous with Promises:
+You start boiling water, set a timer for 5 mins, and go cut vegetables while waiting.
+When water boils, you get a notification, and continue.
+
+Waiting happens, but your main thread (the chef) is free!
+
+Final Answer:
+----------------
+	Just because one task logically depends on another, doesn't mean the program is synchronous.
+	With Promises or async/await, JS is still non-blocking and async, even if it looks sequential.
+
+
+
+
+
+
+
+
+
+
+
+Real Application with Fetch API (AJAX)
+---------------------------------------
+
+What is AJAX?
+
+"Making asynchronous HTTP requests without reloading the page."
+
+ terms: Async, JSON, HTTP methods
+ 
+ 
+XHR is the old way of making AJAX calls	
+-------------------------------------------
+	Syntax is verbose and callback-based	
+	Useful for interview knowledge or legacy codebases	
+	Not recommended for new development
+
+
+let xhr = new XMLHttpRequest();
+xhr.open("GET", "https://jsonplaceholder.typicode.com/posts/1");
+xhr.onload = function () {
+  if (xhr.status === 200) {
+    console.log(JSON.parse(xhr.responseText));
+  }
+};
+xhr.send();
+
+
+What is fetch()?
+------------------
+	fetch() is a modern Web API that returns a 
+	promise to perform HTTP requests.
+
+
+fetch("https://jsonplaceholder.typicode.com/posts/1")
+  .then((response) => response.json())
+  .then((data) => console.log("Post:", data))
+  .catch((err) => console.error("Error fetching:", err));
+
+
+fetch()           → resolves to → Response object
+   ↓
+response.json()   → resolves to → Actual data (as JSON)
+   ↓
+Your logic on the data
+
+
+With async/await:
+----------------------
+async function getPost() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+    const data = await response.json();
+    console.log("Post:", data);
+  } catch (e) {
+    console.error("Fetch error:", e);
+  }
+}
+getPost();
+
+Advantage of  async/await
+----------------------------
+Looks like synchronous code.
+Easier for beginners and pros to follow the logic step by step.
+No deeply nested .then() callbacks (avoids "callback hell")
+Better Error Handling with try/catch
+
+
+Advanced Promise APIs
+--------------------
+
+Promise.all
+---------------
+Waits for all promises to resolve. Fails if any fail.
+
+
+Promise.all([
+  Promise.resolve("One"),
+  Promise.resolve("Two"),
+  Promise.resolve("Three"),
+])
+  .then((values) => console.log("All resolved:", values))
+  .catch((err) => console.log("One failed:", err));
+
+
+use case Load multiple API calls in parallel:
+-------------------------------------------
+Promise.all([
+  fetch('/user'),
+  fetch('/posts'),
+  fetch('/notifications')
+])
+  .then(responses => Promise.all(responses.map(r => r.json())))
+  .then(data => {
+    const [user, posts, notifications] = data;
+    console.log(user, posts, notifications);
+  })
+  .catch(err => console.error("One request failed:", err));
+  
+  
+
+Promise.race
+----------------
+Resolves as soon as the first promise resolves or rejects.
+
+Promise.race([
+  new Promise((res) => setTimeout(() => res("1st"), 1000)),
+  new Promise((res) => setTimeout(() => res("2nd"), 2000)),
+])
+  .then(console.log)
+  .catch(console.error);
+
+
+Promise.allSettled
+------------------------
+Waits for all promises to complete regardless of success/failure.
+
+
+Promise.allSettled([
+  Promise.resolve("Success"),
+  Promise.reject("Failure"),
+])
+  .then((results) => {
+    results.forEach((r) => console.log(r.status, r.value || r.reason));
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let cleanRoom=function(){
+	return new Promise(function(resolve, reject){
+		resolve('clean the room')
+	});
+};
+
+let removeGarbage=function(message){
+	return new Promise( function(resolve, reject){
+		resolve(message+ 'remove the garbage');
+	});
+}
+
+let winTheIceCream=function(message){
+	return new Promise( function(resolve, reject){
+		resolve(message+ 'win icecream');
+	});
+}
+
+cleanRoom().then(function(result){
+	return removeGarbage(result);
+}).then(function(result){
+	return winTheIceCream(result);
+}).then(function(result){
+	console.log('finished'+ result);
+});
+
+
+
+
+ //want to do everything in ||, when all are done do something
+Promise.all([cleanRoom(), removeGarbage(), winTheIceCream()]).then(
+	function(){
+		console.log('all finished....');
+	}
+);
+
+//want if u wnat one of them to finished , when all are done do something
+Promise.race([cleanRoom(), removeGarbage(), winTheIceCream()]).then(
+	function(){
+		console.log('all finished....');
+	}
+);
+
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

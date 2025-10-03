@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+        <body>
+            <h1>let trace your loccation!</h1>
+            <button onclick="getLocation()"> getLocation</button>
+            <div id="output"></div>
+        </body>
+        <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script>
+            var x=document.getElementById('output');
+            function getLocation(){
+               if(navigator.geolocation){
+                 navigator.geolocation.getCurrentPosition(showPosition);
+               }else{
+                x.innerHTML='not supporting';
+               }
+            }
+            function showPosition(position){
+                    x.innerHTML="latitude"+position.coords.latitude;
+                    x.innerHTML+="<br/>"
+                    x.innerHTML+=" "+position.coords.longitude;
+                    let google_api_key='AIzaSyDsJtjqyo-9lLnngSk24RT_I6MKXEyP-EY';
+           let locAPI = 'https://maps.googleapis.com/maps/api/geocode/json?key=' +
+            google_api_key + '&latlng=' + position.coords.latitude + ',' + position.coords.longitude;
+                    x.innerHTML=locAPI;
+                    $.get({url: locAPI,
+                    success: function(data){
+                        console.log(data);
+                    }});
+            }
+
+        </script>
+</body>
+</html>

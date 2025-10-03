@@ -1,0 +1,497 @@
+Typescript tutorial
+_________________
+https://stackoverflow.com/questions/12694530/what-is-typescript-and-why-would-i-use-it-in-place-of-javascript#:~:text=The%20goal%20of%20TypeScript%20is,standardized%20through%20the%20ECMAScript%20standards.
+
+	What is typescript?
+	_______________________
+	=> TypeScript is an open-source programming language developed and maintained by Microsoft
+	
+	=>  As TypeScript is a superset of JavaScript, existing JavaScript programs are also valid 				
+	TypeScript programs. 
+
+	=> TypeScript may be used to develop JavaScript applications for both
+		 client-side and server-side (Node.js) execution
+
+	Why typescript?
+	_________________
+	=> adds optional static typing to the language
+
+	=>  TypeScript is designed for development of large applications 
+		and transcompiles to JavaScript
+
+	=> TypeScript makes code easier to read and understand. 
+
+	=> huge improvement over plain JavaScript. 
+
+	=> TypeScript gives us all the benefits of ES6 (ECMAScript 6), plus more productivity.
+
+
+	Advantage:
+	___________
+	=> easy code management
+	=> Support ecma script
+	=> oo wrapper looks like java, c#
+	=> ide support
+
+
+
+
+gettting started
+_______________
+
+installation: 
+npm install -g typescript
+
+tsc demo.ts --watch
+
+
+
+run tsc command to check version
+
+
+greet.ts
+-----------
+function greet(person:string) {
+    return "Hello, " + person;
+}
+
+let user = "rajeev gupta";
+
+greet(user);
+
+
+converting to js: tsc greet.ts
+
+
+it error to do:
+let user=11;
+
+
+
+
+Typescript datatypes/Variable decleration
+________________________________________
+what is types ? how to use type? number, boolean, string etc
+
+//boolean
+let isJobDone:boolean = false;
+//Number
+let myNum:number = 4;
+
+//text string
+
+let myName:string = "raj";
+
+//template strings
+let greeting : strign ="hello,"+myName;
+
+let greeting : strign =`hello ${myName}';
+
+
+//arrays
+let count : Array<number> = [1,2,3,4];
+
+
+// if you dont know the type
+ let anything : any = 4;
+ anything ="some text";
+
+ anything = false;
+
+//return nothing
+
+ function greet(name: string) : void {
+	console.log(`hello ${name}`);
+ }
+
+//enums
+ let joyStStatus=  1;
+ enum Directions{UP, DOWN, LEFT, RIGHT};
+  if(joyStStatus ===1){
+
+  }
+
+  if(joyStStatus ===Directions.UP){
+
+  }
+ enum Color{RED, BLUE, GREEN};
+ 
+ IF(Color === 1){
+
+ }
+
+Note typescript array:
+____________________
+
+When we declare the array:
+
+let data=['hello','bye'];
+
+and then add 66(number ts gives error)
+
+data[1]=66;
+
+in below case ts dont give error:
+____________________
+let data=['hello','bye',55];
+data[1]=66;
+
+
+
+
+
+typescript union type:
+________________________
+let data: string | number="raja"
+
+
+
+
+
+Interface in typescript:
+________________________
+	=>  interface is a syntactical contract that an entity should conform to
+	
+	=> Interfaces define properties, methods, and events, which are the members of the interface. 
+
+	=> Interfaces contain only the declaration of the members.
+	 It is the responsibility of the deriving class to define the members. 
+
+	=> It often helps in providing a standard structure that the deriving classes would follow.
+
+
+interface Person {
+    firstName: string;
+    lastName: string;
+}
+
+
+
+
+function hello(person: Person) {
+    return "Hello, " + person.firstName + " " + person.lastName;
+}
+
+let user = { firstName: "raj", lastName: "gupta" };
+
+Ex2:
+-----
+
+interface IPerson { 
+   firstName:string, 
+   lastName:string, 
+   sayHi: ()=>string 
+} 
+
+var customer:IPerson = { 
+   firstName:"ravi",
+   lastName:"kumar", 
+   sayHi: ():string =>{return "Hi there"} 
+} 
+
+console.log("Customer Object ") 
+console.log(customer.firstName) 
+console.log(customer.lastName) 
+console.log(customer.sayHi())  
+
+var employee:IPerson = { 
+   firstName:"ekta",
+   lastName:"gupta", 
+   sayHi: ():string =>{return "Hello!!!"} 
+} 
+  
+console.log("Employee  Object ") 
+console.log(employee.firstName);
+console.log(employee.lastName);
+
+
+
+
+Interfaces and Inheritance
+__________________________
+	=> an interface can inherit from other interface. 
+	=> Typescript allows an interface to inherit from multiple interfaces.
+
+
+interface Person { 
+   age:number 
+} 
+
+interface Musician extends Person { 
+   instrument:string 
+} 
+
+
+let drummer = <Musician>{}; 
+drummer.age = 27 
+drummer.instrument = "Drums" 
+console.log("Age:  "+drummer.age) console.log("Instrument:  "+drummer.instrument)
+
+
+
+typescript classes:
+__________________
+
+class Car { 
+   engine:string; 
+   
+   constructor(engine:string) { 
+      this.engine = engine 
+   }  
+   
+   disp():void { 
+      console.log("Function displays Engine is  :   "+this.engine) 
+   } 
+} 
+
+var obj = new Car("XXSY1")
+
+console.log("Reading attribute value Engine as :  "+obj.engine)  
+
+obj.disp()
+
+
+Typescript Constructor Shorthand
+-----------------------------
+	in Typescript there is a shorthand to create and assign 
+	class properties from constructor params.
+
+Imagine you have following code, let’s say you have class User:
+
+class User {
+  private name: string;
+  private surname: string;
+  private age: number;
+
+  constructor(name: string, surname: string, age: number) {
+    this.name = name;
+    this.surname = surname;
+    this.age = age;
+  }
+}
+You can write same class using shorter syntax:
+-----------------------------------------------
+class User {
+  constructor(private name: string,private surname: string,private age: number) {}
+}
+
+
+
+In this case Typescript will automatically generate thore properties. 
+And yes both definitions will produce same Javascript code:
+
+var User = /** @class */ (function() {
+  function User(name, surname, age) {
+    this.name = name;
+    this.surname = surname;
+    this.age = age;
+  }
+  return User;
+})();
+
+And it works not only for private access level modifier, you can use public or protected as well.
+
+So you can use this constructor assignment technique to save some lines of code.
+https://dev.to/satansdeer/typescript-constructor-shorthand-3ibd
+
+
+Inheritance ex :
+________________
+class Emp{
+    
+    constructor( private name: string, private add:string){}
+    print():void{
+        console.log(`the person details are ${this.name}and ${this.add}`)
+    }
+}
+
+class Programmer extends Emp{
+   
+    constructor( name: string,  add:string, private pl: string){
+        super(name, add);
+       
+    }
+    print():void{
+        super.print();
+        console.log(`the person details are ${this.pl}`)
+    }
+}
+
+
+
+Typescript inheritacnce:
+_______________________
+class Shape { 
+   Area:number 
+   
+   constructor(a:number) { 
+      this.Area = a 
+   } 
+} 
+
+class Circle extends Shape { 
+   disp():void { 
+      console.log("Area of the circle:  "+this.Area) 
+   } 
+}
+  
+var obj = new Circle(223); 
+obj.disp()
+
+
+
+
+TypeScript ─ Class inheritance and Method Overriding
+_________________________________________________
+
+class PrinterClass { 
+   doPrint():void {
+      console.log("doPrint() from Parent called…") 
+   } 
+} 
+
+class StringPrinter extends PrinterClass { 
+   doPrint():void { 
+      super.doPrint() 
+      console.log("doPrint() is printing a string…")
+   } 
+} 
+
+var obj = new StringPrinter() 
+obj.doPrint()
+
+
+
+TypeScript ─ static method
+____________________________
+
+
+class StaticMem {  
+   static num:number; 
+   
+   static disp():void { 
+      console.log("The value of num is"+ StaticMem.num) 
+   } 
+} 
+
+StaticMem.num = 12     // initialize the static variable 
+StaticMem.disp()      // invoke the static method
+
+
+What is Optional Chaining (?.) in TypeScript?
+====================================================
+	
+	Optional chaining allows you to safely access deeply nested 
+	properties without having to check if each level exists.
+	
+	TypeScript's optional chaining (?.) and Java 8's Optional<T> share a similar goal —
+	to help developers handle potentially null or undefined values safely
+
+Example: Without Optional Chaining
+-------------------------------
+interface User {
+  name: string;
+  address?: {
+    city?: string;
+    zipCode?: string;
+  };
+}
+
+const user1: User = {
+  name: "Alice",
+};
+
+console.log(user1.address.city); // ❌ Error: Cannot read property 'city' of undefined
+
+Same Example With Optional Chaining
+-------------------------------------
+interface User {
+  name: string;
+  address?: {
+    city?: string;
+    zipCode?: string;
+  };
+}
+
+const user1: User = {
+  name: "Alice",
+};
+
+console.log(user1.address?.city); // ✅ Output: undefined (No error)
+
+Explanation:
+----------------
+user1.address?.city
+
+If address exists, it returns city.
+If address is undefined, it returns undefined instead of throwing an error.
+
+More Optional Chaining Examples
+------------------------------
+1. Calling a method if it exists
+--------------------------------
+const logger = {
+  log?: () => console.log("Logging...")
+};
+
+logger.log?.(); // Only calls if `log` exists
+
+2. Accessing an array element safely
+-------------------------------------------
+const items: string[] | undefined = undefined;
+
+console.log(items?.[0]); // undefined, no error
+
+3. Chaining multiple optional accesses
+------------------------------------
+
+const appConfig = {
+  user: {
+    settings: {
+      theme: "dark"
+    }
+  }
+};
+
+console.log(appConfig.user?.settings?.theme); // "dark"
+console.log(appConfig.admin?.settings?.theme); // undefined, no crash
+
+Not to be confused with Nullish Coalescing (??)
+------------------------------------
+Use ?? to provide default values:
+
+const theme = appConfig.user?.settings?.theme ?? "light";
+
+Let me know if you'd like a mini-project or code snippet
+ using optional chaining in real apps (e.g., API response handling).
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+Configuration file in TypeScript
+_______________________
+
+How to make it 
+	tsc --init
+
+create folders src and output
+	=> we want to put our src in src folder and output to output folder
+
+	    "outDir": "./output",               
+     	     "rootDir": "./src",    
+
+
+
+What we can config
+Try out with  some configuration
+
+
+
+
+https://www.tutorialsteacher.com/typescript/typescript-class
+
+

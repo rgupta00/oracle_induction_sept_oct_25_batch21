@@ -1,0 +1,1758 @@
+Java Front end technologies:
+----------------------------
+UI tech:
+=======
+
+Html	=> for static web pages
+css	=> applying styles to web pages
+js	=> validation
+jquery	=> DOM manipulation lib
+ajax	=> used to send partial data to/server asyn
+
+Client side mvc framework, SPA (single page app : performance)
+-----------------------------------------------------
+angularjs	=> SPA app
+angular 2X
+reactjs
+
+
+
+website :
+--------
+static 
+dynamic
+
+http protocol
+
+Html file ext:
+-------------
+.html or .htm
+
+tag typed:
+------------
+1. paired tags: <html> </html>, <head> <title>
+
+2. unpaired tags: <br> <hr> <img> <input>
+
+
+Sample html:
+----------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta hppt-eqiv='refresh' content='10'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body bgcolor="skyblue">
+    <h1>html basics</h1>
+</body>
+</html>
+
+
+Text formating tages:
+-------------------
+1. font related tags:
+	<h1> to <h6>
+	<font>
+	<i>,<em>
+	<b> , <strong>
+	<u>
+	<s> <small>, <big>
+other tags:
+-------------
+	<header> ,<footer>
+	<address>
+	<sup>,<sub> Super script <X^2) (H2O)
+	<pre> preformated data
+	<p>
+	<br> , <hr>
+	<enter>
+	<marquee>
+
+	
+
+
+Ex:
+------
+<body bgcolor="skyblue">
+    <h4>html basics</h4><br>
+    <h5>html basics</h5><br>
+    <font size="20px" color="red" face="broadway">
+            ui training
+    </font>
+   
+</body>
+
+Ex:
+----
+<body>
+    <header>this is a training session header</header>
+    <strong>rajeev</strong>
+    <u>java trainer</u>
+    <s>java and ui strickthrough</s>
+    <small>small text</small>
+    <big>big text</big>
+   <hr>
+   <address>delhi , india</address>
+   <footer>java tarining &copy; raj</footer>
+</body>
+
+
+Ex:
+---
+<body>
+    <pre>
+        A 
+         B 
+            C
+    </pre>
+  
+    H<sub>2</sub>O <br>
+    X<sup>2</sup>
+    <marquee direction="right">this is text</marquee>
+</body>
+
+
+
+More tags:
+-----------
+List tages
+	1. ordered list		: <ol> , <li> list item
+	2. unordered list	: <ul>, <li>
+	3. defination list	: <dl> <dt>	<dd>
+				defination list, data title, data description
+
+
+Ex:
+----
+
+    <ol>
+        <li>front end tch</li>
+        <li>back end tech</li>
+    </ol>
+
+   <ol type="A">
+        <li>front end tch</li>
+        <li>back end tech</li>
+    </ol>
+
+
+   <ul>
+        <li>front end tch</li>
+        <li>back end tech</li>
+    </ul>
+
+
+Ex:
+-----
+    <dl>
+        <dt>About java training</dt>
+        <dd>best java training in india</dd>
+    </dl>
+    <ol type="A">
+        <li>front end tch</li>
+        <li>back end tech</li>
+    </ol>
+    <u>batches type</u>
+
+   <ul type="square">
+    <li>off line</li>
+    <li>online</li>
+   </ul>
+
+CSS :used to apply styles to html pages
+
+
+Woring with images:
+----------------
+tag name: <img>
+type 	: unpaired
+	  <img src="quote.png" alt="quote not found" height="200px" width="200px">
+
+
+
+Woring with links:
+----------------
+tag name : <a>
+syntex
+	<a> link text/ image </a>
+
+
+   <a href="https://www.youtube.com/">click here</a>
+    
+    <br>
+    <a href="https://www.youtube.com/">
+      <img src="logo.png" height="100px" width="100px">
+
+    </a>
+
+	<a href="https://www.google.com/" target="_blank">click here</a>
+
+
+
+
+html table example:
+------------------------
+<table>	: used to design a table
+<thread>	: desing header
+<tbody>		: design table data
+<tr>		: design a row
+<td>		: desing a single heading
+<td>		: design single cell of data
+<caption>	: design caption of table
+
+<table tag attributes:
+-------------------
+	border
+	cellspacing: space bw adjacent cell in 4 direction
+	cellpadding: space bw cell data and borders
+
+<table border="1">
+  <tr>
+    <th>Course</th>
+    <th>Topics</th>
+    <th>Duration</th>
+  </tr>
+  <tr>
+    <td>Java</td>
+    <td>Spring</td>
+    <td>20</td>
+  </tr>
+  <tr>
+    <td>Java</td>
+    <td>Hibernate</td>
+    <td>30</td>
+  </tr>
+  <tr>
+    <td>Python</td>
+    <td>OOPs</td>
+    <td>20</td>
+  </tr>
+
+</table>
+
+Ex:
+	<table border="1" align="center" cellspacing="8px" cellpadding="8px" bgcolor="yellow">
+
+
+
+working with forms and its items:
+-----------------------
+1.forms:
+------
+	-> its a container to design rest of items
+	-> through from only we can send all items to the server
+
+syntex:
+	<form name="" action="">
+
+	</form>
+
+	=> name => name of form
+	=> action => addess to post the form
+	=> method =>get/post discussion
+
+
+	get 		vs 			post
+	-----------------------------------------------
+	data is viable on 			data is not visiable on brower
+	browser					data goes with form body
+
+	emp?name=raj&pw=raj123			bebugg u can see
+	secrity					more sec, but if u want to make sec : SSL
+
+	limitation of data			no limit of data
+
+
+	when i want to get data			when we want to submit the data to the server
+
+	get can be cached			can not cached*
+
+	idempotency:
+	----------
+	HTTP : many method 
+
+	GET	: used to get data from the server
+	POST	: used to post data from the server (form submission) or insertion of json 
+	PUT	: used to update data from the server
+	DELETE	:: used to delete data from the server
+	(REST WEB service)
+
+	Get/put/delete: idempotent (they dont have side effect)
+	POST is not idempotent	(post have side effect)
+
+	get: is is idempotent
+
+		  updating the price of book to 300 where id=22
+	get
+	client-----> display all books infor
+				---> get all info of books
+				--> get all infor of books
+
+	=> database was hit but the state of data never change => ie why we say get is idempotent
+
+		put (update)
+	client ------> i want to update price of a book to 300 whose id =22
+
+		data base was hit and state of database is change
+		data base was hit and but state of database is  not going to change
+		data base was hit and but state of database is  not going to change
+		.......
+		
+	put: client ----------> 
+	data base was hit and but price change
+
+	data base was hit and but state of database is  not going to change
+	data base was hit and but state of database is  not going to change
+	.......
+
+	put is also called idempotent ie it dont have side effect
+		even if we do put twice by mistack it dont harms us
+
+	delete:
+		want to del a book whose id=22
+			first time it deleted
+			no effect on data , database was hit
+			no effect on data , database was hit
+
+	post:
+		i want to insert a book rec-------------> book was added db was hit state of db change
+		i want to insert a book rec-------------> book was added db was hit state of db change
+
+	ie way : post can be problematic: POST is not idempotent
+
+	Double form submission problem!
+
+		irctc site: 
+
+			
+
+2. lebel:
+-------
+	-> used to perform "labeling"
+Syn:
+	<lable>
+	  label text
+	</label>
+
+	<lable>
+	  Enter your name
+	</label>
+
+3. input list:
+---------
+text		<input type="text">
+password	<input type="password">
+number		<input type="number">
+email		<input type="email">
+date		<input type="date">
+radio		<input type="radio">
+check box	<input type="checkbox">
+file choose	<input type="file">
+hidden 		<input type="hidden">
+
+buttons
+	1. submit	<input type="submit" value="add">
+	2. image	<input type="image" src=""  height="" width="">
+	3. reset	<input type="reset" value="add">
+	4. button	<input type="button" value="add">
+
+
+Other items:
+---------
+	Drop down box	<select> and <option>
+	text area	<textarea>
+
+
+Example:
+--------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+   <style>
+       body{
+           border: 2px solid red;
+       }
+       form{
+           border: 2px solid green;
+       }
+       *{
+           margin: 10px;
+       }
+   </style>
+</head>
+<body>
+    <form>
+        <table align="center" cellpadding="8px" cellspacing="8px">
+            <tr>
+                <td>
+                    <label for="id1">
+                        Enter name:
+                    </label>
+                </td>
+                <td>
+                    <input type="text" name="name" id="id1"> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" value="add">
+                </td>
+                <td>
+                    <input type="reset" value="clear">
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+
+file:///home/raj/Desktop/hcl_ui_practice/ex2/demo1.html?name=rajeev&password=fdfjedl&age=20&email=rgupta.mtech%40gmail.com#
+
+
+
+
+
+
+
+
+
+
+Complete example:
+----------------
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+   <style>
+       body{
+           border: 2px solid red;
+       }
+       form{
+           border: 2px solid green;
+       }
+       *{
+           margin: 10px;
+       }
+   </style>
+</head>
+<body>
+    <form>
+        <table align="center" cellpadding="8px" cellspacing="8px">
+            <tr>
+                <td>
+                    <label for="id1">
+                        Enter name:
+                    </label>
+                </td>
+                <td>
+                    <input type="text" name="name" id="id1"> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="id2">
+                        Mobile no:
+                    </label>
+                </td>
+                <td>
+                    <input type="number" name="phone" id="id2" value="546545454" readonly> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="id3">
+                        Password:
+                    </label>
+                </td>
+                <td>
+                    <input type="password" name="password" id="id3"> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="id4">
+                        Email:
+                    </label>
+                </td>
+                <td>
+                    <input type="email" name="email" id="id4"> <br>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="id5">
+                        Dob:
+                    </label>
+                </td>
+                <td>
+                    <input type="date" name="date" id="id5"> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="id6">
+                        Gender:
+                    </label>
+                </td>
+                <td>
+                    <input type="radio" name="Gender" id="id6" value="male"> Male
+                    <input type="radio" name="Gender" id="id6" value="female"> Female
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="id7">
+                        Language knows:
+                    </label>
+                </td>
+                <td>
+                    <input type="checkbox" name="Language" id="id7" value="english"> english
+                    <input type="checkbox" name="Language" id="id7" value="hindi"> hindi
+                    <input type="checkbox" name="Language" id="id7" value="tamil"> tamil
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="id8">
+                        Upload resume:
+                    </label>
+                </td>
+                <td>
+                    <input type="file" name="file" id="id8" >
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="id9">
+                       Qualification:
+                    </label>
+                </td>
+                <td>
+                    <select id="id9" name="n9">
+                       <option value="" disabled selected>Select your option</option>	
+                        <option value="UG">UG</option>
+                        <option value="PG">PG</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="id10">
+                       Address:
+                    </label>
+                </td>
+                <td>
+                    <textarea id="id10" name="n10" rows="5" cols="10"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- <input type="submit" value="add"> -->
+                    <input type="image" src="logo.png" height="50px" width="50px">
+                </td>
+                <td>
+                    <input type="reset" value="clear">
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+
+
+-----------
+assignment:
+-----------
+we need to create a book entry form:
+------------------------
+header and footer ( copywrite inforation)
+
+isbn
+title
+price
+pub date
+book type
+no of copies
+
+publisher name
+publisher address
+
+author
+author address
+
+
+2 assignment:
+---------------
+Display 5 books into html table 
+
+3. valiation of book form
+--------------------------------------------
+
+
+id attribute:
+-----------
+using this attribute we can access element uniquly in a doc
+sy:
+	<element id="idname">
+
+	<p id="p1"></p>
+	<input type="text" name="name" id="nameid"> <br>
+	
+
+
+name attributes:
+---------------
+	using this attribtue we can send form item data to action(server)
+
+	<input type="text" name="name"> 
+
+readonly:
+--------
+	<input type="number" name="phone" id="id2" value="546545454" readonly> <br>
+
+
+
+
+
+
+
+ html web 2.0 form sample:
+--------------------------------
+ <form action = "#" method = "POST">
+        Enter URL : <input type = "url" name = "newinput" /><br/>
+        Enter email : <input type = "email" name = "newinput" /><br/>
+        Select Range : <input type = "range" min = "0" max = "10" step "1" 
+                value = "5" name = "newinput" /><br/>
+        Select Number : <input type = "number" min = "0" max = "10" step "1"
+                value = "5" name = "newinput" /><br/>
+        Reg date and time : <input type = "datetime" name = "newinput" /><br/> 
+
+	// not to use it
+	https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime
+
+        Local Date and Time : <input type = "datetime-local" name = "newinput" /><br/>
+        Date : <input type = "date" name = "newinput" /><br/>
+        Month : <input type = "month" name = "newinput" /><br/>
+        Week : <input type = "week" name = "newinput" /><br/>
+        Time : <input type = "time" name = "newinput" /><br/>
+            <input type = "submit" value = "submit" />
+</form>
+
+
+
+
+
+Audio video
+---------------
+  <video  width = "300" height = "200" controls autoplay poster="charli.jpeg" loop>
+            <source src = "bar.ogg" type ="video/ogg" />
+            <source src = "bar.mp4" type = "video/mp4" />
+            Your browser does not support the <video> element.
+         </video>
+
+
+
+<audio controls autoplay>
+         <source src = "/html5/audio.ogg" type = "audio/ogg" />
+         <source src = "/html5/audio.wav" type = "audio/wav" />
+         Your browser does not support the <audio> element.
+      </audio>
+      
+
+
+https://stackoverflow.com/questions/17994666/video-auto-play-is-not-working-in-safari-and-chrome-desktop-browser
+
+
+ thml5 template:
+------------------------
+
+	<header> , <footer>
+	<article>
+	<figure>
+	<main>
+	<nav>
+	<section>
+	<summary>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>sample html5 page</title>
+</head>
+<body> 
+    <header role = "banner"> 
+       <h1>HTML5 Document Structure Example</h1> 
+       <p>This page should be tried in safari, chrome or Mozila.</p> 
+    </header> 
+ 
+    <nav> 
+       <ul> 
+          <li><a href = "#">HTML Tutorial</a></li> 
+          <li><a href = "#">CSS Tutorial</a></li> 
+          <li><a href = "#"> JavaScript Tutorial</a></li> 
+       </ul> 
+    </nav> 
+ 
+    <article> 
+       <section> 
+          <p>Once article can have multiple sections</p>
+       </section> 
+    </article> 
+ 
+    <aside> 
+       <p>This is  aside part of the web page</p> 
+    </aside> 
+ 
+    <footer> 
+            <p>Created by <a href = "https://rgupta.com/">rgupta</a></p> 
+        </footer> 
+   </body>  
+</html>
+
+
+
+
+
+Example:
+------
+<body>
+    <header>
+        <h1>ui training</h1>
+        <em>learn to stay ahead</em>
+    </header>
+    <main>
+
+        <nav>
+            <a href="#">home</a> | <a href="#">service</a> | <a href="#">course</a>
+        </nav>
+       <details>
+        <summary>
+            Why to choose java training
+        </summary>
+        <p>
+            we help to learn real java!
+        </p>
+       </details>
+       <figure>
+        <img src="happy.jpeg" height="150px" width="150px">
+        <figure>he is trained by us</figure>
+       </figure>
+       <figure>
+        <img src="happy.jpeg" height="150px" width="150px">
+        <figure>he is trained by us</figure>
+       </figure>
+
+       <section>
+        <h2>Introduction</h2>
+        <p>People have been catching fish for food since before recorded history…</p>
+    </section>
+    </main>
+    <footer>
+        <h3>copyright</h3>
+    </footer>
+</body>
+
+
+CSS:
+------
+used to appy styles to html pages
+1. text color
+2. background color
+3. borders
+4. margins
+5. padding
+6. fonts
+
+
+
+
+CSS:(Casceding Style Sheet)
+====
+html used to develop static web pages (b & w)
+css used to applying styles to html tags
+
+Hello world:
+----------
+<p style="color:red; background-color: silver; text-align: center;">
+        Good morning
+    </p>
+    <p style="color:green;">
+        Good Afternoon
+    </p>
+    <p>
+        Good Evening
+    </p> 
+
+Description of above program:
+----------------------------
+
+style 	 =>Html Tag Attribute
+color,text-align,background-color=>CSS style properties
+red,yellow,center 		 =>CSS style values
+:                        =>Used to assign value to property
+;   			=>Separation of property & value pairs
+
+
+
+Types of CSS:
+=============
+1.Inline CSS
+2.Internal CSS
+3.External CSS
+
+
+1.Inline CSS:
+=============
+Here styles are declared within html element open tag.
+
+syntax:
+
+<tagname style="proprty1:value1;......">
+
+	INNER HTML
+
+</tagname>
+
+For example refer: demo2.html
+
+(+)User need to apply style only once
+(-)No style reusability
+
+
+2.Internal CSS:
+===============
+Internal CSS = Html code + Css code inside <head> tag with in <style> tag
+
+syntax:
+
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		Tag1Name
+			{
+				proprty1:value1;
+				proprty2:value2;
+				...
+			}
+		Tag2Name
+			{
+				proprty1:value1;
+				proprty2:value2;
+				...
+			}
+	</style>
+</head>
+<body>
+	
+</body>
+</html>
+
+Example:
+---------
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Internal Css Ex</title>
+	<style>
+		p
+		{
+			font-size: 20px;
+			font-family: Cooper;
+			background-color: skyblue;
+		}
+		header
+		{
+			color: blue;
+			font-size: 30px;
+			text-align: center;
+		}
+		footer
+		{
+			color: green;
+			font-size: 30px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		Welcome to training
+	</header>
+	<p>	Good morning</p>
+	<p>	Good Afternoon</p>
+	<p>	Good Evening</p>
+	<footer>
+		Thank u for visiting this page
+	</footer>
+</body>
+</html>
+
+
+(-)Complexcity of code because of html code & css code in mixed
+
+
+
+
+
+
+3.External CSS:
+==============
+Preparing styles in a separate page having .css extension called as External CSS.
+This External css file accessed by html page using "<link>" tag.
+"<link>" tag should be prepared inside <head> tag.
+
+syntax of "<link>" tag:
+======================
+	<link  href="FileName.css" rel="stylesheet">
+
+
+
+Example:
+-------
+<!DOCTYPE html>
+<html>
+<head>
+	<title>External CSS Ex</title>
+	<link rel="stylesheet" href="one.css">
+</head>
+<body>
+<header>
+	<h1>
+		welcome to training
+	</h1>
+</header>
+<p>
+	we are best for java training
+</p>
+<u>Courses List:</u>
+<ol>
+    <li>JAVA</li>
+    <li>PYTHON</li>
+    <li>UI</li>
+</ol>
+<u>Branches List:</u>
+<ul>
+    <li>delhi</li>
+    <li>Banglore</li>
+</ul>
+
+<footer>
+	<h2>
+		copyright @ rajeev
+	</h2>
+</footer>
+</body>
+</html>
+
+
+one.css
+------
+
+h1,h2
+{
+	text-align: center;
+}
+p
+{
+	color: white;
+	font-size: 30px;
+	background-color: black;
+	height: 200px;
+	width: 100%;
+}
+u
+{
+	color: red;
+	font-size: 30px;
+	font-weight: bold;
+}
+ol,ul
+{
+	color: orange;
+	font-size: 25px;
+}
+
+
+
+
+
+
+
+
+CSS Selectors:
+______________
+We have 4 types of selectors
+	I have 10 p, for 7 i need same style
+	For one of them i need a particular style : id select
+	
+	for 2 of them i need a special stype: class selector
+
+	1.Tag selector	: for common styles
+		p{
+
+		}
+	2.Id selector
+		#{
+
+		}
+
+	3.Class selector
+		.foo{
+
+		}
+	4.Universal selector
+
+		*{
+		}
+
+1.Tag selector:
+---------------
+Here we can prepare styles for HTML tags & styles are applied to all specific tags
+
+syntax:
+-------
+	tagname
+	{
+		property1:value;
+		...
+	}
+ex:
+---
+	p
+	{
+		color:green;
+	}
+
+	<p>Hi 		</p>
+	<p>Hello 	</p>
+	<p>Bye 		</p>
+
+
+
+2.ID selector:
+--------------
+Here we can prepare styles for user defined names & styles are applied to specific "id attribute" tag.
+Here styles are prepared by  user defined names with # operator.
+syntax:
+----------
+	#idname
+	{
+		property1:value;
+		...
+	}
+
+ex:
+---
+	#p1		{color:green;}
+	#p2,#p3		{color:red;}
+	
+
+	<p  id="p1">	Hi		</p>
+	<p  id="p2">	Hello		</p>
+	<p  id="p3">	Bye		</p>
+
+
+Example:
+--------
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ID selector</title>
+	<style>
+		#id1
+		{
+			border: 3px solid red;
+		}
+		#id2
+		{
+			border: 5px dotted green;
+		}
+		#id3
+		{
+			border: 8px double black;
+		}
+	</style>
+</head>
+<body>
+	<img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+	<img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+	<img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+</body>
+</html>
+
+
+NOTE:
+---------
+border style: every border has 3 sub properties
+------------
+ border: 8px double black;
+	  1	3     3
+	1. border line size
+	2. brder line type
+	3. border line color
+
+Padding style:
+--------------
+	space bw element inner html and border in
+	4 directions (lrtb) : L R T B
+	padding-left : px
+	padding-right : px
+	padding-top : px
+	padding-bottom : px
+	or
+	padding: px ( for common space in all direction)
+
+
+Margin style:
+--------------
+	space bw adjacent element(tag) inner html and borders in 4 directions(lrtb)
+	4 directions (lrtb)
+	margin-left : px
+	margin-right : px
+	margin-top : px
+	margin-bottom : px
+	or
+	margin: px ( for common space in all direction)
+
+
+Example:
+-------
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ID selector</title>
+	<style>
+		#id1
+		{
+            border: 3px solid red;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 20px;
+             padding-bottom: 20px;
+		}
+        #id2, #id3
+		{
+            border: 3px solid red;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 20px;
+             padding-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+	
+</body>
+</html>
+
+
+
+Example:
+-----------
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ID selector</title>
+	<style>
+		img
+		{
+            border: 3px solid red;
+            padding: 20px;
+            margin: 30px;
+		}
+    
+	</style>
+</head>
+<body>
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id1">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id2">
+    <img src="happy.jpeg" 	height="200px" width="200px"  id="id3">
+	
+</body>
+</html>
+
+
+
+
+
+
+3.Class selector:
+--------------------
+Here we can prepare styles for user defined names & styles are applied to all "class" attribute tags.
+Here styles are prepared by  user defined names with . operator.
+
+syntax:
+-------
+	.classname
+	{
+		property1:value;
+		...
+	}
+
+ex:
+---
+	.p1	{		color:green;		}
+	.p2	{		text-align:center;		}
+	.p3	{		background-color:blue;	}
+
+	<p  class="p1">			Hi			</p>
+	<p  class="p1 p2">		Hello		</p>
+	<p  class="p1 p2 p3">	Bye			</p>
+
+
+
+
+
+
+
+
+
+4.Universal selector:
+-----------------------------
+Here we can prepare styles using * operator & styles are applied to all tags.
+
+syntax:
+----------
+	*
+	{
+		property1:value;
+		...
+	}
+ex:
+---
+	*
+	{	
+			text-align	:center;	
+			font-size	:40px;			
+	}
+
+	<p>Hi</p>
+	<p>Hello</p>
+	<p>Bye</p>
+
+
+
+DIV & SPAN tags:
+=============
+
+<div>:
+===
+	div tag divide html body into horizontal blocks
+
+
+<span>:
+====
+	span tag divide html body into vertical blocks with in line
+
+
+Example:
+--------
+<!DOCTYPE html>
+<html>
+<head>
+
+   <style>
+       div{
+           border: 2px  solid green;
+           margin: 10px;
+       }
+       span{
+           border: 2px  solid red;
+           margin: 10px;
+       }
+       *{
+        border: 2px  solid red;
+        margin: 5px;
+       }
+   </style>
+</head>
+<body>
+    <div>div data1</div>
+    <div>div data2</div>
+    <div>div data3</div>
+    <span>span data 1</span>
+    <span>span data 2</span>
+    <span>span data 3</span>
+</body>
+</html>
+
+
+
+Ex 2:
+-------
+<!DOCTYPE html>
+<html>
+<head>
+ 
+   <style>
+       #d1{
+           border: 2px  solid green;
+           margin: 10px;
+           height: 100px;
+           width: 100%;
+       }
+       #d2{
+           border: 2px  solid silver;
+           margin: 10px;
+           height: 100px;
+           width: 100%;
+       }
+       #d3{
+           border: 2px  solid yellow;
+           margin: 10px;
+           height: 100px;
+           width: 100%;
+       }
+       
+   </style>
+</head>
+<body>
+    <div id="d1">
+        div data1
+    </div>
+    <div id="d2">
+        div data2
+    </div>
+    <div id="d3">
+        div data3
+    </div>
+</body>
+</html>
+
+
+Ex: how to make 2 / more div in same horizontal space:
+----------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+   <style>
+       #d1{
+           background-color: silver;
+           height: 100px;
+           width: 100%;
+       }
+       #d2{
+        background-color: yellow;
+           height: 100px;
+           width: 50%;
+           float: left;
+       }
+       #d3{
+        background-color: red;
+           height: 100px;
+           width: 50%;
+           float: left;
+       }
+       #d4{
+        background-color: blue;
+           height: 100px;
+           width: 100%;
+           clear: both;
+       }
+       
+   </style>
+</head>
+<body>
+    <div id="d1">
+        div data1
+    </div>
+    <div id="d2">
+        div data2
+    </div>
+    <div id="d3">
+        div data3
+    </div>
+    <div id="d4">
+        div data4
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+Example: nestetd div:
+----------------------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+   <style>
+       *{
+           margin: 1px;
+       }
+       #d1{
+           background-color: silver;
+           height: 300px;
+           width: 98%;
+       }
+       #d1left{
+        background-color: yellow;
+           height: 200px;
+           width: 18%;
+           float: left;
+       }
+       #d1right{
+        background-color: red;
+           height: 200px;
+           width: 78%;
+           float: left;
+       }
+       
+       
+   </style>
+</head>
+<body>
+    <div id="d1">
+       Div1 data <br>
+       <div id="d1left">
+        Div2 left <br>
+       </div>
+       <div id="d1right">
+        Div3 right <br>
+       </div>
+    </div>
+    
+</body>
+</html>
+
+
+Using span:
+----------------
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <style>
+         .c1{
+             color: blue;
+         }
+         .c2{
+             color: red;
+         }
+         #id1{
+             color: orange;
+         }
+         #id2{
+             color: green;
+         }
+         div{
+             margin-top:100px ;
+             margin-left: 100px;
+         }
+    </style>
+</head>
+<body>
+   <div>
+    <span class="c1">G</span>
+    <span id="id1">o</span>
+    <span class="c2">o</span>
+    <span class="c1">g</span>
+    <span class="id2">l</span>
+    <span class="c2">e</span>
+   </div>
+</body>
+</html>
+
+
+
+
+
+
+ Example: css:
+---------------
+
+  <ul>
+        <li><a href="#">home</a></li>
+        <li><a href="#">courses</a></li>
+        <li><a href="#">trainers</a></li>
+        <li><a href="#">about us</a></li>
+    </ul>
+
+
+ul{
+    margin: 0px;
+    padding: 0px;
+}
+ul li{
+    background-color: black;
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+    border: 1px solid white;
+    text-align: center;
+}
+ul li a{
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+ul li a:hover{
+background-color: green;
+}
+
+
+
+
+Now adding courses:
+---------------------
+  	    <ul>
+                <li><a href="#">Java</a></li>
+                <li><a href="#">Spring</a></li>
+                <li><a href="#">Hibernate</a></li>
+                <li><a href="#">Angular8</a></li>
+            </ul>
+
+
+
+ul li a{
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+ul li a:hover{
+background-color: green;
+}
+ul li ul li{
+    display: none;
+}
+ul li:hover ul li{
+    display: block;
+}
+
+
+
+HCL Training site :
+---------------------
+home 	  register  	courses	  performer	staff 		client		about us
+histroy				|					         some details adderess/ how to contact
+	 reg form	     java -> core, advance, cloud, certification
+				python-> core, data processing
+				ML -> foundation , advance
+				Oracle-> basic, certification
+				Net	
+
+						Technical staff		Corporate client
+						Management		Retail client
+
+	Reg form:
+	name
+	phone
+	address
+	gender
+	qualification
+	date of birth
+	relation with some hcl employee	Y/N
+			hcl emp id
+	course id
+
+
+
+
+
+3. SVG demo
+--------------
+<svg id = "svgelem" height = "200" xmlns = "http://www.w3.org/2000/svg">
+            <circle id = "redcircle" cx = "50" cy = "50" r = "50" fill = "red" />
+         </svg>
+         <svg id = "svgelem" height = "200" xmlns = "http://www.w3.org/2000/svg">
+            <rect id = "redrect" width = "300" height = "100" fill = "red" />
+         </svg>
+         <svg id = "svgelem" height = "200" xmlns = "http://www.w3.org/2000/svg">
+            <line x1 = "0" y1 = "0" x2 = "200" y2 = "100" 
+               style = "stroke:red;stroke-width:2"/>
+         </svg>
+
+4. math
+-----------
+   <math xmlns = "http://www.w3.org/1998/Math/MathML">
+		
+                    <mrow>
+                       <mi>A</mi>
+                       <mo>=</mo>
+                       
+                       <mfenced open = "[" close="]">
+                       
+                          <mtable>
+                             <mtr>
+                                <mtd><mi>x</mi></mtd>
+                                <mtd><mi>y</mi></mtd>
+                             </mtr>
+                               
+                             <mtr>
+                                <mtd><mi>z</mi></mtd>
+                                <mtd><mi>w</mi></mtd>
+                             </mtr>
+                          </mtable>
+                          
+                       </mfenced>
+                    </mrow>
+                 </math>
+
+5. local storage:
+----------------------
+
+session storage:
+--------------
+<script type = "text/javascript">
+         
+         if( sessionStorage.hits ) {
+            sessionStorage.hits = Number(sessionStorage.hits) +1;
+         } else {
+            sessionStorage.hits = 1;
+         }
+         document.write("Total Hits :" + sessionStorage.hits );
+      </script>
+	
+      <p>Refresh the page to increase number of hits.</p>
+      <p>Close the window and open it again and check the result.</p>
+
+
+
+Local Storage
+------------
+
+<script type = "text/javascript">
+         
+         if( localStorage.hits ) {
+            localStorage.hits = Number(localStorage.hits) +1;
+         } else {
+            localStorage.hits = 1;
+         }
+         document.write("Total Hits :" + localStorage.hits );
+      </script>
+		
+      <p>Refresh the page to increase number of hits.</p>
+      <p>Close the window and open it again and check the result.</p>
+
+
+
+
+
+
+Geolocation
+--------------
+   <body>
+            <h1>let trace your loccation!</h1>
+            <button onclick="getLocation()"> getLocation</button>
+            <div id="output"></div>
+        </body>
+        <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script>
+            var x=document.getElementById('output');
+            function getLocation(){
+               if(navigator.geolocation){
+                 navigator.geolocation.getCurrentPosition(showPosition);
+               }else{
+                x.innerHTML='not supporting';
+               }
+            }
+            function showPosition(position){
+                    x.innerHTML="latitude"+position.coords.latitude;
+                    x.innerHTML+="<br/>"
+                    x.innerHTML+=" "+position.coords.longitude;
+            }
+        </script>
+
+
+
+ <script>
+            var x=document.getElementById('output');
+            function getLocation(){
+               if(navigator.geolocation){
+                 navigator.geolocation.getCurrentPosition(showPosition);
+               }else{
+                x.innerHTML='not supporting';
+               }
+            }
+            function showPosition(position){
+                    x.innerHTML="latitude"+position.coords.latitude;
+                    x.innerHTML+="<br/>"
+                    x.innerHTML+=" "+position.coords.longitude;
+                    var locAPI="http://maps.googleapis.com/maps/api/geocode/json?latlng="+position.coords.latitude+","+position.coords.longitude+"&sensor=true";
+
+                    x.innerHTML=locAPI;
+                    $.get({url: locAPI,
+                    success: function(data){
+                        console.log(data);
+                    }});
+            }
+
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

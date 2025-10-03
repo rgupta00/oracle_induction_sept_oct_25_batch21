@@ -1,0 +1,683 @@
+KnockoutJS
+-------------
+	KnockoutJS is basically a library written in JavaScript, 
+	based on MVVM pattern that helps developers build rich and responsive websites.
+	
+	The model separates the application's Model (stored data),
+	View (UI) and View Model (JavaScript Representation of model).
+
+History of KnockoutJS
+----------------------
+	KnockoutJS was developed and is maintained as an open source project by Steve Sanderson, 
+	a Microsoft employee on July 5, 2010. 
+
+	KO is an abbreviation used for KnockoutJS. 
+
+	KO supports all mainstream browsers - IE 6+, Firefox 3.5+, Chrome, Opera, Safari (desktop/mobile).
+
+Features of KnockoutJS
+---------------------------
+Here is a list of some of the most prominent features of KnockoutJS −
+
+	Declarative Binding 
+		− HTML DOM elements are connected to the model through data-bind attribute using a very simple syntax. 
+		It is made easy to achieve responsiveness using this feature.
+		
+	Automatic UI Refresh 
+		− Any changes made to view the model data are reflected in the UI automatically and vice-versa. 
+		No need of writing extra code.
+		
+	Dependency Tracking 
+		− Relationship between KO attributes and KO library functions/components is transparent. 
+		Automatically tracks data changes in KO attribute and updates respective affected areas.
+		
+	Templating 
+		− Templates are a simple and convenient way to build complex UI structures 
+		- with the possibility of repeating or nesting blocks - as a function of view model data.
+		
+	Extensible 
+		− Extends custom behavior very easily.
+
+
+
+Why Use KnockoutJS?
+-------------------
+	KnockoutJS library provides an easy and clean way to handle complex data-driven interfaces. 
+	One can create self-updating UIs for Javascript objects.
+	
+	It is pure JavaScript Library and works with any web framework. 
+	It's not a replacement of JQuery but can work as a supplement providing smart features.
+	
+	KnockoutJS library file is very small and lightweight.
+	
+	KnockoutJS is independent of any other framework. 
+	It is compatible with other client or server side technologies.
+	
+	Most important of all KnockoutJS is open source and hence free for use.
+	
+	KnockoutJS is fully documented.
+	The official site has full documentation including API docs, live examples, and interactive tutorials.
+	
+	
+download :
+-----------
+https://knockoutjs.com/downloads/
+
+using cdn:
+<script src = "https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js" type = "text/javascript"></script>
+   
+   
+Understanding hello world:
+---------------------------
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KnockoutJS Simple Example</title>
+  <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+</head>
+
+<body>
+  <!-- View: HTML markup with data-bind -->
+  <p>First String: <input data-bind="value: firstString" /></p>
+  <p>Second String: <input data-bind="value: secondString" /></p>
+
+  <p>First String: <strong data-bind="text: firstString"></strong></p>
+  <p>Second String: <strong data-bind="text: secondString"></strong></p>
+
+  <p>Derived String: <strong data-bind="text: thirdString"></strong></p>
+
+  <script>
+    // ViewModel: JS logic and data
+    function AppViewModel() {
+      this.firstString = ko.observable("Enter First String");
+      this.secondString = ko.observable("Enter Second String");
+
+      this.thirdString = ko.computed(function () {
+        return this.firstString() + " " + this.secondString();
+      }, this);
+    }
+
+    // Activate Knockout bindings
+    ko.applyBindings(new AppViewModel());
+  </script>
+</body>
+</html>
+
+
+
+
+Explain:
+-----------
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KnockoutJS Simple Example</title>
+  <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+</head>
+
+<body>
+  <!-- View: HTML markup with data-bind
+   
+    This enables two-way binding:
+
+    If the user types in the box, firstString and secondString in the ViewModel get updated.
+
+    If the ViewModel value changes in code, the input field gets updated automatically.
+  -->
+  <p>First String: <input data-bind="value: firstString" /></p>
+  <p>Second String: <input data-bind="value: secondString" /></p>
+
+  <!--They are updated in real-time as the user types — this is one-way binding (ViewModel → View).-->
+  <p>First String: <strong data-bind="text: firstString"></strong></p>
+  <p>Second String: <strong data-bind="text: secondString"></strong></p>
+
+  <!--
+    This displays the computed value — a live concatenation of both strings.
+    If either input changes, thirdString auto-recalculates — this is dependency tracking
+    -->
+  <p>Derived String: <strong data-bind="text: thirdString"></strong></p>
+
+  <script>
+    // ViewModel: JS logic and data
+    function AppViewModel() {
+        //ko.observable(...) creates a reactive variable.
+        //Knockout tracks changes to observables.
+      this.firstString = ko.observable("Enter First String");
+      this.secondString = ko.observable("Enter Second String");
+
+      //ko.computed(...) is a special function that reacts to changes in its dependencies (firstString and secondString).
+    //Whenever either input is changed, thirdString() auto-updates.
+
+      this.thirdString = ko.computed(function () {
+        return this.firstString() + " " + this.secondString();
+      }, this);
+    }
+
+    // Activate Knockout bindings
+    //     Connect the View (HTML) to the ViewModel (JS logic).
+    // Bind all data-bind attributes using the matching properties in the AppViewModel.
+    ko.applyBindings(new AppViewModel());
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+KnockoutJS Architecture
+----------------------------
+
+KnockoutJS is widely used for Single Page Applications 
+
+- A website created with the ability to retrieve all necessary data dynamically 
+with a single page load reducing server round trips.
+
+KnockoutJS is a client-side framework. 
+This is a JavaScript library which makes it very easy to bind HTML to domain data. 
+It implements a pattern called Model-View-ViewModel (MVVM). 
+
+Observables is the magic ingredient of KnockoutJS. All data remains in sync because of Observable attribute.
+
+
+KnockoutJS Architecture
+------------------------
+	View
+		View is nothing but user interface created using HTML elements and CSS styling.
+
+		You can bind HTML DOM elements to data model using KnockoutJS. 
+		
+		It provides 2-way data binding between View and ViewModel using 'data-bind' concept, 
+		which means any updates done in the UI are reflected in the data model and any changes 
+		done in the data model are reflected in the UI. One can create self-updating UI with the help of knockoutJS.
+
+	ViewModel
+		ViewModel is a JavaScript object, which contains necessary properties and functions to represent data. 
+		View and ViewModel are connected together with declarative data-bind concept used in HTML.
+
+		This makes it easy to change HTML without changing ViewModel.
+		KnockoutJS takes care of automatic data refresh between them through the use of Observables.
+
+		Synchronization of data is achieved through binding DOM elements to Data Model, 
+		first using data-bind and then refreshing these 2 components through the use of Observables. 
+		Dependency tracking is done automatically due to this synchronization of data. 
+		
+		No extra coding is required to achieve it. KnockoutJS allows to create direct 
+		connection between the display and underlying data.
+
+		You can create your own bindings called as custom bindings for application specific behaviors. 
+		This way Knockout gives direct control of how you want to transform your data into HTML.
+
+	Model
+		Model is the domain data on the server and it gets manipulated as and when the request is sent/received from ViewModel.
+		
+		The data could be stored in database, cookie, or other form of persistent storage. 
+		KnockoutJS does not worry about how it is stored. 
+		It is up to the programmer to communicate between the stored data and KnockoutJS.
+		
+		Most of the times, data is saved and loaded via an Ajax call.
+		
+		
+		
+Model-View-ViewModel (MVVM)
+	is an architectural design pattern for developing software applications. 
+	
+	MVVM was developed by Microsoft Architect John Gossman in 2005. 
+	This pattern is derived from Model-View-Controller (MVC) pattern. 
+	
+	The advantage of MVVM is that it separates the application layer's graphical user interface from business logic.
+	MVVM is responsible for handling data from the underlying model 
+	in such a way that it is represented and managed very easily.
+
+	ViewModel in MVVM represents an abstract version of View's state and actions.
+
+	The view classes do not know that Model and ViewModel classes exists, 
+	also Model and ViewModel does not know that View exists. Model is also unaware that ViewModel and View exists.
+
+View
+	View is a Graphical User Interface created using markup language to represent data.
+
+	View binds to properties of a ViewModel through data-bind concept, which indirectly connects to the model data. 
+	View need not be changed for any alteration done in ViewModel.
+	Changes made to data in ViewModel is automatically propagated in View due to binding.
+
+Model
+	Model is domain data or business object, which holds real-time data. 
+	Model does not carry behaviors. Behavior is mostly implemented in business logic.
+
+ViewModel
+	ViewModel is the center place, where data from Model and View's display logic are bundled together.
+	
+	ViewModel holds the dynamic state of data. There is an implicit binder in
+	between View and ViewModel to communicate with each other.
+
+	This binding is inclusive of declarative data and command binding. 
+	Synchronization of View and ViewModel is achieved through this binding. 
+	
+	Any change made in View is reflected in ViewModel, and similarly any change in ViewModel gets automatically
+	reflected in View. Existence of this 2-way binding mechanism is a key aspect of this MVVM pattern
+	
+	
+KnockoutJS - Observables
+---------------------------
+KnockoutJS is build upon the following 3 important concepts.
+
+Observables and dependency tracking between them
+-----------------------------------------------
+	- DOM elements are connected to ViewModel via 'data-bind'. 
+	They exchange information through Observables. 
+	This automatically takes care of dependency tracking.
+	
+Declarative Bindings between UI and ViewModel
+---------------------------------------------
+	- DOM elements are connected to ViewModel via 'data-bind' concept.
+	
+Templating to create re-usable components 
+-----------------------------------------
+	- Templating provides a robust way to create complex web applications.
+	
+Understanding Observables 
+-----------------------------
+	As the name specifies, when you declare a ViewModel data/property as Observable, 
+	any data modification each time automatically gets reflected at all places the data is used. 
+	This also includes refreshing the related dependencies. 
+	
+	KO takes care of these things and there is no need to write extra code to achieve this.
+
+	Using Observable, it becomes very easy to make UI and ViewModel communicate dynamically.
+
+Syntax
+-----------
+You just need to declare ViewModel property with function ko.observable() to make it Observable.
+
+this.property = ko.observable('value');
+
+
+Let's take a look at the following example which demonstrates the use of Observable.
+------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+   <head>
+      <title>KnockoutJS Observable Example</title>
+      <script src = "https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js" 
+         type = "text/javascript"></script>
+   </head>
+   
+   <body>
+      <!-- This is called "view" of HTML markup that defines the appearance of UI -->
+
+      <p>Enter your name: <input data-bind = "value: yourName" /></p>
+      <p>Hi <strong data-bind = "text: yourName"></strong> Good Morning!!!</p>
+
+      <script>
+         <!-- This is called "viewmodel". This javascript section defines the data and behavior of UI -->
+
+         function AppViewModel() {
+            this.yourName = ko.observable("");
+         }
+
+         // Activates knockout.js
+         ko.applyBindings(new AppViewModel());
+      </script>
+   </body>
+</html>
+
+
+
+
+Observable Arrays
+--------------------
+	Observable declaration takes care of data modifications of a single object.
+
+	ObservableArray works with the collection of objects. 
+	
+	This is a very useful feature when you are dealing with complex applications containing multiple type of values 
+	and changing their status frequently based on the user actions.
+	
+	
+	Syntax
+	--------------
+	this.arrayName = ko.observableArray();    // It's an empty array
+
+	Observable array only tracks which objects in it are added or removed.
+	It does not notify if the individual object's properties are modified.
+
+Initialize It for the First Time
+--------------------------------------
+	You can initialize your array and at the same time you can declare it as Observable 
+	by passing the initial values to the constructor as follows.
+
+this.arrayName = ko.observableArray(['scott','jack']);
+
+Reading from Observable Array
+----------------------------
+	You can access Observable array elements as follows.
+
+	alert('The second element is ' + arrayName()[1]);
+
+ObservableArray Functions
+----------------------------
+	KnockoutJS has its own set of Observable array functions. They are convenient because −
+
+	These functions work on all browsers.
+
+	These functions will take care of dependency tracking automatically.
+
+	Syntax is easy to use. For example, to insert an element into an array, you just need to use arrayName.push('value') 
+	instead of arrayName().push('value').
+	
+	Functions
+	==========
+	
+1	push('value')					Inserts a new item at the end of array.
+2	pop()							Removes the last item from the array and returns it.
+
+3	unshift('value')				Inserts a new value at the beginning of the array.
+
+4	shift()							Removes the first item from the array and returns it.
+
+5	reverse()						Reverses the order of the array.
+
+6	sort()							Sorts array items in an ascending order.
+
+7	splice(start-index,end-index)	Accepts 2 parameters - start-index and end-index 
+									- removes items starting from start to end index and returns them as an array.
+
+8	indexOf('value')				This function returns the index of the first occurrence of parameter provided.
+
+9	slice(start-index,end-index)	This method slices out a piece of an array. 
+									Returns the items from start-index up to end-index.
+
+10	removeAll()						Removes all items and returns them as an array.
+
+11	remove('value')					Removes items that match the parameter and returns as an array.
+
+12	remove(function(item)
+ { condition })						Removes items which are satisfying the condition and returns them as an array.
+
+13	remove([set of values])			Removes items that match with a given set of values.
+
+14	destroyAll()					Marks all items in an array with property _destroy with value true.
+
+15	destroy('value')				Searches for an item equal to the parameter and mark it
+										with a special property _destroy with value true.
+
+
+
+Example:
+---------
+ko.observableArray() — Like a smart array. It notifies the UI automatically when items are added or removed.
+KO automatically updates DOM when members changes.
+Useful for dynamic list handling in apps.
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>KnockoutJS Add/Remove</title>
+  <script src="js/knockout-3.5.1.js"></script>
+</head>
+<body>
+  <h2>Team Members</h2>
+
+  <input type="text" data-bind="value: newMember, valueUpdate: 'afterkeydown'" placeholder="Enter name" />
+  <button data-bind="click: addMember">Add</button>
+
+  <ul data-bind="foreach: members">
+    <li>
+      <span data-bind="text: $data"></span>
+      <button data-bind="click: $parent.removeMember">Remove</button>
+    </li>
+  </ul>
+
+  <p>Total Members: <span data-bind="text: members().length"></span></p>
+
+  <script type="text/javascript">
+    function ViewModel() {
+      var self = this;
+
+      self.members = ko.observableArray(["Scott", "Jack"]);
+      self.newMember = ko.observable("");
+
+      self.addMember = function () {
+        var name = self.newMember().trim();
+        if (name) {
+          console.log("Adding: " + name);
+          self.members.push(name);
+          self.newMember(""); // clear input
+        }
+      };
+
+      self.removeMember = function (name) {
+        console.log("Removing: " + name);
+        self.members.remove(name);
+      };
+    }
+
+    ko.applyBindings(new ViewModel());
+  </script>
+</body>
+</html>
+
+
+Understanding code:
+------------------------
+
+function ViewModel() {
+  var self = this;
+
+  self.members = ko.observableArray(["Scott", "Jack"]);
+  // a special Knockout array that tracks changes and updates UI
+
+  self.newMember = ko.observable("");
+  // binds to <input>; auto-updated when user types
+
+  self.addMember = function () {
+    var name = self.newMember().trim();
+    if (name) {
+      self.members.push(name);     // adds to observableArray
+      self.newMember("");          // clears the textbox (2-way binding)
+    }
+  };
+
+  self.removeMember = function (name) {
+    self.members.remove(name);     // removes from observableArray
+  };
+}
+
+ko.applyBindings(new ViewModel());
+Activates Knockout and binds your UI to the ViewModel
+
+
+
+
+
+
+
+
+Knockout.js – Computed Observables Explained
+---------------------------------------------
+What is a Computed Observable?
+-------------------------------
+	A Computed Observable is a special type of observable in Knockout.js that:
+	Depends on one or more other observables
+	Automatically updates whenever those dependencies change
+	Is typically used to calculate derived values (like totals, averages, full names, etc.)
+
+Computed Observables can be chained
+---------------------------------------
+this.varName = ko.computed(function() {
+   // your logic
+}, this)
+
+
+
+Example: Average of Two Numbers
+-------------------------------
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KnockoutJS Computed Observables</title>
+  <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+</head>
+<body>
+  <p>Enter first number: <input data-bind="value: a" /></p>
+  <p>Enter second number: <input data-bind="value: b" /></p>
+  <p>Average := <span data-bind="text: totalAvg"></span></p>
+
+  <script>
+    function MyViewModel() {
+      this.a = ko.observable(10);
+      this.b = ko.observable(40);
+
+      this.totalAvg = ko.computed(function() {
+        // Convert from string to number
+        if (typeof this.a() !== "number") this.a(Number(this.a()));
+        if (typeof this.b() !== "number") this.b(Number(this.b()));
+
+        return (this.a() + this.b()) / 2;
+      }, this);
+    }
+
+    ko.applyBindings(new MyViewModel());
+  </script>
+</body>
+</html>
+
+
+Key Concepts:
+-------------
+	data-bind="value: a" connects the input to the observable a
+	
+	totalAvg is a computed value: it reacts to changes in a and b
+	
+	Input from <input> is always a string → converted to number
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Spring boot + knockout js integration
+-------------------------------------
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <script src="js/knockout-3.5.1.js"></script>
+</head>
+
+<body>
+    <h2>Employees</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Salary</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: employees">
+            <tr>
+                <td data-bind="text: id"></td>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: salary"></td>
+                <td><button data-bind="click: $parent.removeEmployee">Remove</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Add New Employee</h3>
+    <p>
+        Name: <input data-bind="value: newName, valueUpdate: 'afterkeydown'" />
+        Salary: <input data-bind="value: newSalary, valueUpdate: 'afterkeydown'" />
+        <button data-bind="click: addEmployee">Add</button>
+    </p>
+
+    <script>
+        function Employee(id, name, salary) {
+            this.id = id;
+            this.name = name;
+            this.salary = salary;
+        }
+
+        function AppViewModel() {
+            var self = this;
+
+            self.employees = ko.observableArray([]);
+            self.newName = ko.observable("");
+            self.newSalary = ko.observable("");
+
+            self.loadEmployees = function () {
+                fetch('http://localhost:8080/employees')  // update path if needed
+                    .then(res => res.json())
+                    .then(data => {
+                        const mapped = data.map(emp => new Employee(emp.id, emp.name, emp.salary));
+                        self.employees(mapped);
+                    })
+                    .catch(err => console.error("Error loading employees:", err));
+            };
+
+            self.addEmployee = function () {
+                const name = self.newName().trim();
+                const salary = parseFloat(self.newSalary());
+                if (name && !isNaN(salary)) {
+                    fetch("http://localhost:8080/employees", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ name, salary })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            const added = new Employee(data.id, data.name, data.salary);
+                            self.employees.push(added);
+                            self.newName("");
+                            self.newSalary("");
+                        })
+                        .catch(err => console.error("Add failed:", err));
+                }
+            };
+
+
+            self.removeEmployee = function (emp) {
+                self.employees.remove(emp);
+            };
+
+            // load data initially
+            self.loadEmployees();
+        }
+
+        ko.applyBindings(new AppViewModel());
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+

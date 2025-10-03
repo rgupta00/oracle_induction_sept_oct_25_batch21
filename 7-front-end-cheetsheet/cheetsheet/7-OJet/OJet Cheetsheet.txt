@@ -1,0 +1,599 @@
+Oracle JET (OJET) Tutorial 
+----------------------------
+Prerequisites:
+-------------------
+	Node.js and npm installed
+	Basic HTML, JavaScript, and KnockoutJS knowledge
+	Java JDK (for some tooling)
+
+Documentation:
+--------------
+https://www.oracle.com/webfolder/technetwork/jet/index.html
+https://docs.oracle.com/en/middleware/developer-tools/jet/18.1/develop/index.html
+
+What is Oracle JET?
+------------------
+	Oracle JET (JavaScript Extension Toolkit) is an open-source modular toolkit for building 
+	advanced web apps using modern JavaScript, TypeScript, HTML5, and CSS3. 
+	
+	It is especially suitable for enterprise-grade applications and uses popular libraries like RequireJS,
+	KnockoutJS, jQuery, and Cordova for hybrid mobile apps.
+	
+	
+	It is not a framework like Angular or React, but rather a toolkit that includes multiple open-source 
+	libraries pre-integrated (such as Knockout, jQuery, RequireJS) plus Oracle’s own components and tooling.
+	
+When to Use Oracle JET?
+--------------------------
+Oracle JET is most suitable when:
+-----------------------------------
+	You're working within the Oracle ecosystem (e.g., Oracle SaaS, Fusion Apps, Oracle Cloud)
+	
+	You need enterprise-grade, standards-compliant, component-driven development
+	
+	You want tight integration with REST services and responsive layouting
+	
+	You prefer MVVM pattern using KnockoutJS
+	
+	You need enterprise charting and data visualization tools out-of-the-box
+	
+Key Components of Oracle JET
+----------------------------------
+	KnockoutJS – For data binding (MVVM)
+	RequireJS – For module loading
+	jQuery – DOM manipulation
+	Alta UI – Oracle’s responsive theme
+	JET Custom Components – For charts, forms, tables, etc.
+	Cordova Integration – Build mobile apps with web tech
+
+
+Real-World Adoption & Market Share (2025)
+-----------------------------------------------
+Framework	Estimated Usage (Dev Surveys & GitHub trends 2025)
+----------------------------------------------
+React			40–45%
+Angular			25–30%
+Vue.js			10–15%
+Svelte, SolidJS	3–5%
+Oracle JET		< 1% (mostly Oracle internal/clients)
+
+
+
+
+Oracle JET (OJET) Setup
+------------------------
+
+Step 1: Install Oracle JET CLI
+---------------------------------
+npm install -g @oracle/ojet-cli
+
+Verify installation:
+-------------------
+ojet --version
+
+Various option while creating application:
+-------------------------------------------------
+ojet create <app_name> --template=navdrawer|navbar|basic|blank
+
+ojet create jet-employee-app --template=basic
+
+ojet create jet-employee-app --template=navbar
+
+ojet create jet-employee-app --template=navdrawer
+
+
+Note:
+----------------------------------------------------------------
+Oracle JET provides several predefined starter templates to help 
+you bootstrap a new application with specific UI layouts.
+----------------------------------------------------------------
+
+
+Template Options
+----------------------
+Template Name		UI Pattern						Description	When to Use
+---------------------------------------------------------------------------
+navdrawer			Navigation Drawer (side menu)	Creates a responsive layout with a side navigation drawer (hamburger menu). 
+													It’s mobile-friendly and includes routing for multiple views.	
+													Ideal for apps with many views or where users need persistent navigation
+													(e.g., dashboards, admin panels).
+													
+navbar				Top Navigation Bar				Creates a header with horizontal navigation links.
+													Routing is preconfigured. Simple and clean layout.	
+													Good for smaller apps or apps with only a few sections.
+													
+basic				Minimal Setup					Basic routing and view structure, no navigation bar or drawer UI. 
+													Lightweight and clean.	
+													Best for custom layouts, POCs, or learning. Gives you 
+													flexibility to design your own UI.
+													
+blank				Empty App Shell					No views, routing, or layout. 
+													Barebones setup with just the project structure.	
+													Best for advanced developers who want to build everything from scratch
+													Also ideal for mobile hybrid apps or embedding JET inside other frameworks.
+---------------------------------------------------------------------------
+
+
+
+vs code plugin:
+------------------
+oracle.oracle-jet-core
+
+
+Step 1:  create an project
+ojet create employee-app-basic1 --template=navbar
+ojet serve
+
+
+Understanding dir structure of project:
+-----------------------------------------
+JET-EMPLOYEE-APP/
+├── .gitignore
+├── oraclejetconfig.json
+├── scripts/                      (Build scripts – usually auto-managed)
+├── src/
+│   ├── css/                      (Custom CSS files)
+│   └── js/
+│       ├── viewModels/          (JS files for each page/view)
+│       │   ├── about.js
+│       │   ├── customers.js
+│       │   ├── dashboard.js
+│       │   └── incidents.js
+│       ├── views/               (Corresponding HTML files for each view)
+│       │   ├── about.html
+│       │   ├── customers.html
+│       │   ├── dashboard.html
+│       │   └── incidents.html
+│       ├── accUtils.js          (Utility JS for accessibility, optional)
+│       ├── appController.js     (Router and navigation configuration)
+│       ├── main.js              (Entry point for RequireJS, starts the app)
+│       ├── path_mapping.json    (Alias mappings for JS module paths)
+│       └── root.js              (Root viewModel for the whole application shell)
+├── index.html                   (Main HTML shell for the app)
+├── staged-themes/              (Generated or custom theme assets)
+└── web/                         (Build output folder – after `ojet build`)
+
+
+
+
+
+Important Files Explained
+-------------------------
+index.html
+----------------
+	Main HTML file loaded in the browser.
+	Bootstraps the RequireJS system and references main.js.
+
+main.js
+----------
+	Sets up RequireJS configuration.
+	Loads appController and root to start the app.
+
+appController.js
+--------------------
+	Defines routing and navigation logic.
+	Manages top navbar and routing between views like dashboard, customers, etc.
+
+root.js
+----------
+	Acts as the ViewModel for the app shell (navbar + page outlet).
+	Used in conjunction with index.html and appController.
+	
+viewModels/*.js
+--------------
+	Each .js file corresponds to a view (page).
+	Contains Knockout observables and logic for that page.
+
+views/*.html
+--------------
+	HTML templates rendered into the page when user navigates.
+	Bound to their respective viewModels.
+
+accUtils.js
+-----------
+	Utility for accessibility (e.g., managing focus and screen reader support).
+
+oraclejetconfig.json
+------------------------
+	Contains Oracle JET app metadata and CLI configuration (theme, platform, etc.).
+
+path_mapping.json
+----------------
+	Helps resolve module aliases in RequireJS (e.g., oj for Oracle JET components).
+
+
+Runtime Flow Summary
+----------------------
+Browser loads → index.html
+               → main.js initializes RequireJS
+               → root.js creates base ViewModel
+               → appController.js sets up routes
+               → views/* + viewModels/* are injected based on the URL
+			   
+			   
+
+Navigation flow:
+------------------
+            +--------------------+
+            |    index.html      |  <-- HTML Shell
+            +--------------------+
+                     |
+                     v
+            +--------------------+
+            |     main.js        |  <-- RequireJS config
+            +--------------------+
+                     |
+                     v
+            +--------------------+
+            |   root.js          |  <-- App shell ViewModel
+            | - Controls layout  |
+            +--------------------+
+                     |
+                     v
+            +--------------------+
+            | appController.js   |  <-- Routing (oj.Router)
+            | - Maps routes to   |
+            |   viewModel + view |
+            +--------------------+
+                 /      |     \
+                /       |      \
+               v        v       v
+        dashboard   customers  about  etc.
+        ----------   ---------  -----
+        dashboard.js + dashboard.html
+        customers.js + customers.html
+        about.js     + about.html
+
+
+
+
+Flow Summary (in words)
+----------------------------
+	index.html loads in the browser.
+	main.js configures RequireJS and boots the app.
+	root.js sets up the application shell (e.g., navbar layout).
+	appController.js defines routes like /dashboard, /customers.
+	Based on the URL, the corresponding:
+	ViewModel from viewModels/
+	HTML template from views/
+	...are dynamically loaded and rendered.
+
+
+
+
+Basics customization:
+-------------------
+1. remove footer
+
+2. change logo ... put inside css/images
+
+            <!-- <img class="oj-icon demo-oracle-icon" title="Oracle Logo" alt="Oracle Logo"></img> -->
+              <img src="css/images/emp-logo.jpeg" width="300" height="60"></img>
+
+
+3. change app name
+      // Header
+      // Application Name used in Branding Area
+      this.appName = ko.observable("App Name");
+
+
+4. changing menu
+let say i need to create a new menu option (employees)
+
+rename about.html and about.js with name employees.html and employee.js
+and change accordingly
+
+
+
+change navData in appController.js
+------------------------------------
+      let navData = [
+        { path: '', redirect: 'dashboard' },
+        { path: 'dashboard', detail: { label: 'Dashboard', iconClass: 'oj-ux-ico-bar-chart' } },
+        { path: 'incidents', detail: { label: 'Incidents', iconClass: 'oj-ux-ico-fire' } },
+        { path: 'customers', detail: { label: 'Customers', iconClass: 'oj-ux-ico-contact-group' } },
+        { path: 'employees', detail: { label: 'Employees', iconClass: 'oj-ux-ico-information-s' } }
+      ];
+
+
+5. employee screen creation
+---------------------------
+https://www.oracle.com/webfolder/technetwork/jet/jetCookbook.html?component=table&demo=basicTable
+
+
+put services in services folder in js folder
+commonService.js
+------------------
+
+define([], function () {
+  const server_url = "http://localhost:8080/"; // Spring Boot base URL
+
+  async function callGetService(serviceName) {
+    return fetch(server_url + serviceName, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(resp => resp.json());
+  }
+
+  return {
+    callGetService
+  };
+});
+
+
+
+employees.html
+-----------------
+<div class="oj-flex oj-sm-padding-4x">
+  <div class="oj-flex-item oj-sm-12">
+    <h2>Employee Records</h2>
+
+    <oj-table
+      data="[[dataProvider]]"
+      columns='[
+        {"headerText": "ID", "field": "id"},
+        {"headerText": "Name", "field": "name"},
+        {"headerText": "Salary", "field": "salary"}
+      ]'
+      selection-mode.row="none">
+    </oj-table>
+  </div>
+</div>
+
+employees.js
+----------
+define([
+  'knockout',
+  '../services/commonService',
+  'ojs/ojarraydataprovider',
+  'ojs/ojtable'
+], function (ko, commonService, ArrayDataProvider) {
+  function EmployeesViewModel() {
+    var self = this;
+
+    self.employees = ko.observableArray([]);
+    self.dataProvider = new ArrayDataProvider(self.employees, { keyAttributes: 'id' });
+
+    self.loadEmployees = function () {
+      commonService.callGetService('employees')
+        .then(function (response) {
+          self.employees(response);
+        })
+        .catch(function (err) {
+          console.error("Failed to load employees", err);
+        });
+    };
+
+    self.connected = function () {
+      self.loadEmployees();
+    };
+  }
+
+  return EmployeesViewModel;
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What You Get with --template=basic
+------------------------------------
+jet-employee-app/
+│
+├── index.html                  🔹 Main HTML entry point (loaded by browser)
+│
+├── main.js                     🔹 RequireJS config + entry point for app
+│
+├── appController.js            🔹 Top-level ViewModel for global logic (navbar, router, etc.)
+│
+├── js/
+│   ├── appController.js        🔹 (Sometimes here) Manages global routing/layout logic
+│   └── views/                  🔹 HTML view fragments for each screen
+│   └── viewModels/             🔹 KnockoutJS ViewModels (JavaScript logic) for each view
+│
+├── css/
+│   └── app.css                 🔹 Custom application styles
+│
+├── scripts/
+│   └── ...                     🔹 Utility scripts, pre/post build scripts (ignore for now)
+│
+├── web/
+│   ├── js/                     🔹 Compiled app code (used for deploy)
+│   └── index.html              🔹 Final generated HTML (used for deploy)
+│
+├── package.json               🔹 Node config — includes ojet-cli, dependencies
+├── ojet.config.js             🔹 OJET specific config file (paths, build targets)
+└── vite.config.js             🔹 Vite config (used during development build)
+
+
+
+OJET Basic App Flow (Hello World Rendering)
+--------------------------------
+	Browser (localhost:8000)
+		⬇
+	index.html (contain an script of RequireJS)
+		⬇
+	RequireJS loads main.js ( RequireJS is a JavaScript module loader used by Oracle JET to manage dependencies and load scripts dynamically.)
+	main.ts is entry point of the application
+		⬇
+	main.js loads router + controller (appController.js)
+			router decide which page to display like employee or dashboard
+		⬇
+	Loads default module (e.g., views/dashboard.html + viewModels/dashboard.js)
+			then its view and viewmodel is loaded
+		⬇
+	Bindings applied using Knockout.js
+			using knockout js html and js viewmodel are bind togather 
+		⬇
+	Rendered on browser
+			at the end everything is visible to the browwer
+			
+		
+
+Step-by-Step Runtime Flow 
+------------------------------
+
+Step  	File                    Description                                                                                                     
+---------------------------------------------------------
+| 1    | index.html          Entry point — includes `require.js`, `main.js`, and sets up 
+								`<div id="globalBody">` where JET app will render.    
+								
+| 2    | main.js             This file is loaded by RequireJS. It configures module loading and starts the app. 
+                                         
+| 3    | appController.js   Registered as the global ViewModel. Handles routing via `oj.Router`.  
+                                                       
+| 4    | Routing + Modules  Based on the route (e.g., `/dashboard`), JET dynamically loads: <br>
+								`views/dashboard.html` <br>👉 `viewModels/dashboard.js`
+								
+| 5    | Knockout Bindings   Oracle JET uses Knockout.js to bind the ViewModel (`dashboard.js`)
+											to the View (`dashboard.html`).                  
+											
+| 6    | Display             The bound HTML (from `/views`) is rendered inside `<div id="pageContent">`.                                                   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OJet cookbook:
+----------------
+https://www.oracle.com/webfolder/technetwork/jet/jetCookbook.html
+
+
+Step 2: Create a New OJET App
+-----------------------------
+ojet create jet-employee-app --template=basic
+ojet create jet-employee-app --template=navdrawer
+cd jet-employee-app
+ojet serve 
+
+Open browser at: http://localhost:8000
+
+Step 3: Project Structure
+-------------------------
+src/
+ ├── js/
+ │   ├── viewModels/       ← Knockout viewmodels
+ │   ├── views/            ← HTML views
+ │   └── appController.js  ← App-level logic
+ ├── css/                  ← Custom styles
+ └── index.html            ← Entry point
+
+
+Step 4: Create a Simple View + ViewModel
+
+Add a new page
+-----------------
+ojet add view employee
+
+This creates:
+src/js/viewModels/employee.js
+src/js/views/employee.html
+
+
+employee.html
+----------------
+<div class="oj-flex">
+  <div class="oj-flex-item">
+    <h3>Employee List</h3>
+    <ul data-bind="foreach: employees">
+      <li data-bind="text: name"></li>
+    </ul>
+  </div>
+</div>
+
+
+employee.js
+--------------
+define(['knockout'], function(ko) {
+  function EmployeeViewModel() {
+    this.employees = ko.observableArray([
+      { name: 'Rajeev' },
+      { name: 'Ekta' }
+    ]);
+  }
+  return new EmployeeViewModel();
+});
+
+Step 5: Add Navigation Link
+-----------------------------
+Edit src/js/appController.js → navData array:
+
+{ name: 'Employee', id: 'employee', iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chart-icon-24' }
+
+Now click “Employee” tab in your running app.
+
+Step 6: Make an API Call (Spring Boot)
+-----------------------------------------
+Replace dummy employee list with:
+
+fetch('http://localhost:8080/employees')
+  .then(res => res.json())
+  .then(data => {
+    self.employees(data);
+  });
+
+
+Step 7: Deploy the App
+----------------------
+ojet build --release
+
+Deploy web/ folder to Apache, Tomcat, NGINX, or serve using Spring Boot static resources.
+

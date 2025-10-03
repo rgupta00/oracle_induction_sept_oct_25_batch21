@@ -1,0 +1,28 @@
+Software setup require:
+=========================
+1. download and install vs code
+
+2. download and install nodejs version 20 (LTS): only version 20
+------------------------------------------------
+https://nodejs.org/en/download
+
+3. Install angular cli 
+--------------------------
+ng 18 install
+----------------
+npm install -g @angular/cli@18.0.0
+
+Note: 
+Compatibility Test (after install):
+----------------------------------
+node -v          # should return v20.19.4
+npm -v           # should return compatible npm version
+ng version       # verify Angular CLI 18 is used
+ng new test-app  # create test project
+cd test-app
+ng serve         # test local dev server
+
+
+checking version:
+---------------
+ng --version

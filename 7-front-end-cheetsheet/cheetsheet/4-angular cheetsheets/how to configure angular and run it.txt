@@ -1,0 +1,36 @@
+npm install -g @angular/cli@18.0.0
+
+
+Compatibility Test (after install):
+----------------------------------
+node -v          # should return v20.19.4
+npm -v           # should return compatible npm version
+ng version       # verify Angular CLI 18 is used
+
+how to create new app:
+-------------------------
+ng new test-app  # create test project
+
+how to run
+------------
+cd test-app
+
+ng serve         # test local dev server
+
+
+how to create project with routing support
+------------------------------------------
+ng new myapp --standalone --routing --style=css
+
+
+checking version:
+---------------
+ng --version
+
+creating project:
+---------------
+ng new helloapp
+
+Running:
+------
+ng serve --open

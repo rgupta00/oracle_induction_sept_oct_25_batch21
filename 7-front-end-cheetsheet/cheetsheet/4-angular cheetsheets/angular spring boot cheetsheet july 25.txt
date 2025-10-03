@@ -1,0 +1,1413 @@
+
+ng new empappclient --standalone --routing --style=css
+
+Angular crud application:
+_______________________
+step 1: add bootstrap to index.html
+---------------------------------
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  
+
+check if working:
+------------------
+
+<h1 class="text-center">app is running!</h1>
+<router-outlet></router-outlet>
+
+
+
+Generate employee class:
+----------------------
+ng g class model/employee
+
+
+export class Employee {
+	  id: number = 0;
+	  name: string = '';
+	  salary: number = 0;
+}
+
+
+create employee component:
+----------------------
+ng g c employee
+
+
+
+
+Now display all employee : (dont forget to use common module)
+---------------------------
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th> Emp id</th>
+            <th> Emp Name </th>
+            <th> Emp salary</th>
+            <th> Actions </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let employee of employees">
+            <td> {{ employee.id }} </td>
+            <td> {{ employee.name }} </td>
+            <td> {{ employee.salary }} </td>
+            <td>
+                <button (click)="updateEmployee(employee.id)" class="btn btn-info">
+                    Update</button>
+                <button (click)="deleteEmployee(employee.id)" class="btn btn-danger" style="margin-left: 10px">
+                    Delete</button>
+
+                <button (click)="employeeDetails(employee.id)" class="btn btn-info" style="margin-left: 10px">
+                    View</button>
+            </td>
+        </tr>
+    </tbody>
+
+
+Now populate hard coded employees:
+------------------------------------
+
+export class EmployeeComponent implements OnInit {
+
+  employees: Employee[]=[];
+
+  constructor() { }
+
+  ngOnInit() {
+    this.employees = [
+      {
+        "id": 1,
+        "name": "rajeev",
+        "salary": 40
+      },
+      {
+        "id": 2,
+        "name": "ekta",
+        "salary": 40
+      },
+      {
+        "id": 3,
+        "name": "gunika",
+        "salary": 15.3300
+      }
+    ];
+  }
+
+}
+
+Note:
+configure EmployeeComponent into app.component.ts and use in app.component.html
+
+
+put table in proper position:
+-----------------------------
+
+
+<div class="text-center">
+  <app-employee></app-employee>
+</div>
+
+
+
+
+create service to fetch with rest endpoint:
+---------------------------------------------
+ng g s services/employee
+ 
+
+provide HttpClient in app.config.ts
+----------------------------------------
+import { provideHttpClient } from '@angular/common/http';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    provideZoneChangeDetection({ eventCoalescing: true }), 
+    provideRouter(routes)]
+};
+
+
+
+employee service:
+--------------------
+http://localhost:8080/employees
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http'
+import { Observable } from 'rxjs';
+import { Employee } from './employee';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+
+  private baseURL = "http://localhost:8080/employees";
+
+  constructor(private httpClient: HttpClient) { }
+  
+  getEmployeesList(): Observable<Employee[]>{
+    return this.httpClient.get<Employee[]>(`${this.baseURL}`);
+  }
+
+  createEmployee(employee: Employee): Observable<Object>{
+    return this.httpClient.post(`${this.baseURL}`, employee);
+  }
+
+  getEmployeeById(id: number): Observable<Employee>{
+    return this.httpClient.get<Employee>(`${this.baseURL}/${id}`);
+  }
+
+  updateEmployee(id: number, employee: Employee): Observable<Object>{
+    return this.httpClient.put(`${this.baseURL}/${id}`, employee);
+  }
+
+  deleteEmployee(id: number): Observable<Object>{
+    return this.httpClient.delete(`${this.baseURL}/${id}`);
+  }
+}
+
+
+
+
+employee component:
+--------------------
+import { Component, OnInit } from '@angular/core';
+import { Employee } from '../../model/employee';
+import { CommonModule } from '@angular/common';
+import { EmployeeService } from '../../services/employee.service';
+import { RouterModule } from '@angular/router';
+@Component({
+  selector: 'app-employee',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './employee.component.html',
+  styleUrl: './employee.component.css'
+})
+export class EmployeeComponent implements OnInit{
+
+  public employees: Employee[] = [];
+
+  constructor(private employeeService: EmployeeService) { }
+
+  ngOnInit() {
+    this.getEmployees();
+  }
+  private getEmployees() {
+    this.employeeService.getEmployeesList().subscribe(data => {
+      this.employees = data;
+    });
+  }
+}
+
+
+
+configure the route in app.routes.ts
+------------------------------------
+export const routes: Routes = [
+  {path:'employees', component: EmployeeComponent},
+  {path:'', redirectTo:'employees', pathMatch:'full'}
+];
+
+
+Update app.component.ts to import RouterModule
+---------------------------------------------------
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule],
+  templateUrl: './app.component.html'
+})
+export class AppComponent {}
+
+
+
+use route in app.component.html
+-----------------------------
+
+<div class="text-center">
+  <router-outlet></router-outlet>
+</div>
+
+
+
+
+ Routing and Navigation:
+-------------------------
+add to app.component.html:
+--------------------------
+
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+  <ul class = "navbar-nav">
+      <li class = "nav-item">
+          <a routerLink="employees" routerLinkActive="active" class="nav-link" >Employee List</a>
+      </li>
+  </ul>
+</nav>
+
+
+<div class="text-center">
+  <router-outlet></router-outlet>
+</div>
+
+<footer class = "footer">
+  <div class = "container">
+      <span>All Rights Reserved 2025</span>
+  </div>
+</footer>
+  
+
+
+
+
+
+add to style.css(applicable to whole project)
+------------------
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    height: 40px;
+    background-color: blue;
+    text-align: center;
+    color: white;
+}
+
+
+
+Creating add employee ui:
+--------------------------
+ ng g c create-employee
+
+now create rounte for create employee:
+-----------------------------------
+const routes: Routes = [
+  {path:'employees', component: EmployeeComponent},
+  {path:'create-employee', component: CreateEmployeeComponent},
+  {path:'', redirectTo:'employees', pathMatch:'full'}
+];
+
+
+
+update app.component.html
+------------------------
+
+<li class = "nav-item">
+          <a routerLink="create-employee" routerLinkActive="active" class="nav-link" >Add Employee</a>
+</li>
+
+
+
+
+create an empty object of emp to attacehd with form:
+----------------------------------
+
+export class CreateEmployeeComponent implements OnInit {
+
+  employee: Employee = new Employee();
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+ onSubmit(){
+    console.log(this.employee);
+  }
+}
+
+
+crete the form:
+------------
+
+
+<div class="col-md-6 offset-md-3">
+    <h3> Create Employee </h3>
+    <form (ngSubmit) = "onSubmit()">
+    
+        <div class="form-group">
+            <label> Name</label>
+            <input type="text" class ="form-control" id = "name"
+                [(ngModel)] = "employee.name" name = "name">
+        </div>
+    
+        <div class="form-group">
+            <label> Salary </label>
+            <input type="text" class ="form-control" id = "salary"
+                [(ngModel)] = "employee.salary" name = "salary">
+        </div>
+    
+        <button class = "btn btn-success" type ="submit">Submit</button>
+    
+    </form>
+</div> 
+
+
+
+Note:
+	=> Error:Can't bind to 'ngModel' since it isn't a known property of 'input'. (
+
+	=> dont forget to import FormsModule in create-employee component
+	
+	
+
+
+
+Now code CreateEmployeeComponent and inject EmployeeService and router to it
+----------------------------------------------------------------------------
+
+import { Component, OnInit } from '@angular/core';
+import { Employee } from '../employee';
+
+import { Router } from '@angular/router';
+import { EmployeeService } from '../employee.service';
+
+@Component({
+  selector: 'app-create-employee',
+  templateUrl: './create-employee.component.html',
+  styleUrls: ['./create-employee.component.css']
+})
+
+
+export class CreateEmployeeComponent implements OnInit {
+
+  employee: Employee = new Employee();
+  
+  constructor(private employeeService: EmployeeService,private router: Router) { }
+  
+  ngOnInit(): void {
+  }
+
+	saveEmployee(): void {
+	  this.employeeService.createEmployee(this.employee).subscribe({
+		next: data => {
+		  console.log(data);
+		  this.goToEmployeeList();
+		},
+		error: err => console.error(err)
+	  });
+	}
+
+  goToEmployeeList(){
+    this.router.navigate(['/employees']);
+  }
+  
+  onSubmit(){
+    console.log(this.employee);
+    this.saveEmployee();
+  }
+}
+
+
+
+
+
+Now update employee:
+------------------------
+
+ng g c update-employee
+
+
+
+now create rounte for update employee:
+-----------------------------------
+const routes: Routes = [
+  {path:'employees', component: EmployeeComponent},
+  {path:'create-employee', component: CreateEmployeeComponent},
+  {path:'update-employee/:id', component: UpdateEmployeeComponent},
+  {path:'', redirectTo:'employees', pathMatch:'full'}
+ 
+ 
+];
+
+
+
+now add update link and update method :EmployeeComponent
+-----------------------------------------------------
+
+
+import { Component, OnInit } from '@angular/core';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+import { Router } from '@angular/router';
+@Component({
+  selector: 'app-employee',
+  templateUrl: './employee.component.html',
+  styleUrls: ['./employee.component.css']
+})
+export class EmployeeComponent implements OnInit {
+
+  employees: Employee[];
+
+  constructor(private employeeService: EmployeeService, private  router: Router ) { }
+
+  ngOnInit() {
+    this.getEmployees();
+  }
+  private getEmployees(){
+    this.employeeService.getEmployeesList().subscribe(data=>{
+       this.employees=data;
+    });
+  }
+  
+  updateEmployee(id: number){
+    console.log(`-----------`)
+    this.router.navigate(['update-employee', id]);
+  }
+
+}
+
+
+
+
+
+now update  UpdateEmployeeComponent so that record populate automatically:
+----------------------------------------------------------------------
+
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+@Component({
+  selector: 'app-update-employee',
+  templateUrl: './update-employee.component.html',
+  styleUrls: ['./update-employee.component.css']
+})
+export class UpdateEmployeeComponent implements OnInit {
+  id: number;
+  employee: Employee = new Employee();
+  constructor(private employeeService: EmployeeService,private route: ActivatedRoute) { }
+  
+ ngOnInit(): void {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.employeeService.getEmployeeById(this.id).subscribe({
+      next: data => this.employee = data,
+      error: err => console.error(err)
+    });
+  }
+
+
+}
+
+ update employee page:
+--------------------------
+<div class="col-md-6 offset-md-3">
+    <h3> Update Employee </h3>
+    <form (ngSubmit) = "onSubmit()">
+    
+        <div class="form-group">
+            <label> Name</label>
+            <input type="text" class ="form-control" id = "name" [(ngModel)] = "employee.name" name = "name">
+        </div>
+    
+        <div class="form-group">
+            <label> Salary </label>
+            <input type="text" class ="form-control" id = "salary" [(ngModel)] = "employee.salary" name = "salary">
+        </div>
+    
+        <button class = "btn btn-success" type ="submit">Submit</button>
+    
+    </form>
+</div> 
+
+
+
+
+
+Now code for update and route back to showing all records:
+----------------------------------------------------------
+
+
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+@Component({
+  selector: 'app-update-employee',
+  templateUrl: './update-employee.component.html',
+  styleUrls: ['./update-employee.component.css']
+})
+
+export class UpdateEmployeeComponent {
+  id: number = 0;
+  employee: Employee = new Employee();
+  constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router) { }
+
+  ngOnInit(): void {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.employeeService.getEmployeeById(this.id).subscribe({
+      next: data => this.employee = data,
+      error: err => console.error(err)
+    });
+  }
+  onSubmit(): void {
+    this.employeeService.updateEmployee(this.id, this.employee).subscribe({
+      next: () => this.goToEmployeeList(),
+      error: err => console.error(err)
+    });
+  }
+
+  goToEmployeeList(): void {
+    this.router.navigate(['/employees']);
+  }
+
+}
+
+
+
+
+
+
+
+Delete employee:
+-------------------
+
+
+update EmployeeComponent for deletion:
+----------------------------------------
+export class EmployeeComponent implements OnInit {
+
+  //....
+deleteEmployee(id: number): void {
+  this.employeeService.deleteEmployee(id).subscribe({
+    next: () => this.getEmployees(),
+    error: err => console.error(err)
+  });
+}
+
+employeeDetails(id: number): void {
+  this.router.navigate(['employee-details', id]);
+}
+}
+
+
+Creating employee details components:
+------------------------------------
+step : create employee-details componenet
+
+ng g c employee-details
+
+
+step 2: register employee-details in routes:
+
+
+const routes: Routes = [
+  {path:'employees', component: EmployeeComponent},
+  {path:'create-employee', component: CreateEmployeeComponent},
+  {path:'update-employee/:id', component: UpdateEmployeeComponent},
+  {path:'employee-details/:id', component: EmployeeDetailsComponent},
+  {path:'', redirectTo:'employees', pathMatch:'full'}
+ 
+ 
+];
+
+
+EmployeeDetailsComponent code:
+--------------------------------
+import { ActivatedRoute, Router } from '@angular/router';
+import { Employee } from '../employee';
+import { EmployeeService } from '../employee.service';
+
+export class EmployeeDetailsComponent implements OnInit {
+
+  id: number
+  employee: Employee=new Employee();
+
+  constructor(private route: ActivatedRoute,
+     private employeService: EmployeeService) { }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+
+    this.employee = new Employee();
+    this.employeService.getEmployeeById(this.id).subscribe( data => {
+      this.employee = data;
+    });
+  }
+}
+
+export class EmployeeDetailsComponent {
+  id: number = 0;
+  employee: Employee = new Employee();
+
+  constructor(
+    private route: ActivatedRoute,
+    private employeeService: EmployeeService
+  ) {}
+
+  ngOnInit(): void {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.employeeService.getEmployeeById(this.id).subscribe({
+      next: data => this.employee = data,
+      error: err => console.error(err)
+    });
+  }
+}
+
+
+employee-detail html page:
+-------------------------
+
+
+<h3> View Employee Details</h3>
+<div>
+    <div>
+        <label> <b> ID: </b></label> {{employee.id}}
+    </div>
+    <div>
+        <label> <b> Name: </b></label> {{employee.name}}
+    </div>
+    <div>
+        <label> <b> Salary: </b></label> {{employee.salary}}
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+angular security application:
+----------------------------
+
+step 1:
+Create  authentication service:
+-------------------------------
+
+	=> Create a new authentication service where we check if the user name and password is 
+	correct then set it in session storage. 
+
+	=> Using sessionStorage properties we can save key/value pairs in a web browser.
+	 The sessionStorage object stores data for only one session . 
+	So the data gets deleted if the browser is closed
+
+	authenticate() Authenticate the username and password
+	isUserLoggedIn() -checks the session storage if user name exists. If it does then return true
+	logout()- This method clears the session storage of user name
+
+
+
+
+ng g s authentication
+
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthenticationService {
+
+  constructor() { }
+
+  authenticate(username:string, password:string) {
+    if (username === "raj" && password === "raj123") {
+      sessionStorage.setItem('username', username)
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isUserLoggedIn() {
+    let user = sessionStorage.getItem('username')
+    console.log(!(user === null))
+    return !(user === null)
+  }
+
+  logOut() {
+    sessionStorage.removeItem('username')
+  }
+}
+
+
+
+
+
+step 2: create a login component:
+------------------------------
+ng g c login
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthenticationService } from '../authentication.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+
+export class LoginComponent implements OnInit {
+
+  username: string = 'raj'
+  password: string = ''
+  invalidLogin = false
+
+  constructor(private router: Router,
+    private loginservice: AuthenticationService) { }
+
+  ngOnInit() {
+  }
+
+  checkLogin() {
+    if (this.loginservice.authenticate(this.username, this.password)) {
+      this.router.navigate([''])
+      this.invalidLogin = false
+    } else
+      this.invalidLogin = true
+  }
+}
+
+
+from: (dont forget FormsModule module)
+--------
+
+<div class="container">
+  <div>
+    User Name : <input type="text" name="username" [(ngModel)]="username">
+    Password : <input type="password" name="password" [(ngModel)]="password">
+  </div>
+  <button (click)=checkLogin() class="btn btn-success">
+    Login
+  </button>
+</div>
+
+
+
+Add the login path to the routing module.
+-----------------------------
+
+import { LoginComponent } from './login/login.component';
+
+const routes: Routes = [
+  
+  { path: 'login', component: LoginComponent },
+];
+
+
+
+
+
+Create a Logout Component
+---------------------------
+ng g c logout
+
+
+import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../authentication.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-logout',
+  templateUrl: './logout.component.html',
+  styleUrls: ['./logout.component.css']
+})
+export class LogoutComponent implements OnInit {
+
+  constructor( private authentocationService: AuthenticationService,private router: Router) {
+
+  }
+
+  ngOnInit() {
+    this.authentocationService.logOut();
+    this.router.navigate(['login']);
+  }
+
+}
+
+
+add logout path to rountes:
+------------------------
+import { LogoutComponent } from './logout/logout.component';
+
+
+const routes: Routes = [
+
+  { path: 'logout', component: LogoutComponent },
+];
+
+
+
+
+Modify existing header component to add login , logout menu options
+------------------------------------------------------------------------
+
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a routerLink="employees" routerLinkActive="active" class="nav-link">Employee List</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="create-employee" routerLinkActive="active" class="nav-link">Add Employee</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="login" routerLinkActive="active" class="nav-link">Login</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="logout" routerLinkActive="active" class="nav-link">Logout</a>
+    </li>
+  </ul>
+</nav>
+
+
+
+We need to inject AuthenticationService to AppComponent
+----------------------------------------------------------------
+
+
+import { Component } from '@angular/core';
+import { AuthenticationService } from './authentication.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements OnInit{
+  constructor(public loginService:AuthenticationService) { }
+
+  title = 'empclient';
+
+ ngOnInit() {
+    
+  }
+}
+
+
+Now change old navbar:
+--------------------------------------
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a routerLink="employees" routerLinkActive="active" class="nav-link">Employee List</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="create-employee" routerLinkActive="active" class="nav-link">Add Employee</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="login" routerLinkActive="active" class="nav-link">Login</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="logout" routerLinkActive="active" class="nav-link">Logout</a>
+    </li>
+  </ul>
+</nav>
+
+to this:
+-----------
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a *ngIf="loginService.isUserLoggedIn()"  routerLink="employees" routerLinkActive="active" class="nav-link">Employee List</a>
+    </li>
+    <li class="nav-item">
+      <a *ngIf="loginService.isUserLoggedIn()" routerLink="create-employee" routerLinkActive="active" class="nav-link">Add Employee</a>
+    </li>
+    <li class="nav-item">
+      <a *ngIf="!loginService.isUserLoggedIn()" routerLink="login" routerLinkActive="active" class="nav-link">Login</a>
+    </li>
+    <li class="nav-item">
+      <a *ngIf="loginService.isUserLoggedIn()" routerLink="logout" routerLinkActive="active" class="nav-link">Logout</a>
+    </li>
+  </ul>
+</nav>
+
+
+
+
+Need of auth service:Create the AuthGaurd Service
+--------------------------------------------------
+	=> But what will happen if the user directly tries to access a page without login. 
+	For example if a user directly navigates to localhost:4200 He will be able to view the page. 
+
+	=> So we should first check if the user is logged in and only then allow the user to view the page. We achive 			
+	this using the CanActivate interface.
+
+	=> we will use service for this
+
+
+Create service:
+-------------------
+ng generate service authGaurd
+
+
+
+
+
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { AuthenticationService } from './authentication.service';
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGaurdService implements CanActivate{
+
+  constructor(private router: Router,
+    private authService: AuthenticationService) { }
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (this.authService.isUserLoggedIn())
+      return true;
+
+    this.router.navigate(['login']);
+    return false;
+
+  }
+}
+
+
+
+Modify the app.routing.ts to activate route only if the user is logged in using the above AuthGaurdService.
+--------------------------------------------------------------------------------------------
+
+import { AuthGaurdService } from './auth-gaurd.service';
+
+const routes: Routes = [
+  {path:'employees', component: EmployeeComponent, canActivate:[AuthGaurdService]},
+  {path:'create-employee', component: CreateEmployeeComponent, canActivate:[AuthGaurdService]},
+  {path:'update-employee/:id', component: UpdateEmployeeComponent, canActivate:[AuthGaurdService]},
+  {path:'employee-details/:id', component: EmployeeDetailsComponent,canActivate:[AuthGaurdService] },
+  { path: 'login', component: LoginComponent },
+  { path: 'logout', component: LogoutComponent ,canActivate:[AuthGaurdService]},
+  {path:'', redirectTo:'employees', pathMatch:'full'}
+];
+
+
+
+
+Angular + Basic Authentication
+----------------------------------
+@CrossOrigin(origins = "http://localhost:4200")
+
+
+
+Now we will apply spring boot:
+------------------
+Step 1: add security dependency to the project
+
+step2: configure hard coded sec as of now
+--------------------------------------------
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    	http
+        .csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults()) // this enables your corsConfigurationSource bean
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .httpBasic(Customizer.withDefaults());
+
+    return http.build();
+    }
+
+    @Bean
+     InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User
+            .withUsername("raj")
+            .password("raj123")
+            .roles("USER")
+            .build();
+
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    // Only for testing/demo (use BCryptPasswordEncoder in real apps)
+    @Bean
+     PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+}
+
+step 3: dont forget to config cors policy
+----------------------------------------
+
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        
+        config.setAllowedOrigins(List.of("http://localhost:4200")); // Change this in prod
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
+}
+
+step4: Create dto and and rest end point 
+-------------------------------------------
+public class AuthResponse {
+	private String status;
+
+	public AuthResponse(String status) {
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+}
+
+ Create rest end point
+-----------------------
+@GetMapping("/validateLogin")
+public AuthResponse validateLogin() {
+		return new AuthResponse("User successfully authenticated");
+}
+	
+
+
+
+
+Step 5: Implement changes for Basic Authentication on the Angular side
+----------------------------------------------------------------
+In the EmployeeService we will be adding the basic auth header
+ before making the REST calls.
+
+
+import { Injectable } from '@angular/core';
+
+import { from, Observable } from 'rxjs';
+import {HttpClient, HttpHeaders} from '@angular/common/http'
+import { Employee } from './employee';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+
+  private baseURL="http://localhost:8080/employee";
+  constructor(private httpClient: HttpClient) { }
+
+  getEmployeesList(): Observable<Employee[]>{
+    let username='raj'
+    let password='raj123'
+    const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    return this.httpClient.get<Employee[]>(`${this.baseURL}`,{headers});
+  }
+
+  createEmployee(employee: Employee): Observable<Object>{
+    let username='raj'
+    let password='raj123'
+    const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    return this.httpClient.post(`${this.baseURL}`, employee,{headers});
+  }
+  updateEmployee(id: number, employee: Employee): Observable<Object>{
+    let username='raj'
+    let password='raj123'
+    const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    return this.httpClient.put(`${this.baseURL}/${id}`, employee,{headers});
+  }
+
+  getEmployeeById(id: number): Observable<Employee>{
+    let username='raj'
+    let password='raj123'
+    const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    return this.httpClient.get<Employee>(`${this.baseURL}/${id}`,{headers});
+  }
+
+  deleteEmployee(id: number): Observable<Object>{
+    let username='raj'
+    let password='raj123'
+    const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    return this.httpClient.delete(`${this.baseURL}/${id}`,{headers});
+  }
+}
+
+
+
+
+
+
+
+Step 6: Previously the authentication.service.ts used to check the credentials against hardcoded values. 
+Now we will make a REST call using Basic Auth header. Only if the User object is returned will be login be successful.
+-----------------------------------------------------------------------------------------------------------------------
+
+import { Injectable } from '@angular/core';
+import { HttpClientService } from './http-client.service';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+
+export class AuthResponse{
+  constructor(public status:string) {}
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthenticationService {
+  constructor(private httpClient:HttpClient) {  }
+
+	authenticate(username: string, password: string) {
+	  const headers = new HttpHeaders({
+		Authorization: 'Basic ' + btoa(`${username}:${password}`)
+	  });
+
+	  return this.httpClient.get<AuthResponse>('http://localhost:8080/validateLogin', { headers }).pipe(
+		map(userData => {
+		  sessionStorage.setItem('username', username);
+		  return userData;
+		})
+	  );
+	}
+  isUserLoggedIn() {
+    let user = sessionStorage.getItem('username')
+    console.log(!(user === null))
+    return !(user === null)
+  }
+
+  logOut() {
+    sessionStorage.removeItem('username')
+  }
+}
+
+Note:
+-------------
+export class AuthResponse {
+  status: string = '';
+
+  constructor(status: string) {
+    this.status = status;
+  }
+}
+
+
+
+Step 7: modify checkLogin method
+-----------------------------------
+
+In the login.service.ts we check if the valid user is returned by the authentication service. 
+If yes then login is successful and the user is forwarded to the employee page.
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthenticationService } from '../service/authentication.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+
+  username = ''
+  password = ''
+  invalidLogin = false
+
+  constructor(private router: Router,
+    private loginservice: AuthenticationService) { }
+
+  ngOnInit() {
+  }
+
+  checkLogin() {
+    (this.loginservice.authenticate(this.username, this.password).subscribe(
+      data => {
+        this.router.navigate([''])
+        this.invalidLogin = false
+      },
+      error => {
+        this.invalidLogin = true
+
+      }
+    )
+    );
+
+  }
+
+}
+
+
+Step 8: Angular Spring Boot Basic Auth Using HTTPInterceptor Example
+-------------------------------------------------------------------
+	We had seen we had to duplicate the code for adding Basic Auth 
+	Headers to the HTTPRequest before making HTTP calls. 
+
+	In the authentication.service.ts if the authentication for the user entered username and password is 
+	successful, we will be saving the basicAuth string which we are adding the 
+	Authorization Header for basic Authenication in the session.
+
+
+
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { map } from 'rxjs/operators';
+
+export class AuthResponse{
+  constructor(public status:string) {}
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthenticationService {
+  constructor(private httpClient:HttpClient) {  }
+
+	authenticate(username: string, password: string) {
+	  const authString = 'Basic ' + btoa(`${username}:${password}`);
+	  const headers = new HttpHeaders({ Authorization: authString });
+
+	  return this.httpClient.get<AuthResponse>('http://localhost:8080/validateLogin', { headers }).pipe(
+		map(userData => {
+		  sessionStorage.setItem('username', username);
+		  sessionStorage.setItem('basicauth', authString);
+		  return userData;
+		})
+	  );
+	}
+
+  isUserLoggedIn() {
+    let user = sessionStorage.getItem('username')
+    console.log(!(user === null))
+    return !(user === null)
+  }
+
+  logOut() {
+    sessionStorage.removeItem('username')
+  }
+}
+
+
+
+
+Step 9: HttpInterceptor service:
+----------------------------------
+	Next we will be creating a new HttpInterceptor service called BasicAuthInterceptor Service. 
+	
+	This service will check if the session has valid username and basicAuth String,
+	then it will update the headers of all outgoing HTTP requests. We implement the interceptor by extending the HttpInterceptor.
+
+
+ng g service BasicAuthHtppInterceptor
+---------------------------------------
+
+import { HttpInterceptorFn } from '@angular/common/http';
+
+export const basicAuthInterceptor: HttpInterceptorFn = (req, next) => {
+  const username = sessionStorage.getItem('username');
+  const authHeader = sessionStorage.getItem('basicauth');
+
+  if (username && authHeader) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: authHeader
+      }
+    });
+  }
+
+  return next(req);
+};
+
+
+Note : Dont forget to Register the interceptor main.ts
+-------------------------------------------------------
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { AppComponent } from './app/app.component';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { basicAuthInterceptor } from './app/services/basic-auth-htpp-interceptor.service';
+
+bootstrapApplication(AppComponent, {
+  ...appConfig,
+  providers: [
+    ...appConfig.providers || [],
+    provideHttpClient(
+      withInterceptors([basicAuthInterceptor])
+    )
+  ]
+});
+
+
+
+
+
+Step 10: Finally we will remove the hardcoded basic auth logic from the Http client service.
+-----------------------------------------------------------------------------------------
+
+import { Injectable } from '@angular/core';
+
+import { from, Observable } from 'rxjs';
+import {HttpClient, HttpHeaders} from '@angular/common/http'
+import { Employee } from './employee';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+
+  private baseURL="http://localhost:8080/employee";
+  constructor(private httpClient: HttpClient) { }
+
+  getEmployeesList(): Observable<Employee[]>{
+    // let username='raj'
+    // let password='raj123'
+    // const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    // return this.httpClient.get<Employee[]>(`${this.baseURL}`,{headers});
+    return this.httpClient.get<Employee[]>(`${this.baseURL}`);
+  }
+
+  createEmployee(employee: Employee): Observable<Object>{
+    // let username='raj'
+    // let password='raj123'
+    // const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+   // return this.httpClient.post(`${this.baseURL}`, employee,{headers});
+   return this.httpClient.post(`${this.baseURL}`, employee);
+  }
+  updateEmployee(id: number, employee: Employee): Observable<Object>{
+    // let username='raj'
+    // let password='raj123'
+    // const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    // return this.httpClient.put(`${this.baseURL}/${id}`, employee,{headers});
+
+    return this.httpClient.put(`${this.baseURL}/${id}`, employee);
+  }
+
+  getEmployeeById(id: number): Observable<Employee>{
+    // let username='raj'
+    // let password='raj123'
+    // const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    //return this.httpClient.get<Employee>(`${this.baseURL}/${id}`,{headers});
+    return this.httpClient.get<Employee>(`${this.baseURL}/${id}`);
+  }
+
+  deleteEmployee(id: number): Observable<Object>{
+    // let username='raj'
+    // let password='raj123'
+    // const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+    // return this.httpClient.delete(`${this.baseURL}/${id}`,{headers});
+    return this.httpClient.delete(`${this.baseURL}/${id}`);
+  }
+}
+

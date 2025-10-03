@@ -1,0 +1,246 @@
+AJAX — Asynchronous JavaScript and XML
+------------------------------------------
+
+What is AJAX?
+	AJAX is the technique of exchanging data with a web server and updating
+	parts of a web page without reloading the entire page. It allows web applications 
+	to be faster and more dynamic by handling communication asynchronously.
+
+	This improves the user experience by enabling real-time interaction with the server in the background.
+
+Key Technologies Involved in AJAX
+-------------------------------------
+	Technology		Purpose
+	------------------------
+	JavaScript		Allows interaction with the browser and responds to user actions.
+	DOM				Used to dynamically access and update the HTML content.
+	XML				Traditional data format (often replaced with JSON nowadays).
+	XMLHttpRequest	Core API used to send and receive data asynchronously from the server.
+
+AJAX Process Flow
+--------------------
+1. User triggers an event (e.g., clicks a button).
+2. JavaScript creates an XMLHttpRequest object.
+3. Request is sent to the server (GET/POST).
+4. Server processes the request and sends a response.
+5. JavaScript receives the response.
+6. DOM is updated with the response data (without reloading the page).
+
+
+Step-by-Step Breakdown:
+------------------------
+	Assign HTML IDs to elements to fetch values in JavaScript.
+	Create an XMLHttpRequest object.
+	Configure the request using .open(method, url).
+	Set up event listener with onreadystatechange or onload.
+	Send the request using .send().
+	Wait for readyState === 4 and status === 200.
+	Process response using responseText or responseJSON.
+
+AJAX Hello World Example
+
+Using XMLHttpRequest – GET
+------------------------------
+
+const url = 'https://jsonplaceholder.typicode.com/users';
+const xhr = new XMLHttpRequest();
+
+xhr.open('GET', url);
+xhr.responseType = 'json';
+
+xhr.onload = () => {
+    console.log(xhr.response);
+};
+
+xhr.onerror = (err) => {
+    console.error('Request failed:', err);
+};
+
+xhr.send();
+
+Using XMLHttpRequest – POST
+--------------------------
+
+function callAjax(method, url, body) {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.responseType = 'json';
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onload = () => {
+        console.log(xhr.response);
+    };
+
+    xhr.onerror = (err) => {
+        console.error('Error:', err);
+    };
+
+    xhr.send(JSON.stringify(body));
+}
+
+const body = { name: 'raj', job: 'trainer' };
+const url = 'https://jsonplaceholder.typicode.com/users';
+callAjax('POST', url, body);
+
+
+
+Using fetch() API (Modern JavaScript)
+----------------------------------
+
+GET Request with Fetch API
+----------------------------
+function callAjax(method, url, body = null) {
+    return fetch(url)
+        .then((res) => res.json());
+}
+
+const url = 'https://jsonplaceholder.typicode.com/users';
+
+callAjax('GET', url)
+    .then((res) => console.log(res))
+    .catch((err) => console.error(err));
+
+POST Request with Fetch API
+-----------------------------
+
+<script>
+    function callAjax(method, url, body) {
+        return fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        }).then((res) => res.json());
+    }
+
+    const body = { name: 'raj', job: 'trainer' };
+    const url = 'https://jsonplaceholder.typicode.com/users';
+
+    callAjax('POST', url, body)
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
+</script>
+
+
+
+Local API Call Example
+--------------------------------------
+let data = fetch('http://localhost:9000/bookapp/book');
+
+data.then((item) => item.json())
+    .then((result) => console.log(result))
+    .catch((err) => console.error(err));
+	
+Summary: XMLHttpRequest vs Fetch
+-------------------------------------
+Feature				XMLHttpRequest		Fetch API
+Simpler Syntax			❌ No			✅ Yes
+Promise Support			❌ No			✅ Yes
+Better Error Handling	❌ Manual		✅ Built-in .catch()
+Browser Support			✅ All browsers	✅ Modern browsers
+
+
+Example:
+------------
+	complete working example of a Live Search box using fetch() API and AJAX (no page reload).
+	It uses the keyup event to trigger API calls and displays results dynamically.
+
+index.html
+------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Search with Fetch API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .results {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            max-width: 320px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .result-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Live User Search</h2>
+    <input type="text" id="searchBox" placeholder="Search by name..." />
+
+    <div class="results" id="resultsBox">
+        <!-- Results will appear here -->
+    </div>
+
+    <script>
+        const searchBox = document.getElementById('searchBox');
+        const resultsBox = document.getElementById('resultsBox');
+
+        // Fetch user data once and reuse for search
+        let allUsers = [];
+
+        // Fetch users on page load
+        fetch('https://jsonplaceholder.typicode.com/users')
+            .then(res => res.json())
+            .then(data => {
+                allUsers = data;
+            })
+            .catch(err => {
+                console.error('Failed to fetch users:', err);
+            });
+
+        // Listen to keyup event
+        searchBox.addEventListener('keyup', () => {
+            const query = searchBox.value.toLowerCase().trim();
+            const filtered = allUsers.filter(user =>
+                user.name.toLowerCase().includes(query)
+            );
+
+            displayResults(filtered);
+        });
+
+        // Function to display results
+        function displayResults(users) {
+            resultsBox.innerHTML = '';
+
+            if (users.length === 0) {
+                resultsBox.innerHTML = '<p>No results found.</p>';
+                return;
+            }
+
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `<strong>${user.name}</strong><br><small>${user.email}</small>`;
+                resultsBox.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+How it works:
+------------
+	On page load, it fetches all users once from the API.
+	On every keyup, it filters the user list based on input.
+	It updates the .results container with matching names.
+	No page reload or form submit is involved.

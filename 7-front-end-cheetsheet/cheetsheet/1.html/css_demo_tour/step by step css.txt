@@ -1,0 +1,118 @@
+
+
+
+1.
+----------------
+ <div class="menudrop">
+        <ul>
+            <li> USA </li>
+            <li> India </li>
+            <li> France </li>  
+            <li> Australia </li>
+            <li> Brazil </li>
+        </ul>
+    </div>
+
+
+
+
+2.
+-----------------
+<div class="menudrop">
+        <ul>
+            <li> USA 
+                <ul>
+                    <li>New york</li>
+                </ul>
+            </li>
+
+            <li> India
+                <ul>
+                    <li>Banglore</li>
+                </ul>
+                <ul>
+                    <li>Delhi</li>
+                </ul>
+                <ul>
+                    <li>Agra</li>
+                </ul>
+                <ul>
+                    <li>Jaipur</li>
+                </ul>
+                <ul>
+                    <li>Chennai</li>
+                </ul>
+            </li>
+            <li> France </li>  
+            <li> Australia </li>
+            <li> Brazil </li>
+        </ul>
+    </div>
+
+
+3.
+------------------------
+<style>
+        body{
+           background:url("tour.jpg") center no-repeat;
+           height: 100vh;
+           background-size: cover;
+        }
+    </style>
+
+
+
+
+
+ .menudrop{
+            width: 75%;
+            height: 100px;
+            margin: 0px auto;
+        }
+
+
+4:
+----------------------
+ body{
+           background:url("tour.jpg") center no-repeat;
+           height: 100vh;
+           background-size: cover;
+        }
+        .menudrop{
+            width: 80%;
+            height: 100px;
+            margin: 0px auto;
+        }
+        .menudrop ul{
+                padding: 0px;
+        }
+
+        .menudrop ul li{
+            float: left;
+            background-color: black;
+            color: white;
+            width: 200px;
+            list-style: none;
+            height: 50px;
+            font-size: 25px;
+            text-align: center;
+            line-height: 50px;
+	   opacity: 0.6;
+           
+        }
+
+
+
+-----------------------------------
+5. 
+
+.menudrop ul li ul{
+            display: none;
+        }
+
+        .menudrop ul li:hover > ul{
+            display:block;
+        }
+
+
+

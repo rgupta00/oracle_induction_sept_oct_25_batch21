@@ -1,0 +1,2831 @@
+Introduction to Angular 19
+_________________________
+Topics:
+__________
+	- Introduction , Different Building blocks
+	- component: What are components, how to create components?
+	- Data Binding in angular: one way , two way
+	- Angular Directive: ngFor, ngIf
+	- Angular pipes
+	- angular services
+	- http services
+	- applying routing
+	- applying guards routes in angular
+	- angular forms and validations
+	- angular testing jasmine and karma
+	
+
+	
+_____________________________________________
+- Introduction , Different Building blocks
+_____________________________________________
+
+Introduction to Angular — Client-Side MVC (or MVVM)
+------------------------------------------
+Angular is:A front-end framework (runs in the browser)
+
+Implements component-based architecture (similar to MVVM/MVC)
+
+Handles:
+	View (HTML templates)
+	Model (TypeScript classes, services)
+	Controller (component classes with logic)
+
+Manages:
+	Routing
+	HTTP requests (via HttpClient)
+	Form handling
+	State management (via services or libraries like NgRx)
+
+In short:
+	Angular builds the user interface (UI) of the application — all on the client/browser side.
+
+Angular vs angularjs
+____________________
+
+	=> Angular is is not a simple upgrade from angular 1 
+	=> Angular  is completely rewritten, 
+		so it has lot of improvements when compared with Angular 1. 
+
+improvements
+____________
+
+	=> Performance : 
+	____________
+	- faster initial loads, change detection, and improved rendering time. 
+	- improved modularity, Dependency injection and testability. 
+	- Angular 2+ is 5 times faster compared to AngularJS 1. 
+
+
+	Mobile Support : 
+	____________
+	- Angular 1 was not built for mobile devices. 
+	- Angular 2 on the other hand is designed from the ground up with mobile support. 
+
+
+	Component Based Development :
+	________________________
+	-  "everything is a component". Components are the building blocks of an Angular application.
+	 - it facilitates greater code reuse. 
+	- the use of components make Angular2 more testable. 
+
+
+	Build on typescript
+	____________________
+	- Early error checking
+	- TypeScript has great support of ECMAScript 6 standard. S
+
+
+Arch arch and Understaind Design pattern:
+________________________________________
+	MVVM (Model-View-ViewModel) architecture in Angular with an ASCII diagram,
+	including variables and flow direction between layers.
+
+MVVM Architecture in Angular
+	-----------------------------
+	Model
+		Represents the application data and business logic (e.g., Services, Interfaces, APIs)
+
+	View
+		The UI elements (HTML templates + Angular bindings)
+
+	ViewModel
+		The component class (.ts) that connects View and Model
+
+ASCII Diagram
+-------------------------
++----------------+        Bind Data       +-------------------+        API/Data Logic       +----------------------+
+|     View       | <--------------------> |   ViewModel        | <------------------------> |      Model           |
+| (HTML, UI)     |   (Two-way binding)    | (Component .ts)    |     (Service, Interface)   | (API, Business Logic)|
++----------------+                        +-------------------+                             +----------------------+
+
+Example:             home.component.html          home.component.ts               user.service.ts
+                     -------------------          ------------------             ------------------
+                     <input [(ngModel)]="name">   name: string = '';             getUser(), saveUser()
+					 
+Flow Explanation
+-----------------------------
+Layer			Role
+Model			Talks to backend via services (HttpClient), handles business logic
+ViewModel		Component class: holds UI data, methods, and handles events
+View			HTML template: binds to component variables, emits events
+
+
+View (HTML) – app.component.html
+-------------------------------
+<h1>Hello {{ name }}</h1>
+<input [(ngModel)]="name" />
+<button (click)="save()">Save</button>
+
+ViewModel (Component) – app.component.ts
+-------------------------------
+export class AppComponent {
+  name = '';
+
+  constructor(private userService: UserService) {}
+
+  save() {
+    this.userService.saveUser(this.name);
+  }
+}
+
+Model (Service) – user.service.ts
+-------------------------------
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  saveUser(name: string) {
+    console.log("Saving user:", name);
+    // HTTP logic goes here
+  }
+}
+
+
+Summary Table
+------------------
+MVVM Role			Angular Entity			Responsibility
+--------------------------------------------------------------
+Model				Service, Interface		Data fetching, persistence, business logic
+ViewModel			Component Class (.ts)	Handles data & logic for the template
+View				HTML Template			UI and user interactions
+
+
+Building block of angular:
+________________________
+
+=> Component
+=> module
+=> services
+=> pipes
+
+
+component?
+____________
+
+	=> typescrpt class with a template and a decorator
+
+	component= Template + class + decorators
+
+	Template 
+		-Defines the user interface. Contains the HTML, directives and bindings.
+
+	Class 
+		- Contains the contain the logic for the view. 
+
+	Decorator 
+		- A class becomes an Angular component, 
+		when it is decorated with the Component decorator.
+
+
+
+
+getting started with angular 18:
+_________________________________
+
+node 20 download
+----------------
+https://nodejs.org/en/download
+
+ng 18 install
+----------------
+npm install -g @angular/cli@18.0.0
+
+
+Compatibility Test (after install):
+----------------------------------
+node -v          # should return v20.19.4
+npm -v           # should return compatible npm version
+ng version       # verify Angular CLI 18 is used
+ng new test-app  # create test project
+cd test-app
+ng serve         # test local dev server
+
+
+checking version:
+---------------
+ng --version
+
+creating project:
+---------------
+ng new helloapp
+
+Running:
+------
+ng serve --open
+
+
+
+ 
+Simplest ex:
+____________
+creating new module:
+ng g c test
+
+
+
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  templateUrl: './test.component.html',
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+}
+
+
+
+template vs templateUrl
+________________________
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+   template: `<h1>Hello {{name}}</h1>`,
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+}
+
+
+
+template vs templateUrl
+________________________
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  templateUrl: './test.component.html',
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+}
+
+
+
+
+
+_______________________________________________
+- Data Binding in angular: one way , two way
+________________________________________________
+
+
+Interpolation in Angular
+________________________
+
+	-Interpolation is all about data binding in angular
+
+Data Binding		Description				How
+-----------------------------------------------------------------------------
+One way ==========>	From Component to View Template    Interpolation and Property binding
+One way ==========>	From View Template to Component	   event binding
+Two way ==========>	From Component <===> Template 	   <input [(ngModel)]='name'>
+
+
+
+
+1.One way data biding using Angular Interpolation {{}}
+____________________________________________________________
+	Interpolation {{}} used for data binding from C==> V
+____________________________________________________________
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  template: `
+  <h4>{{20+20}}<h4>
+    {{title}}<br/>
+    {{name}}<br/>
+    {{fullname()}}
+
+  `,
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+  title: string='angular demo'
+  name: string='rajeev'
+  fullname():string{
+    return `my name is ${thsi.name}`;
+  }
+}
+
+dont forget to import TestComponent to app.component.ts 
+----------------------------------------------------------
+@Component({
+ ........
+  imports: [RouterOutlet, TestComponent],
+ .........
+})
+export class AppComponent {
+  title = 'helloapp2';
+}
+ 
+and use it app.component.html
+----------------------------
+<app-test></app-test>
+
+
+
+
+
+1.One way data biding using Property binding [ ]
+________________________________________________
+Interpolation {{}} used for data binding from C==> V
+________________________________________________
+
+	=> Interpolation is an alternative of Property binding only work for
+	 string (not for boolean etc)
+
+
+Use interpolation when setting plain text content, e.g.:
+------------------------------------------------
+
+<p>{{ userName }}</p>
+
+Use property binding when setting element attributes or boolean flags, e.g.:
+---------------------------------------------------
+<button [disabled]="isDisabled">Click me</button>
+<img [src]="imagePath">
+
+
+
+Ex:
+This Angular component demonstrates the difference between interpolation and property binding in action
+--------------------------------------------------------------------------------------------------
+
+interpolation vs property binding
+---------------------------------------
+interpolation
+---------------
+Name <input type="text" name="name" value={{name}}/> <br/>
+This uses interpolation: value={{name}}
+Angular will convert name (string) to a string literal and insert it in the HTML.
+Works, but not preferred for DOM properties like value.
+
+property binding
+---------------------
+Name <input type="text" name="name" [value]="name"/> <br/>
+Uses property binding: [value]="name"
+
+This is the correct and recommended way.
+
+
+Directly binds the value of the name property ('raj') to the input’s DOM property value.
+
+@Component({
+  selector: 'app-test',
+  template: `
+  
+  Name <input type="text" name="name" value ={{name}}/> <br/>
+  Name <input type="text" name="name" [value]="name"/> <br/>
+
+
+  <div hidden={{isHidden}}>this is a div</div>
+  <div [hidden]="isHidden">this is a div2</div>
+
+  `,
+  styleUrls: ['./test.component.css']
+})
+export class TestComponent implements OnInit {
+
+  name:string='raj';
+  isHidden:boolean=false;
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+}
+
+
+
+2. Event binding in Angular
+___________________________
+One way binding from V ==> C
+___________________________
+
+Hello world:
+
+<button (click)=myenvent()>call event</button>
+    {{count}}
+
+
+export class TestComponent {
+
+  count =0;
+  data = '';
+  myenvent(){
+    ++this.count;
+  }
+}
+
+Using $(event)
+_____________
+
+How to use event binding ((eventName)="method($event)")
+How to access input values using event.target.value
+How to dynamically update the DOM using component properties + interpolation
+Introduces TypeScript types (e.g., KeyboardEvent, HTMLInputElement) for better safety
+
+
+
+template: `
+    <input type="text" (keyup)=callmethod($event)/>
+    <p>{{data}}
+  `,
+
+
+export class AppComponent {
+
+  //
+   callmethod(event: KeyboardEvent){
+  const input = (event.target as HTMLInputElement).value;
+    this.data += input + ";";
+    console.log(event);
+  }
+}
+
+
+
+
+3. 2 Way data binding: ngModel
+_________________________________
+ Two way binding from V <==> C
+_________________________________
+
+	=> build in directive, [()]
+
+Example:
+
+ Email <input type='text'  [(ngModel)]='email'/><br/>
+      <button (click)=getEmail()>click me</button>
+    
+    {{email}}
+  
+
+
+
+(click)=getEmail()
+
+export class AppComponent {
+  title = 'exp1';
+  email = 'r@r.gupta';
+
+  getEmail(){
+    console.log(this.email);
+  }
+}
+
+Note: Starting with Angular 17 (and continuing into Angular 18), the new Standalone
+ Component-based Architecture allows you to eliminate AppModule (i.e., app.module.ts) completely.
+ ----------------------------------------------------
+
+What's Changed in Angular 18:
+	Angular now supports full "standalone" applications where modules are optional, 
+	and you bootstrap the app with just components.
+
+
+
+	Note:
+	=> Error:Can't bind to 'ngModel' since it isn't a known property of 'input'. (
+
+	=> Before using ngModel directive in a two way data binding, 
+		we must import the FormModule and add it to the component ( in which we want to use) import list
+
+	@Component({
+	  selector: 'app-hello',
+	  standalone: true,
+	  imports: [FormsModule],
+	  ............
+	})
+
+
+
+Simple cal using angular 2+ way binding
+________________________________________
+
+    First no: <input [(ngModel)] ='num1' type="number" name="num1"/><br/>
+    Second no: <input [(ngModel)] ='num2' type="number" name="num2"/><br/>
+    <button  (click) = 'addition()'>Calculate</button>
+   
+	{{num1}} + {{num2}}={{result}}
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-cal',
+  templateUrl: './cal.component.html',
+  styleUrls: []
+})
+export class TestComponent {
+
+  public num1:number=0;
+  public num2:number=0;
+  public result:number=0;
+
+  addition() {
+    this.result= this.num1+ this.num2;
+  }
+
+}
+
+=> dont forget to add to the component ( in which we want to use) import list
+
+
+
+
+
+____________________________________________
+Angular Directive: @if @for etc
+____________________________________________
+
+ng g c emplist
+-----------------
+
+Angular Directive:
+______________________
+
+	=> Directive add custom behaviour to our html pages
+	=> Basically they are attribute to html pages
+	=> Example @if @for etc
+	=> Inbuild and Custom directive
+
+Note:
+ Dont forget to mention common module 
+ ---------------------------------
+ @Component({
+  selector: 'app-emp-list',
+  standalone: true,
+  imports: [CommonModule],
+  
+create a component EmployeeList
+--------------------------
+ng g c employeelist
+
+
+@for
+_________
+
+ @if (employees.length > 0) {
+      @for (employee of employees; track employee.code) {
+        <tr>
+          <td>{{ employee.code }}</td>
+          <td>{{ employee.name }}</td>
+          <td>{{ employee.gender }}</td>
+          <td>{{ employee.annualSalary }}</td>
+          <td>{{ employee.dateOfBirth }}</td>
+        </tr>
+      }
+    } @else {
+      <tr>
+        <td colspan="5">No employees to display</td>
+      </tr>
+    }
+Ex:
+
+step 1: create an component: employeelist
+______________________________________
+
+import { Component } from '@angular/core';
+
+@Component({
+    selector: 'list-employee',
+    templateUrl: 'app/employee/employeeList.component.html',
+    styleUrls: ['app/employee/employeeList.component.css']
+})
+export class EmployeeListComponent {
+    employees: any[] = [
+        {
+            code: 'emp101', name: 'Raj', gender: 'Male',
+            annualSalary: 5500, dateOfBirth: '25/6/1988'
+        },
+        {
+            code: 'emp102', name: 'Keshav', gender: 'Male',
+            annualSalary: 5700.95, dateOfBirth: '9/6/1982'
+        },
+        {
+            code: 'emp103', name: 'Gunika', gender: 'Female',
+            annualSalary: 5900, dateOfBirth: '12/8/1979'
+        },
+        {
+            code: 'emp104', name: 'Ekta', gender: 'Female',
+            annualSalary: 6500.826, dateOfBirth: '14/10/1980'
+        },
+    ];
+}
+
+
+html page:
+__________
+
+<table>
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Annual Salary</th>
+            <th>Date of Birth</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+
+code
+name
+gender
+annualSalary
+dateOfBirth
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Gender</th>
+      <th>Annual Salary</th>
+      <th>Date of Birth</th>
+    </tr>
+  </thead>
+  <tbody>
+     @if (employees.length > 0) {
+      @for (employee of employees; track employee.code) {
+        <tr>
+          <td>{{ employee.code }}</td>
+          <td>{{ employee.name }}</td>
+          <td>{{ employee.gender }}</td>
+          <td>{{ employee.annualSalary }}</td>
+          <td>{{ employee.dateOfBirth }}</td>
+        </tr>
+      }
+    } @else {
+      <tr>
+        <td colspan="5">No employees to display</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+
+
+css:
+_______
+table {
+    color: #369;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #369;
+    padding:5px;
+}
+
+th{
+    border: 1px solid #369;
+    padding:5px;
+}
+
+
+
+
+Example 2:  angular directive:
+---------------------------------
+
+import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  template: `
+    @if (displayName) {
+      <h2>Rajeev Gupta</h2>
+    } @else {
+      <h2>Name is hidden</h2>
+    }
+
+    @if (displayName) {
+      <h2>Rajeev Gupta</h2>
+    } @else {
+      <h2>Hidden</h2>    
+    }
+
+    @switch (color) {
+      @case ('red') {
+        <div>You picked red color</div>
+      }
+      @case ('blue') {
+        <div>You picked blue color</div>
+      }
+      @case ('green') {
+        <div>You picked green color</div>
+      }
+      @default {
+        <div>Pick again</div>
+      }
+    }
+
+    @for (color of colors; let i = $index; track color) {
+      <h2>{{ i }} {{ color }}</h2>
+    }
+  `,
+  styles: []
+})
+export class TestComponent {
+  public displayName = false;
+  public color = 'red';
+  public colors = ['red', 'blue', 'green', 'yellow'];
+}
+
+
+___________________________________________
+	Angular pipes
+____________________________________________
+
+
+Angular pipes |
+_________________
+
+	=> A pipe is used to format the value of an expression displayed in the view
+
+	=> Angular comes with multiple predefined pipes such as date curreny, lowercase, upper case and others
+	=> Built in pipes include lowercase, uppercase, decimal, date, percent, currency etc
+
+	=> Syntex :{{expression | pipeName:inputParam1}}
+
+	=> If pipe takes multipe inputs then they can be placced one
+	after another separated by a colon :
+	=> Ex: {{fullname | slice:0:20}}
+	=> pipes can be chained, ie output from one pipe can serve as the input to another pipe
+	=> Common pipes:
+
+	=> date: date filter is used to formate the date in a specified manner
+	=> uppercase and lowercase: chagne the case of input string
+	=> decimal and percent: based on current brower locale
+	=> currency: used to format numeric values as a currency based on the current brower locale
+
+	{{14.22 | currency:"USD"}} {{14.2 |currency:"USD":true}}
+
+	=> json: handy pipe that convert any input into 
+a json string using JSON.stringify
+
+
+create new compoent with html and style (use inline)
+---------------------------------------------
+ng g c pipedemo -t -s --skip-tests
+
+you can also type this:
+-------------------------
+ng g c pipedemo --inline-template --inline-style --skip-tests
+
+Ex: date pipe:
+_________________
+
+Dont forget to import 		DatePipe
+-----------------------------
+import { DatePipe, CurrencyPipe, DecimalPipe, JsonPipe } from '@angular/common';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-pipedemo',
+  standalone: true,
+  imports: [DatePipe, CurrencyPipe, DecimalPipe, JsonPipe],
+  template: `
+   <p> json objet: {{object | json }} </p>
+     <p>Currency: {{ 123456 | currency: 'EUR' }}</p>
+   <p> simple date is :{{mydate | date}} </p> <br/>
+    <p> medium date is :{{mydate | date: 'medium'}} </p> <br/>
+    <p> short date is :{{mydate | date: 'short'}} </p> <br/>
+    <p> full date is :{{mydate | date: 'fullDate'}} </p> <br/>
+    <p> custom date is :{{mydate | date: 'yyyy-mm-dd HH:mm a z ':' +0900}} </p> <br/>
+   <p> currrency : {{123456 | currency: 'EUR' }}</p>
+	<p>currency : {{ 123456 | currency: 'EUR':'symbol' }}</p>
+	<p>currency : {{ 123456 | currency: 'USD':'symbol' }}</p>
+  <p> no : {{2.24159265 | number: '3.1-2'}} </p>
+  <p> no : {{3.15159265 | number: '1.4-4'}}</p>
+
+  `,
+  styles: ``
+})
+export class PipedemoComponent {
+object : Object ={fname:'rajeev',lname:'gupta'};
+  title = 'app1';
+  mydate=Date.now();
+
+}
+
+
+currrency pipe:
+______________
+
+	<p> currrency : {{123456 | currency: 'EUR' }}</p>
+
+Decimal pipe:
+_____________
+	=> This pipe is uesd for transformation of decimal numbers
+
+	=> The first arguement is a formate string of the form
+	"{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}"
+
+
+	Ex: {{2.24159265 | number: '3.1-2'}} Output: 002.24
+	Ex: {{3.15159265 | number: '1.4-4'}} Output: 3.1416
+
+Ex:
+	<p> currrency : {{123456 | currency: 'EUR' }}</p>
+	<p>currency : {{ 123456 | currency: 'EUR':'symbol' }}</p>
+	<p>currency : {{ 123456 | currency: 'USD':'symbol' }}</p>
+  <p> currrency : {{123456 | currency: 'USD' : true }}</p>
+  <p> no : {{2.24159265 | number: '3.1-2'}} </p>
+  <p> no : {{3.15159265 | number: '1.4-4'}}</p>
+
+
+JsonPipe
+____________
+	=> this transforms a javascript object into a JSON string
+	=> object : Object ={fname:'rajeev',lname:'gupta'};
+
+	 <p> json objet: {{object | json }} </p>
+
+Ex:
+<p>json object {{ object | json }} </p>
+ object: object= { fname:'rajeev', lname:'gupta' };
+
+
+Ex: 
+---
+	<td>{{employee.code | uppercase}}</td>
+	We can also chain pipes<td>{{employee.dateOfBirth | date:'fullDate' | uppercase }}</td>
+	
+	Pass parameters to pipe using colon " : "
+	<td>{{employee.annualSalary | currency:'USD':true:'1.3-3'}}</td>
+	<td>{{employee.dateOfBirth | date:'fullDate'}}</td>
+	<td>{{employee.dateOfBirth | date:'dd/MM/y'}}</td>
+
+
+
+creating a Custom Pipe in Angular
+_______________________________
+ 	=> Depending on the gender of the employee, 
+	we want to display Mr. or Miss. prefixed to the employee name 
+
+
+angular pipes:
+_____________
+	
+Custom pipe?
+_____________
+What is a Pipe?
+	A pipe is a class decorated with @Pipe metadata.
+	
+	It implements the PipeTransform interface and defines a transform() method.
+	
+	The transform(value, ...args) method takes input, optional parameters, 
+	and returns a transformed value (e.g., formatting).
+
+Key Concepts:
+--------------
+Decorator: @Pipe({ name: 'yourPipeName' })
+	Implements: PipeTransform from @angular/core
+	Return type: any, string, number, or specific types based on use-case
+	Arguments: You can pass multiple arguments to the pipe
+
+
+Step-by-Step: Custom Pipe in Angular 18
+---------------------------------------
+
+Step 1: Create Custom Pipe
+------------------------------
+ng g pipe empTitle --standalone
+
+This generates a standalone pipe.
+
+
+
+Step 2: Implement Pipe Logic
+--------------------------------
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'empTitle',
+  standalone: true, // Required in Angular 15+
+})
+export class EmpTitlePipe implements PipeTransform {
+
+  transform(value: string, gender: string): string {
+    if (gender.toLowerCase() === 'male') {
+      return 'Mr. ' + value;
+    } else {
+      return 'Miss. ' + value;
+    }
+  }
+}
+
+
+Step 3: Use Pipe in Standalone Component
+-----------------------------------
+ng g c emppipelist --inline-template --inline-style --skip-tests
+
+emp-list.component.ts (partial):
+
+import { Component } from '@angular/core';
+import { EmpTitlePipe } from './emp-title.pipe';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-emp-list',
+  standalone: true,
+  imports: [EmpTitlePipe,CommonModule],
+  template: `
+    <table>
+       @for (emp of employees; track emp.code) {
+          <tr>
+            <td>{{ emp.code }}</td>
+            <td>{{ emp.name | empTitle: emp.gender }}</td>
+            <td>{{ emp.gender }}</td>
+            <td>{{ emp.annualSalary }}</td>
+            <td>{{ emp.dateOfBirth }}</td>
+          </tr>
+        }
+    </table>
+  `
+})
+export class EmpListComponent {
+  employees = [
+    { code: '101', name: 'Rajeev', gender: 'male', annualSalary: 550000, dateOfBirth: '1990-01-01' },
+    { code: '102', name: 'Priya', gender: 'female', annualSalary: 650000, dateOfBirth: '1992-05-15' }
+  ];
+}
+
+
+Note: dont forget to import EmppipelistComponent to app.component.ts
+
+
+
+
+
+
+
+
+
+_____________________________
+	Angular services:
+_____________________________
+What is an Angular Service?
+------------------------------
+	An Angular service is a reusable class used to share data or logic across components.
+
+Why Use Services?
+-------------------
+	Share data between components
+	Handle API calls (HTTP)
+	Business logic layer
+
+
+hard coded
+____________
+ng g c emp -t -s --skip-tests
+ng g c empdetails -t -s --skip-tests
+
+
+Example:
+
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Age</th>
+  </tr>
+  @for (emp of employees; track emp.id) {
+    <tr>
+      <td>{{ emp.id }}</td>
+      <td>{{ emp.name }}</td>
+      <td>{{ emp.salary }}</td>
+    </tr>
+  }
+</table>
+
+
+public employees=
+[
+    {"id": 1, "name": "Rajev", "salary": 40},
+    {"id": 2, "name": "Ekta", "salary": 38},
+    {"id": 3, "name": "Keshav", "salary": 26},
+    {"id": 4, "name": "Gunika", "salary": 28},
+    {"id": 5, "name": "Vikas", "salary": 25}    
+]
+
+
+
+
+Problem? SRP, DRY
+__________________
+create new folder for services
+
+step 1: generate emp service
+	ng g s emp
+
+step 2: create a function to return list of employees
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmpService {
+  constructor() {}
+
+  getEmployees() {
+    return [
+      {"id": 1, "name": "Rajev", "salary": 40},
+      {"id": 2, "name": "Ekta", "salary": 38},
+      {"id": 3, "name": "Keshav", "salary": 26},
+      {"id": 4, "name": "Gunika", "salary": 28},
+      {"id": 5, "name": "Vikas", "salary": 25}   
+    ];
+  }
+}
+
+
+step 3: Now create an empty array in employee component
+______________________________________________________
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { EmpService } from '../../services/emp.service';
+
+@Component({
+  selector: 'app-empdetails',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+   .....
+  `,
+  styles: ``
+})
+export class EmpdetailsComponent {
+  public employees: { id: number; name: string; salary: number }[] = [];
+
+  constructor(private _es: EmpService) {}
+
+  ngOnInit() {
+    this.employees = this._es.getEmployees();
+  }
+}
+
+
+
+mention in app.component.ts
+-------------------------
+@Component({
+  ...........
+  imports: [RouterOutlet,EmpComponent,EmpdetailsComponent],
+  .............
+})
+export class AppComponent {
+  title = 'helloapp';
+}
+
+finally use in app.component.html
+----------------------------------
+<app-empdetails></app-empdetails>
+<app-emp></app-emp>
+
+
+
+
+
+
+
+
+
+Angular services:
+______________
+	http
+______________
+RxJs
+---------
+	What is RxJS?
+	
+	RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using Observables 
+	—asynchronous streams of data.
+
+	In Angular, HTTP, Forms, Events are often handled via RxJS.
+	
+	
+
+Step 2: Provide HttpClient in app.config.ts
+______________________________________________
+
+// app.config.ts
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from './app.routes';
+
+
+import { provideHttpClient } from '@angular/common/http';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    provideZoneChangeDetection({ eventCoalescing: true }), 
+    provideRouter(routes)]
+};
+
+
+
+
+Step 3: Now create employee interface 
+________________________________
+
+ng generate interface model/Employee
+
+export interface Employee {
+    id: number;
+    name: string;
+    salary: number;
+}
+
+
+
+step 4: We have spring boot app that provide response
+---------------------------------------------------
+http://localhost:8080/employees
+
+
+step 3: Create employee.service.ts
+------------------------------------
+	ng g s employee
+	
+	
+// employee.service.ts
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Employee } from '../model/employee';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+ private _url = 'http://localhost:8080/employees';
+ 
+ //http=inject(HttpClient)
+ 
+ constructor(private http: HttpClient) {}
+
+  getEmployees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(this._url).pipe(
+      catchError(this.errorHandler)
+    );
+  }
+
+  errorHandler(error: HttpErrorResponse) {
+    return throwError(() => error.message || 'Server Error!');
+  }
+}
+
+
+
+Note:  Use one of the two based on your coding style:
+---------------------------------------------
+	Use constructor(private http: HttpClient) for familiar/classic Angular code
+	
+	Use http = inject(HttpClient) for standalone components, signals, or modern functional approach
+	
+	Angular 18 fully supports both styles, but inject() is the preferred modern way in standalone architecture.
+
+
+Line-by-Line understanding:
+---------------------------
+	getEmployees(): Public method to call the backend and fetch employees.Returns Observable<Employee[]>:
+
+	http.get<T>() returns Observable<T> from RxJS.
+
+	So, get<Employee[]> returns an observable of an array of employees.
+
+	Observable is a stream that emits values asynchronously (think: Promise + Streams).
+
+.pipe(...):
+----------
+	pipe() is an RxJS method to compose multiple operators.
+	It lets you chain operators like map, filter, catchError, etc.
+
+catchError(this.errorHandler):
+------------------
+	catchError() is an RxJS error-handling operator.
+	If http.get() fails (e.g., server down, 404, etc.), catchError() 
+	intercepts the error and passes it to errorHandler.
+
+Method: errorHandler()
+--------------------
+errorHandler(error: HttpErrorResponse) {
+  return throwError(() => error.message || 'Server Error!');
+}
+Purpose:
+-------
+Custom method to transform and rethrow HTTP errors into observable errors.
+
+HttpErrorResponse:
+-----------------
+	Angular-specific error type containing:
+	status, statusText, message, url, etc.
+	Useful to log or show meaningful error messages.
+
+throwError(() => ...):
+----------------------
+	RxJS operator used to create an error Observable.
+	Used here to rethrow a custom error message.
+	The () => is a lazy function, as required by throwError() in RxJS 7+.
+
+
+Full Flow of getEmployees() with RxJS:
+------------------------------------
+	Component calls getEmployees().
+	HttpClient.get() returns an Observable<Employee[]>.
+	pipe(catchError(...)) wraps the stream with error handling.
+	Component subscribes to the observable.
+
+	If the backend responds:
+	-------------------------
+		next() is triggered, component receives Employee[].
+
+	If there's an error:
+	------------------
+	 error() is triggered, the component receives the string 'Server Error!' (or specific error.message).
+
+
+
+
+
+
+Step 5:  Create emp.component.ts as a Standalone Component
+---------------------------------------------------------
+
+ng g c emphttp -t -s --skip-tests
+
+
+// emphttp.component.ts
+----------------------------
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { Employee } from '../../model/employee';
+import { EmployeeService } from '../../services/employee.service';
+
+@Component({
+  selector: 'app-emphttp',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+   <h2>Employee List</h2>
+    @if (errorMessage) {
+      <p style="color:red">{{ errorMessage }}</p>
+    }
+
+	@if (employees.length > 0) {
+	<table border="1">
+	  <tr>
+		<th>ID</th><th>Name</th><th>Age</th>
+	  </tr>
+
+	  @for ( emp of employees; track emp.id) {
+		<tr>
+		  <td>{{ emp.id }}</td>
+		  <td>{{ emp.name }}</td>
+		  <td>{{ emp.salary }}</td>
+		</tr>
+	  }
+	</table>
+	}
+  `,
+  styles: ``
+})
+
+export class EmphttpComponent implements OnInit {
+  public employees: Employee[] = [];
+  public errorMessage = '';
+
+  constructor(private _es: EmployeeService) {}
+
+  ngOnInit() {
+    this._es.getEmployees().subscribe({
+      next: data => this.employees = data,
+      error: err => this.errorMessage = err
+    });
+  }
+}
+
+
+
+Note:What is happing here
+--------------------------
+1. ngOnInit()
+---------------
+This is a lifecycle hook in Angular.
+It runs automatically when the component is initialized.
+Ideal place to fetch data (like from a service).
+
+2. this._es.getEmployees()
+----------------------------
+this._es refers to an injected service 
+getEmployees() is a method in that service that returns an Observable (typically from HttpClient.get()).
+
+3. .subscribe({...})
+-----------------------
+Subscribes to the Observable so it starts emitting data.
+The object passed to .subscribe() is an Observer object.
+
+4. next: data => this.employees = data
+-----------------------------------
+If the API call succeeds, data holds the employee list.
+It assigns the data to the component property this.employees, so it can be displayed in the UI.
+
+5. error: err => this.errorMessage = err
+-------------------------------------
+If the API call fails, err contains the error object.
+
+Assigns it to this.errorMessage so it can be shown to the user.
+
+Summary
+-------------
+	"When the component loads, fetch employees from the service.
+	If successful, store them in employees.
+	If it fails, save the error in errorMessage."
+
+
+Explanation:
+---------------
+.subscribe({ ... }) takes an object now.
+
+	This object has 3 optional named functions:
+		next: when data is received (success)
+		error: when an error occurs
+		complete: when the stream ends
+
+What does next: data => ... mean?
+-----------------------------
+It’s just an arrow function inside an object:
+
+{
+  next: function(data) {
+    this.employees = data;
+  }
+}
+But written with shorthand:
+---------------------------------
+{
+  next: data => this.employees = data
+}
+
+
+
+
+
+Step 6: Use EmpComponent in AppComponent
+----------------------------------
+// app.component.ts
+import { Component } from '@angular/core';
+import { EmpComponent } from './emp.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [EmpComponent],
+  template: `<app-emp />`
+})
+export class AppComponent {}
+
+
+
+
+app.component.html
+----------------------
+<app-emphttp></app-emphttp>
+
+
+
+
+
+
+
+
+
+
+Angular forms:
+_________________
+
+1)Template driven form
+2)Model driven ( reactive form)
+
+
+1. Template-driven Forms
+________________________
+	Easy to use, more HTML-centric
+	Good for simple use-cases
+	Uses [(ngModel)]
+	
+	template-driven forms place the emphasis on developing a form within an HTML 
+	template and handling most of the logic for the form-inputs, data validation, saving, 
+	and updating-in form directives placed within that template.
+
+	Very less code required because most of the forms related work 
+	have been done by the angular framework itself.
+
+	heavy use of the ngModel form directive 
+
+	Setup in Angular 18 (Standalone Components)
+	-----------------------------------------
+	No app.module.ts, everything is imported via imports: [] inside @Component() decorator.
+
+
+
+template driven form:
+_____________________
+
+step 1: add bootstrap to index.html
+---------------------------------
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+
+step 2: create a folder forms and create new compoent template
+ng g c template
+
+add html to the form
+-------------------
+<div class="mt-2 p-2 bg-secondary text-white rounded">
+    <h1>Template Form</h1>
+    <p>Using ngModel</p>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" name="firstName" class="form-control" required minlength="3">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Last name</label>
+                <input type="text" name="lastName" class="form-control">
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text"><span>&#64;</span> </span>
+                    <input type="text" name="userName" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control">
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">State</label>
+                <select class="form-select" name="state">
+                    <option selected disabled value="">Choose...</option>
+                    <option>Mahashtra</option>
+                    <option>Goa</option>
+                    <option>Punjab</option>
+                </select>
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Zip</label>
+                <input type="text" name="zipCode" class="form-control">
+
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" name="isAcceptTerms" type="checkbox">
+                    <label class="form-check-label" for="invalidCheck">
+                        Agree to terms and conditions
+                    </label>
+
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-secondary">Reset form</button>
+                 
+                <button class="btn btn-primary mx-2" >Submit </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+    </div>
+</div>
+
+
+step 3> configure this component with app.component
+
+
+Step 4: configure TemplateComponent
+------------------------------------
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-template',
+  standalone: true,
+  imports: [FormsModule, JsonPipe],
+  templateUrl: './template.component.html',
+  styleUrl: './template.component.css'
+})
+export class TemplateComponent {
+	studentObj: any = {
+		firstName: '',
+		lastName: '',
+		userName:'',
+		city: '',
+		state: '',
+		zipCode:'',
+		isAcceptTerms: false
+	  }
+  
+}
+
+
+We have imported FormsModule, JsonPipe
+
+
+
+Step 5: Now we need to bind the forms with the object
+----------------------------------------------
+<input type="text" name="firstName" [(ngModel)]="studentObj.firstName" class="form-control" required minlength="3">
+
+do to all field accordingly
+
+Note: name attribute is mandatory
+
+
+Step 6: now create submit button
+-----------------------------
+in the form
+------------
+  <button class="btn btn-secondary" type="button" (click)="resetForm()">Reset form</button>
+                 
+  <button class="btn btn-primary mx-2" type="button" (click)="onSubmit()">Submit </button>
+
+	print value of form to check
+	--------------------------
+	
+   <div class="col-4">
+        {{formValue|json}}
+    </div>
+
+in the component class
+--------------------------
+formValue: any;
+
+onSubmit() {
+    this.formValue  = this.studentObj;
+  }
+  
+resetForm() {
+    this.studentObj = {
+      firstName: '',
+      lastName: '',
+      userName:'',
+      city: '',
+      state: '',
+      zipCode:'',
+      isAcceptTerms: false
+    }
+  }
+  
+  
+Step 7: how to do validation?
+-----------------------------
+add with firstName
+-------------------
+we need to craete a variable with #fName="ngModel" actually this hold the value of  [(ngModel)]="studentObj.firstName"
+
+ <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" name="firstName" #fName="ngModel" [(ngModel)]="studentObj.firstName"
+                    class="form-control" required minlength="3">
+                <div class="text-danger"> 
+                    @if (fName.errors?.['required']) {
+                    <span>field is required</span>
+                    } @else if (fName.errors?.['minlength']) {
+                    <span>Min 3 Char Required</span>
+                    }
+                </div> 
+            </div>
+			
+even if we have not filled anything getting error
+-----------------------------------------------
+ <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" name="firstName" #fName="ngModel" [(ngModel)]="studentObj.firstName"
+                    class="form-control" required minlength="3">
+                <div class="text-danger"> 
+                    @if ((fName.touched || fName.dirty) && fName.errors?.['required']) {
+                    <span>field is required</span>
+                    } @else if ((fName.touched || fName.dirty) && fName.errors?.['minlength']) {
+                    <span>Min 3 Char Required</span>
+                    }
+                </div> 
+            </div>
+
+
+disable form submission if some error
+--------------------------------------
+  <form class="row g-3" #form="ngForm">
+  </form>
+
+ <button class="btn btn-primary mx-2" [disabled]="form.invalid" type="button" (click)="onSubmit()">Submit </button>
+
+
+final form:
+-----------
+<div class="mt-2 p-2 bg-secondary text-white rounded">
+    <h1>Template Form</h1>
+    <p>Using ngModel</p>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form class="row g-3" #form="ngForm">
+            <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" name="firstName" #fName="ngModel" [(ngModel)]="studentObj.firstName"
+                    class="form-control" required minlength="3">
+                <div class="text-danger"> 
+                    @if ((fName.touched || fName.dirty) && fName.errors?.['required']) {
+                    <span>{{validationMessage.REQUIRED}}</span>
+                    } @else if ((fName.touched || fName.dirty) && fName.errors?.['minlength']) {
+                    <span>Min 3 Char Required</span>
+                    }
+                </div> 
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Last name</label>
+                <input type="text" name="lastName" [(ngModel)]="studentObj.lastName" class="form-control">
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text"><span>&#64;</span> </span>
+                    <input type="text" name="userName" [(ngModel)]="studentObj.userName" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input type="text" name="city" [(ngModel)]="studentObj.city" class="form-control">
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">State</label>
+                <select class="form-select" name="state" [(ngModel)]="studentObj.state">
+                    <option selected disabled value="">Choose...</option>
+                    <option>Mahashtra</option>
+                    <option>Goa</option>
+                    <option>Punjab</option>
+                </select>
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Zip</label>
+                <input type="text" name="zipCode" required [(ngModel)]="studentObj.zipCode" class="form-control">
+
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" name="isAcceptTerms" [(ngModel)]="studentObj.isAcceptTerms"
+                        type="checkbox">
+                    <label class="form-check-label" for="invalidCheck">
+                        Agree to terms and conditions
+                    </label>
+
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-secondary" type="button" (click)="resetForm()">Reset form</button>
+                 
+                <button class="btn btn-primary mx-2" [disabled]="form.invalid" type="button" (click)="onSubmit()">Submit </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+        {{formValue|json}}
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Reactive Forms
+__________________
+
+	More scalable and powerful
+	Uses FormGroup, FormControl, FormBuilder
+	Suitable for complex forms and dynamic validation
+
+
+2)Model driven ( reactive form)
+-------------------------------
+
+	1.It is also called reactive forms.
+
+	2.In this approach, we have to add an additional layer of complexity and 
+	functionality by having you to declare the model of the form in your component class.
+
+	3.We represent the form as a model composed of instances of FormGroups and FormControls.
+
+	4.HTML for our form isn’t automatically created for us in model-driven approach.
+
+	5.need to write the HTML that represents our form and then explicitly link the HTML
+	 form elements to code on our component.
+
+	6.We represent the form as a model composed of instances of FormGroups and FormControls.
+
+
+
+step 2: create a folder forms and create new compoent template
+ng g c reactive
+
+add html to the form
+-------------------
+<div class="mt-2 p-2 bg-secondary text-white rounded">
+    <h1>Template Form</h1>
+    <p>Using ngModel</p>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" name="firstName" class="form-control" required minlength="3">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Last name</label>
+                <input type="text" name="lastName" class="form-control">
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text"><span>&#64;</span> </span>
+                    <input type="text" name="userName" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control">
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">State</label>
+                <select class="form-select" name="state">
+                    <option selected disabled value="">Choose...</option>
+                    <option>Mahashtra</option>
+                    <option>Goa</option>
+                    <option>Punjab</option>
+                </select>
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Zip</label>
+                <input type="text" name="zipCode" class="form-control">
+
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" name="isAcceptTerms" type="checkbox">
+                    <label class="form-check-label" for="invalidCheck">
+                        Agree to terms and conditions
+                    </label>
+
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-secondary">Reset form</button>
+                 
+                <button class="btn btn-primary mx-2" >Submit </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+    </div>
+</div>
+
+
+step 3> configure this component with app.component
+
+step 4: now create form object in component
+------------------------------------------
+
+import { JsonPipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-reactive',
+  standalone: true,
+  imports: [ReactiveFormsModule,JsonPipe],
+  templateUrl: './reactive.component.html',
+  styleUrl: './reactive.component.css'
+})
+export class ReactiveComponent {
+ studentForm: FormGroup = new FormGroup({
+    firstName: new FormControl(),
+    lastName: new FormControl(),
+    userName: new FormControl(),
+    city: new FormControl(),
+    state: new FormControl(),
+    zipCode: new FormControl(),
+    isAcceptTerms: new FormControl()
+  });
+
+  formValue: any ;
+
+  onSave( ) {
+    this.formValue =  this.studentForm.value;
+  }
+
+}
+
+
+Step 5: Reactive Form Binding
+----------------------------------------
+<form class="row g-3" [formGroup]="studentForm">
+
+The formGroup directive binds the entire form to the studentForm object in the TypeScript class
+
+
+Step 5 b. Form Controls
+---------------------
+<input type="text" formControlName="firstName" ...>
+formControlName="firstName" binds this input to the firstName control in the FormGroup.
+
+All fields like lastName, userName, city, etc., are similarly bound.
+
+
+
+print form value for understanding
+---------------------------------
+    <div class="col-4">
+         {{formValue | json}}
+    </div>
+	
+	
+	
+
+final form:
+----------
+<div class="mt-2 p-2 bg-secondary text-white rounded">
+    <h1>Template Form</h1>
+    <p>Using ngModel</p>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form class="row g-3" [formGroup]="studentForm">
+            <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" formControlName="firstName" name="firstName" class="form-control" required minlength="3">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Last name</label>
+                <input type="text" formControlName="lastName" name="lastName" class="form-control">
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text"><span>&#64;</span> </span>
+                    <input type="text" formControlName="userName" name="userName" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input type="text" formControlName="city" name="city" class="form-control">
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">State</label>
+                <select class="form-select" formControlName="state" name="state">
+                    <option selected disabled value="">Choose...</option>
+                    <option>Mahashtra</option>
+                    <option>Goa</option>
+                    <option>Punjab</option>
+                </select>
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Zip</label>
+                <input type="text" formControlName="zipCode" name="zipCode" class="form-control">
+
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" formControlName="isAcceptTerms" name="isAcceptTerms" type="checkbox">
+                    <label class="form-check-label" for="invalidCheck">
+                        Agree to terms and conditions
+                    </label>
+
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-secondary">Reset form</button>
+                 
+                 <button class="btn btn-primary mx-2" type="button"  (click)="onSave()">Submit </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+         {{formValue | json}}
+    </div>
+</div>
+
+
+Step 6: What if i want to provide some default values while form is displayed and validation
+-----------------------------------------------------------------------------------
+
+  studentForm: FormGroup = new FormGroup({
+    firstName: new FormControl("",[Validators.required,Validators.minLength(4)]),
+    lastName: new FormControl(""),
+    userName: new FormControl("some@123",[Validators.email]),
+    city: new FormControl(""),
+    state: new FormControl(""),
+    zipCode: new FormControl(""),
+    isAcceptTerms: new FormControl("")
+  });
+  
+
+Step 6 b: display error message
+------------------------------
+            <div class="col-md-4">
+                <label class="form-label">First name</label>
+                <input type="text" formControlName="firstName" class="form-control">
+                <div class="text-danger">
+                    @if (studentForm.controls['firstName'].touched && studentForm.controls['firstName'].errors?.['required']) {
+                        <span> This is Required</span>
+                    } @else if(studentForm.controls['firstName'].touched && studentForm.controls['firstName'].errors?.['minlength']) {
+                        <span> Min char 4 required</span>
+                    } 
+                </div>
+            </div>
+  
+
+Note:The ?. (Optional Chaining Operator)
+-------------------------------------------------
+
+studentForm.controls['firstName'].errors?.['required']
+--------------------------------------------------------
+?. is called the optional chaining operator in JavaScript.
+
+It safely accesses nested properties without throwing an error if 
+the previous object is null or undefined.
+
+
+
+
+
+
+
+
+________________________
+ - applying routing
+_______________________________
+
+Introduction to routing?
+__________________________
+	=> web applications can have different sections that corrosponds to 
+	different URLs and supporting those section programmatically is called routing
+
+	=> In simple words, as per url open different angular components is called routing
+
+
+
+
+step 1: create an angular project with routing option
+-----------------------------------------------
+ng new myapp --standalone --routing --style=css
+
+step 2: create two components 
+------------------------------
+ng g c deptlist -t -s --standalone --skip-tests
+ng g c emplist -t -s --standalone --skip-tests
+ng g c page-not-found -t -s --standalone --skip-tests
+
+
+step 3: configure the route in app.routes.ts
+------------------------------------------
+ app.routes.ts
+ -------------
+import { Routes } from '@angular/router';
+import { DeptlistComponent } from './components/deptlist/deptlist.component';
+import { EmplistComponent } from './components/emplist/emplist.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+
+export const routes: Routes = [
+    { path: '', redirectTo: '/departments', pathMatch: 'full' }, // default
+    { path: 'departments', component: DeptlistComponent },
+    { path: 'employees', component: EmplistComponent },
+    { path: '**', component: PageNotFoundComponent } // wildcard
+];
+
+
+step 4: Update app.config.ts
+----------------------------
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { appRoutes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(appRoutes)]
+};
+
+
+step 5: check  main.ts.....Make sure this uses appConfig:
+---------------------------------------
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig)
+  .catch(err => console.error(err));
+
+
+
+
+step 6: Update app.component.ts to import RouterModule
+---------------------------------------------------
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule],
+  templateUrl: './app.component.html'
+})
+export class AppComponent {}
+
+
+step 7: Create Navigation in app.component.html
+-----------------------------------------
+<h1>Angular 18 Standalone Routing</h1>
+
+<nav>
+  <a routerLink="/departments">Departments</a> |
+  <a routerLink="/employees">Employees</a>
+</nav>
+
+<hr>
+
+<router-outlet></router-outlet>
+
+
+
+href vs routerLink
+------------------
+href 		: HTML attribute, full page reload
+routerLink 	: Angular directive, no reload, SPA behavior
+
+
+
+<!-- Not recommended for Angular apps -->
+<a href="/departments">Departments</a>
+
+<!-- Recommended in Angular -->
+<a routerLink="/departments">Departments</a>
+
+
+Use routerLink inside Angular apps for internal navigation.
+Use href only for external links (like https://google.com).
+
+
+
+
+
+
+
+
+Routing parameters:
+______________________
+
+	we want to nevigate to department detail component if 
+	we click an particular department
+
+Dept 			Deptdetail
+----------------------------------------
+
+angular   id		you selected dept with id =1
+node	-------> 
+mongo
+java
+
+
+step 1: update dept component
+----------------------------
+
+ <ul class="item">
+  <li *ngFor="let department of departments">
+    <span class="badge">{{department.id}}</span> {{department.name}}
+  </li>
+</ul>
+
+
+
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+
+
+
+@Component({
+  selector: 'app-deptlist',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+     <ul class="item">
+    <li *ngFor="let department of departments">
+      <span class="badge">{{department.id}}</span> {{department.name}}
+    </li>
+</ul>
+  `,
+  styles: ``
+})
+export class DeptlistComponent {
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+}
+
+
+
+
+step 3: generate new component 
+ng g c dept-detail -t -s --standalone --skip-tests
+
+step 4: add route for this component in app-routing module
+
+{ path : 'departments/:id', component: DeptDetailComponent}
+
+
+step 5: update dept component to 
+-------------------------------
+
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-deptlist',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+   <ul class="item">
+	  <li (click)="onSelect(department)"  *ngFor="let department of departments">
+		<span class="badge">{{department.id}}</span> {{department.name}}
+	  </li>
+	</ul>
+  `,
+  styles: ``
+})
+export class DeptlistComponent {
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+  constructor(private rounter: Router) { }
+
+    onSelect(department: { id: any; }){
+    // from neviate from code to rooute we need router service
+    this.rounter.navigate(['/departments', department.id]);
+  }
+}
+
+
+
+Step 6: we want to access parameter (dept id) in department detail module and use it threre
+-----------------------------------------------------------------------------------------
+we have to use "ACTIVATED ROUTE SERVICE"
+
+go to dept detail compoent and update:
+-----------------------------------
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-dept-detail',
+  standalone: true,
+  imports: [],
+  template: `
+    <h3>you selected dept with id {{deptId}}</h3>
+  `,
+  styles: ``
+})
+export class DeptDetailComponent {
+   public deptId: any; 
+
+  constructor(private route: ActivatedRoute) { }
+
+  ngOnInit() {
+    // tslint:disable-next-line: radix
+    let id = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
+    this.deptId = id;
+  }
+}
+
+
+
+
+
+
+______________________________________
+- applying guards routes in angular
+______________________________________
+
+guards routes in angular:
+__________________________
+
+	=> The Angular supports several guards like CanActivate, 
+	CanDeactivate, Resolve, CanLoad, and CanActivateChild. 
+
+	=> These guards help us to secure the route or to perform some actions before navigating 
+	into a route or leaving the route
+
+
+Why guards routes?
+_____________________
+
+	=> Allowing the user to navigate all parts of the application is not a good idea.
+	 We need to restrict the user until the user performs specific actions like login.
+	 Angular provides the Route Guards for this purpose.
+
+	One of the common scenario, where we use Route guards is authentication. 
+	We want our App to stop the unauthorized user from accessing the protected route. 
+	We achieve this by using the CanActivate guard, which angular invokes when the 
+	user tries to navigate into the protected route.
+
+	 Then we hook into the CanActivate guard and use the authentication service to check whether the user is 			
+	 authorized to use the route and if not we can redirect the user to the login page.
+
+
+Uses of  Angular Route Guards
+________________________________
+
+	To Confirm the navigational operation
+	Asking whether to save before moving away from a view
+	Allow access to certain parts of the application to specific users
+	Validating the route parameters before navigating to the route
+	Fetching some data before you display the component
+
+Types of Route Guards
+______________________
+
+The Angular Router supports Five different guards, which you can use to protect the route
+
+CanActivate:
+	This guard decides if a route can be activated (or component gets used). 
+	This guard is useful in the circumstance where the user is not authorized 
+	to navigate to the target component Or the user might not be logged into the system
+
+
+CanDeactivate:
+	The CanDeactivate route allows us to ask user confirmation before leaving the component.  
+	You might ask the user if it’s OK to discard pending changes rather than save them.
+
+Resolve:
+
+	This guard delays the activation of the route until some tasks are complete.
+	 You can use the guard to pre-fetch the data from the backend API, before activating the route
+
+
+CanLoad:
+	The CanLoad Guard prevents the loading of the Lazy Loaded Module. 
+	We generally use this guard when we do not want to unauthorized user 
+	to be able to even see the source code of the module.
+
+
+
+CanActivateChild:
+	This guard determines whether a child route can be activated. 
+	This guard is very similar to CanActivateGuard. We apply this guard to the parent route. 
+	The Angular invokes this guard whenever the user tries to navigate to any of its child route.
+	 This allows us to check some condition and decide whether to proceed with the navigation or cancel it.
+
+
+step 1: create new project
+-------------------
+ng new myapp --standalone --routing --style=css
+
+
+
+Step 2: Create Basic Components
+--------------------
+ng g c home -t -s --standalone --skip-tests
+ng g c admin -t -s --standalone --skip-tests
+
+
+Step 3: Create the Route Guard
+-----------------------
+ng g guard auth/activate --skip-tests
+
+activate.guard.ts
+------------------
+import { CanActivateFn } from '@angular/router';
+export const activateGuard: CanActivateFn = (route, state) => {
+  return true;
+};
+
+
+Step 4: Create a User Service and edit user.service.ts
+------------------------------------------------
+ng g service services/user --skip-tests
+
+
+import { Injectable } from '@angular/core';
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  isAdminRight(): boolean {
+    // Logic can be based on login token or user role
+    return false; // change to true to allow access
+  }
+}
+
+
+
+
+
+Create Routing File using Standalone Route Config in app.routes.ts
+--------------------------------------------------------------------
+Define routes:
+--------------
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home.component';
+import { AdminComponent } from './admin.component';
+import { activateGuard } from './auth/activate.guard';
+
+export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [activateGuard] }
+];
+
+
+
+
+step 5: Update app.component.ts to import RouterModule
+---------------------------------------------------
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule],
+  templateUrl: './app.component.html'
+})
+export class AppComponent {}
+
+
+step 6: check  main.ts.....Make sure this uses appConfig:
+---------------------------------------
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig)
+  .catch(err => console.error(err));
+  
+  
+
+
+use user service in ActivateGuard:
+---------------------------------
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+
+export const activateGuard: CanActivateFn = (route, state) => {
+  const userService = inject(UserService);
+  const router = inject(Router);
+  if (userService.isAdminRight()) {
+    return true;
+  } else {
+    alert('You do not have permission to access this page.');
+    return router.createUrlTree(['/home']);
+  }
+};
+
+
+update app.compoent.html:
+------------------------
+
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a routerLink="home" routerLinkActive="active" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="admin" routerLinkActive="active" class="nav-link">Admin</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="text-center mt-3">
+    <router-outlet></router-outlet>
+  </div>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+ 
+Component Life Cycle Events
+__________________________
+
+
+
+
+----------------------------------------
+- angular testing jasmine and karma
+----------------------------------------
+
+
+Anugular testing:
+---------------
+Introduction
+What is karma and jasmin?
+How Karma & Jasmine  are configured with Angular?
+What is the role of Karma.conf.js?
+What is the role of test.ts?
+
+
+
+
+step 1: create hello world angular using cli
+
+step 2: hello world contain app.component.spec.ts
+ spec file code is created whenever we are created new component, pipe, services etc
+
+ run: ng test
+	run karma jasmin test cases
+
+ http://localhost:9876/?id=16030314
+
+ how to configure test env?
+ ------------------------
+	=> when we create angular app, package.json contain dev-depenencies
+	in these dev dependencies we also have dependencies of karma and jasmine
+
+     package.json
+     ----------
+
+    "@types/jasmine": "~3.3.8",
+    "@types/jasminewd2": "~2.0.3",
+    "codelyzer": "^5.0.0",
+    "jasmine-core": "~3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
+
+
+    angular.json
+    -----------
+
+    "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+
+	=> main act as entry for karma config (karma.config.js), default configuration for karma framework
+
+
+Hello world test:
+----------------
+
+
+cal.ts
+------
+export function cal(num1: number, num2: number){
+    return num1+num2;
+}
+
+cal.spec.ts
+----------
+import { cal } from "./cal"
+
+describe('cal test',()=>{
+    //it define test suite
+    it('testing add function', ()=>{
+       expect( cal(2,2)).toBe(4);
+    })
+})
+
+run the test case....
+
+
+testing string and arrarys:
+-------------------------
+1.Test Strings using matchers:
+    toBe, toEqual, toContain, toMatch
+2. Difference between toBe & toEqual
+3. Test Arrays using matchers:
+     toEqual, toContain
+
+
+Ex:
+describe('string matcher test', ()=>{
+
+   it('testing string,"toBe" for matcher ===', ()=>{
+    let firstStr='india';
+    expect(firstStr).toBe('india');
+   });
+
+
+   it('testing string,"toEqual" for matcher ==', ()=>{
+    let firstStr='india';
+    expect(firstStr).toEqual('india');
+   })
+
+   it('testing string,"toContain" check hello present in the string', ()=>{
+    let firstStr='india is my country';
+    expect(firstStr).toContain('my');
+   })
+
+   it('testing string,"toMatch" matcher for regular expression', ()=>{
+    let firstStr='This 4th lane of Underworld';
+    expect(firstStr).toMatch(/\d+/);
+    expect(firstStr).toMatch("Underworld");
+
+   })
+
+});
+
+
+how to exclude an test case?
+-------------------
+
+Write x before describe
+
+xdescribe{
+}
+
+=> it will remove all test cases from execution
+
+
+
+
+ //testing negative
+
+   it('testing string,"not.toEqual" for matcher ==', ()=>{
+    let firstStr='india';
+    expect(firstStr).not.toEqual('india 2');
+   })
+
+
+ it('testing string,"toBe" for matcher ===', ()=>{
+    let firstStr='india';
+    expect(firstStr).not.toBe('india 2');
+   });
+
+
+Difference between toBe & toEqual:
+-----------------------------
+	toEquals must be used to compare object and array, do deep comparision
+ Ex:
+    it('toBe vs equals', ()=>{
+
+        let a={val: 10};
+        let b={val: 10};
+
+       // expect(a).toBe(b);
+       expect(a).toEqual(b);
+       });
+
+
+
+
+ Example array:
+------------------
+
+ it('array test', ()=>{
+        let a=[1,2,3];
+        let b=[1,2,3];
+       expect(a).toEqual(b);
+       });
+    
+
+       it('toContain in array of string ', ()=>{
+        let a=["i","love","js"];
+        
+       expect(a).toContain('love');
+       });
+
+
+
+Understanding setup and tear-down, beforeEach and afterEach
+-----------------------------
+
+custreg.ts
+--------
+export class CustomerReg{
+    hotelCap= 30;
+    custCount=10;
+
+    regCustomer(){
+        return ++this.custCount;
+    }
+    unRegCustomer(){
+        return --this.custCount;
+    }
+}
+
+
+
+custreg.spec.ts
+----------
+
+import { CustomerReg } from "./custreg"
+
+describe('cust reg',()=>{
+
+    it('reg customer count should increse by one',()=>{
+        let custService=new CustomerReg();
+        let custCount=custService.regCustomer();
+        expect(custCount).toEqual(11);
+    })
+
+    it('un reg customer count should dec by one',()=>{
+        let custService=new CustomerReg();
+        let custCount=custService.unRegCustomer();
+        expect(custCount).toEqual(9);
+    })
+})
+
+What if we create common custService object?
+---------------------------------------
+
+import { CustomerReg } from "./custreg"
+
+describe('cust reg',()=>{
+    let custService=new CustomerReg();
+    it('reg customer count should increse by one',()=>{
+        
+        let custCount=custService.regCustomer();
+        expect(custCount).toEqual(11);
+    })
+
+    it('un reg customer count should dec by one',()=>{
+        let custCount=custService.unRegCustomer();
+        expect(custCount).toEqual(9);
+    })
+})
+
+one test pass one fail
+-------------------------
+ beforeEach and afterEach
+------------------------
+
+import { CustomerReg } from "./custreg"
+
+describe('cust reg',()=>{
+
+    let custService:CustomerReg;
+
+    beforeEach(()=>{
+        let custService=new CustomerReg();
+    });
+    afterEach(()=>{
+        custService=null;
+    });
+    beforeAll(()=>{
+        console.log(`run before any test cases...`);
+    });
+
+    afterAll(()=>{
+        console.log(`run before after all test cases runs...`);
+    });
+
+    it('reg customer count should increse by one',()=>{
+        
+        let custCount=custService.regCustomer();
+        expect(custCount).toEqual(11);
+    })
+
+    it('un reg customer count should dec by one',()=>{
+        let custCount=custService.unRegCustomer();
+        expect(custCount).toEqual(9);
+    })
+})
+
+
+
+
+
+deployment angular to tomcat:
+-----------------------------
+
+http://www.thejavageek.com/2018/01/04/deploying-angular-app-tomcat/
+https://stackoverflow.com/questions/40852931/how-can-i-deploy-an-angular-2-application-on-tomcat-server-windows-server-2012
+
+
+ng build --base-href=empappclient
+
+
+ng build --prod --base-href=empappclient
+
+<script type="text/javascript">
+    var cfgApiBaseUrl = "http://localhost:8082/bookapp";
+    /*
+    IDE: http://localhost:8082"
+    Tomcat1: http://localhost:8083/empapp
+    */
+    window.cfgApiBaseUrl = cfgApiBaseUrl;
+  </script>
+
+
+
+
+private BASE_URL = window["cfgApiBaseUrl"] + "/api";
+
+  public ALL_NOTEBOOKS_URL = `${this.BASE_URL}/notebooks/all`;
+
+
+
+
+
+
+
+
+
+
+Check verion of an lib
+
+npm install -g version-check
+version-check rxjs
+
+
+how to remove cache:
+---------------------
+npm uninstall -g @angular/cli@8.3.19
+npm cache clean --force
+
+
+https://stackoverflow.com/questions/39566257/how-to-uninstall-upgrade-angular-cli

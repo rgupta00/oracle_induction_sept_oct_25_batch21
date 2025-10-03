@@ -1,0 +1,1872 @@
+ES6 Tutorial: ES6 New Enhancements
+==================================
+0. Setup
+1. var hoisting and function scope
+2. const in ES6
+3. Arrow function, functional programming in JS
+4. Default value to function arguments
+5. Rest operation in ES6 (aka variable argument methods in Java)
+6. Spread operator in ES6
+7. Spread operator with object literals
+8. Destructuring array
+9. Destructuring objects
+10. String templates
+11. for...of loop (used with iterables)
+12. ES6 Classes
+   - Types of functions in a class
+   - Class inheritance
+13. Set and Map in ES6
+
+
+
+ES6 Tutorial – Topic 1
+---------------------------
+
+ var, let, const — Scope, Hoisting, and Redeclaration
+------------------------------------------------------
+
+Variable Declarations in JS
+--------------------------
+Traditionally, JavaScript used var to declare variables.
+ES6 introduced let and const to overcome the scoping and hoisting issues of var.
+
+Problem with var — Scoping Issue
+---------------------------------
+JavaScript uses function-level scope for var, unlike C/Java/C++ which are block-scoped.
+
+Example 1:
+--------------
+
+var flag = true;
+if (flag) {
+	var fname = "rajeev";
+}
+console.log(fname); // Accessible — not block scoped
+
+Our understanding from C/Java is that fname should be 
+restricted to the block, but not in JS using var.
+
+
+
+
+Example 2:
+------------------
+
+for (var i = 0; i < 10; i++) {
+	var fname = "rajeev";
+	console.log(fname + ": " + i);
+}
+console.log(i); // Still accessible
+
+var does not respect block scope.
+i leaks out of the loop block.
+
+Conclusion:
+------------ 
+var is function-scoped, not block-scoped.
+Advantage of let
+
+
+let introduces block scope — just like C/Java.
+
+Variables declared inside {} are not accessible outside.
+---------------------------------------------------
+if (flag) {
+	let fname = "rajeev";
+	console.log(fname); // Works
+}
+console.log(fname); // ReferenceError
+
+
+
+Hoisting Issue with var
+--------------------------
+Example:
+
+console.log(x); // Output: undefined
+var x = 33;
+JavaScript hoists var declarations to the top (declaration only, not assignment).
+
+
+
+So, above code is interpreted as:
+------------------------------
+var x;
+console.log(x); // undefined
+x = 33;// let is not hoisted like var
+
+
+
+console.log(x);
+let x = 33; //  ReferenceError: Cannot access 'x' before initialization
+
+Technically, let is hoisted, but it is in a Temporal Dead Zone (TDZ) 
+from start of block to declaration line.
+
+
+
+
+
+Redeclaring variables
+----------------------
+With var:
+----------
+var greeting = "good morning";
+var greeting = "good evening"; //  No error
+console.log(greeting); // Output: "good evening"
+
+//This may cause bugs when accidentally re-declaring variables.
+
+With let:
+-----------
+let greeting = "good morning";
+let greeting = "good evening"; //  SyntaxError: Identifier has already been declared
+
+✅ Safer, avoids silent bugs.
+✅ Summary Table – var vs let
+
+Feature		var											let
+--------------------------------------------------------------
+Scope			Function-scoped							Block-scoped
+Hoisting		Yes (initialized as undefined)			Yes (in TDZ)
+Redeclaration	Allowed									Not allowed
+Use in Loops	Variable leaks outside					Confined to block
+
+
+
+Example – var vs let inside a function
+-----------------------------------------
+Using var:
+---------
+function greetPerson(name) {
+	if (name === "rajeev") {
+		var greet = "hello programmer";
+	} else {
+		var greet = "hello person";
+	}
+	console.log(greet); //  Works
+}
+
+var can be redeclared, and the declaration is hoisted to the top of the function.
+
+
+
+Using let:
+-----------
+function greetPerson(name) {
+	if (name === "rajeev") {
+		let greet = "hello programmer";
+	} else {
+		let greet = "hello person";
+	}
+	console.log(greet); //  ReferenceError
+}
+
+Solution:
+---------
+function greetPerson(name) {
+	let greet;
+	if (name === "rajeev") {
+		greet = "hello programmer";
+	} else {
+		greet = "hello person";
+	}
+	console.log(greet); //  Works
+}
+
+
+ Wrong usage of let (temporal dead zone):
+---------------------------------------------
+
+function greetPerson(name) {
+	if (name === "rajeev") {
+		greet = "hello programmer";
+	} else {
+		greet = "hello person";
+	}
+	console.log(greet);
+	let greet; //  ReferenceError
+}
+
+
+
+Summary: const vs let vs var
+------------------------------
+Feature					var				let				const
+Scope					Function		Block			Block
+Hoisting				Yes				Yes (TDZ)		Yes (TDZ)
+Reassignable			Yes				Yes				❌ No
+Redeclarable			Yes				❌ No			❌ No
+Must initialize?		No				No				✅ Yes
+
+
+
+
+
+Topic 2: const in ES6 
+-----------------------
+Const in ES6 – Constant Declarations and Object Behavior
+---------------------------------------------
+const = Constant Binding
+------------------------------
+	const creates block-scoped variables just like let, 
+	but you cannot reassign them.
+
+Think of it as similar to final in Java or const in C++.
+---------------------------------------------
+Basic Example
+-----------------
+const pi = 3.1415;
+console.log(pi);
+pi = 3.14; //  TypeError: Assignment to constant variable
+
+Note:
+----
+ pi is read-only and must be initialized during declaration.
+ Cannot be re-declared or reassigned.
+
+Important Note
+const does not make objects immutable, it just makes the reference to the object constant.
+You can still mutate the internal properties.
+
+Example: const with Objects
+------------------
+const obj1 = {
+    name: "raj"
+};
+obj1.name = "rajeev"; // Allowed
+console.log(obj1.name); // "rajeev"
+
+Trying to reassign the object reference:
+-----------------------------------
+obj1 = {
+    name: "ravi"
+}; 
+// TypeError: Assignment to constant variable
+
+You can change the contents of the object but cannot reassign the object reference.
+
+
+Example: const in Arrays
+------------------------
+const colors = ["Red", "Blue"];
+colors.push("Green"); //  Works
+console.log(colors); // ["Red", "Blue", "Green"]
+
+colors = ["Yellow"]; // TypeError
+
+
+Arrays declared with const can still be mutated.
+
+
+
+Summary: When to use const?
+----------------------------
+	Use const by default for all variables that don’t need reassignment.
+	Use let only when reassignment is necessary.
+	Avoid var in ES6+ code.
+
+Final Notes:
+-----------------------------------
+Feature						const
+Scope						Block
+Hoisting					Yes (in TDZ)
+Must initialize				Yes
+Redeclaration allowed?		No
+Reassignment allowed?		No
+Object mutation allowed?	Yes (but reference is fixed)
+
+
+
+
+
+
+Topic 3: Arrow Functions & Functional Programming
+-------------------------------------------------
+Arrow Functions & Functional Programming in JavaScript
+
+Arrow Functions – The Shorthand Syntax
+	ES6 introduced arrow functions as a more concise way to write function expressions.
+
+Traditional function:
+-----------------------
+var a = function() {
+    return 10;
+}
+
+ES6 Arrow function:
+-----------------
+var b = () => 10;
+
+Implicit return is allowed when there's only one expression (no {} needed).
+
+Another example:
+---------------
+const adder = (a, b) => a + b;
+
+
+Benefits of Arrow Functions
+-------------------------
+	Concise syntax
+	Implicit return (no need for return keyword)
+	No own this binding (lexical this)
+	Ideal for callback functions and functional programming
+
+
+
+Console Output
+--------------
+console.log(b); // b is a function, prints the function body
+
+
+
+Functional Programming with JavaScript
+-------------------------------------------
+	Functional programming = Writing code using pure functions, 
+	immutability, and data transformations.
+
+ES6 arrow functions make this style easier.
+-----------------------------------------
+Dataset Example:
+-----------------
+const companies = [
+	{name: "Company One", category: "Finance", start: 1981, end: 2003},
+	{name: "Company Two", category: "Retail", start: 1992, end: 2008},
+	{name: "Company Three", category: "Auto", start: 1999, end: 2007},
+	{name: "Company Four", category: "Retail", start: 1989, end: 2010},
+	{name: "Company Five", category: "Technology", start: 2009, end: 2014},
+	{name: "Company Six", category: "Finance", start: 1987, end: 2010},
+	{name: "Company Seven", category: "Auto", start: 1986, end: 1996},
+	{name: "Company Eight", category: "Technology", start: 2011, end: 2016},
+	{name: "Company Nine", category: "Retail", start: 1981, end: 1989}
+];
+
+const ages = [33, 12, 20, 16, 5, 54, 21, 44, 61, 13, 15, 45, 25, 64, 32];
+
+
+
+
+forEach – Print all companies
+----------------------------
+Traditional:
+------------
+for(let i = 0; i < companies.length; i++) {
+	console.log(companies[i]);
+}
+
+
+Functional:
+-----------
+companies.forEach(function(company) {
+	console.log(company);
+});
+
+With Arrow:
+-----------
+companies.forEach(company => console.log(company));
+
+
+
+
+
+
+
+
+filter() – Returns a subset of data
+--------------------------------
+
+Ages 21 and above
+------------------
+const selectedAges = ages.filter(function(age) {
+	if(age >= 21) {
+		return true;
+	}
+});
+
+const selectedAges = ages.filter(age => age >= 21);
+console.log(selectedAges);
+
+
+Filter Retail Companies
+-------------------------
+const retailCompanies = companies.filter(function(company) {
+	return company.category === "Retail";
+});
+
+const retailCompanies = companies.filter(company => company.category === "Retail");
+console.log(retailCompanies);
+
+Companies from 1980s
+---------------------
+const companies80 = companies.filter(company => 
+	company.start >= 1980 && company.start <= 1990
+);
+console.log(companies80);
+
+
+Companies lasting 10+ years
+---------------------------
+const companiesMore10 = companies.filter(company => 
+	(company.end - company.start) >= 10
+);
+console.table(companiesMore10);
+
+
+map() – Transform data into new arrays
+-------------------------------
+
+Just company names
+--------------------
+const companyNameArr = companies.map(company => company.name);
+console.log(companyNameArr);
+
+Company name with duration
+--------------------------------
+const companyNameArr2 = companies.map(company => 
+	`${company.name} [${company.start}--${company.end}]`
+);
+console.table(companyNameArr2);
+
+
+sort() – Sort elements
+---------------------
+
+By start year
+----------
+const sortedCompanies = companies.sort((c1, c2) => 
+	c1.start > c2.start ? 1 : -1
+);
+console.table(sortedCompanies);
+
+
+Bonus: reduce()
+----------------
+You didn’t add it, but it fits here perfectly:
+
+Sum of all ages:
+----------------
+const ageSum = ages.reduce((total, age) => total + age, 0);
+console.log(ageSum);
+
+
+Summary Table: Functional Utilities
+----------------------------------
+
+Method				Use Case
+-------------------------------
+forEach			Looping through items
+filter			Getting a subset
+map				Transforming elements
+sort			Ordering elements
+reduce			Aggregating to single value
+
+
+
+
+Topic 4: Default Function Parameters in ES6
+---------------------------------------
+What are Default Parameters?
+	ES6 allows default values for function parameters, similar to Java and C++.
+
+	This makes your function definitions more flexible and safer by reducing 
+	the need to check for undefined inside the function.
+
+Without Default Parameters
+--------------------------
+let getValue = function(a) {
+    console.log(a);
+}
+
+getValue();         // undefined
+getValue(5);        // 5
+
+You had to manually assign defaults:
+
+let getValue = function(a) {
+    a = a || 10;
+    console.log(a);
+}
+
+
+With ES6 Default Parameters
+-------------------------
+let getValue = function(a = 10) {
+    console.log(a);
+}
+
+getValue();         // 10
+getValue(5);        // 5
+
+Cleaner and more readable code.
+
+
+Multiple Parameters with Defaults
+-----------------------
+let getValue = function(a = 10, b = 4) {
+    console.log(a, b);
+}
+
+getValue();              // 10 4
+getValue(20);            // 20 4
+getValue(undefined, 12); // 10 12
+
+⚠If you skip a parameter, use undefined explicitly to trigger the default.
+
+Use Cases
+-----------
+	Optional arguments
+	Safer API design
+	Cleaner fallback logic
+
+
+
+Best Practices
+	Always put default parameters after non-default ones.
+	Combine with rest or destructuring for powerful patterns.
+
+
+
+Topic 5: Rest Operator (...args) – Variable Arguments in ES6
+------------------------------------------------------------
+
+Before ES6, JavaScript functions could access extra passed 
+arguments using the special arguments object:
+-----------------------------------------
+function show() {
+  console.log(arguments); // not a real array
+}
+show(1, 2, 3);
+
+Problems with arguments:
+	Not a real array (no .map(), .filter(), etc.)
+	Confusing to read and maintain
+	Doesn’t work in arrow functions
+	Less expressive
+
+ES6 Solution: Rest Parameter (...args)
+---------------------------------------
+The rest operator collects remaining arguments into a real array.
+
+function showColors(message, ...colors) {
+  console.log(message);
+  console.log(colors); // ['Red', 'Blue']
+}
+
+showColors("Available colors:", "Red", "Blue");
+
+Advantages:
+	Real array → can use .map(), .filter(), etc.
+	Cleaner and expressive
+	Works with arrow functions
+	Matches features in other languages (e.g., *args in Python, varargs in Java)
+	
+	
+
+Internal Behavior:
+-------------------
+// Behind the scenes:
+function show(...args) {
+    console.log(args); // all extra args as array
+}
+show(1, 2, 3); //Automatically converted to array [1, 2, 3]
+
+Note:
+
+Only One Rest Parameter Per Function
+
+The rest parameter must be the last one.
+-----------------------------------
+function sum(a, ...nums, b) {
+    //  SyntaxError: Rest parameter must be last
+}
+
+
+
+
+
+Topic 6: Spread Operator (...) in ES6
+------------------------------------
+What is the Spread Operator?
+	The spread operator (...) spreads the elements of 
+	an array (or object) into individual items.
+
+Use cases:
+	Pass array elements as individual arguments
+	Clone or merge arrays/objects
+	Expand iterable elements
+
+// REST: packs into array
+---------------------------
+function sum(...nums) {
+  return nums.reduce((a, b) => a + b);
+}
+
+// SPREAD: unpacks array
+-----------------------
+let arr = [1, 2, 3];
+console.log(...arr);  // 1 2 3
+
+Problem Without Spread
+------------------------
+let colorArray = ['Orange', 'Yellow', 'Indigo'];
+
+displayColors(message, colorArray); 
+
+// Passes entire array as one argument
+
+Solution: Spread Operator
+----------------------------
+let colorArray = ['Orange', 'Yellow', 'Indigo'];
+
+displayColors(message, ...colorArray); 
+// Passes each color as a separate argument
+
+Example: Array Expansion
+-------------------------
+let arr1 = [1, 2, 3];
+let arr2 = [...arr1, 4, 5];
+console.log(arr2); // [1, 2, 3, 4, 5]
+
+
+Copying Arrays
+----------------
+const original = [10, 20, 30];
+const copy = [...original];
+
+console.log(copy); // [10, 20, 30]
+
+Creates a shallow copy
+
+Combining Arrays
+-----------------
+const nums1 = [1, 2];
+const nums2 = [3, 4];
+
+const merged = [...nums1, ...nums2];
+console.log(merged); // [1, 2, 3, 4]
+
+
+Spread in Function Calls
+-------------------------
+function add(a, b, c) {
+    return a + b + c;
+}
+
+let nums = [1, 2, 3];
+console.log(add(...nums)); // 6
+
+
+Spread ≠ Rest
+------------------
+Feature			Spread									Rest
+Use case		Expanding elements						Gathering elements
+Used in			Function call, literals, arrays			Function definition
+Syntax	...iterable	...args
+
+
+
+
+Topic 7: Spread Operator with Object Literals
+-------------------------------------------
+
+Object Literals Before ES6
+
+You had to manually map variables to properties:
+-------------------------------------------
+let firstname = "rajeev";
+let lastname = "gupta";
+
+let person = {
+    firstname: firstname,
+    lastname: lastname
+};
+
+console.log(person.firstname); // rajeev
+
+
+ES6 Enhancement – Property Shorthand
+-----------------------------
+If key and variable names are the same, you can omit the key.
+
+let firstname = "rajeev";
+let lastname = "gupta";
+
+let person = {
+    firstname,
+    lastname
+};
+
+console.log(person.firstname); // rajeev
+console.log(person.lastname);  // gupta
+
+
+Returning Object Literals from Functions
+------------------------------------------
+
+function createPerson(firstname, lastname, age) {
+    let fullname = firstname + " " + lastname;
+    return { firstname, lastname, fullname };
+}
+
+let p = createPerson("rajeev", "gupta", 62);
+console.log(p.firstname);  // rajeev
+console.log(p.fullname);   // rajeev gupta
+
+
+Function Shorthand in Objects
+------------------------------
+Define methods without the function keyword:
+-----------------------------
+function createPerson(firstname, lastname, age) {
+    let fullname = firstname + " " + lastname;
+    return {
+        firstname,
+        lastname,
+        fullname,
+        isSenior() {
+            return age > 60;
+        }
+    };
+}
+
+let p = createPerson("rajeev", "gupta", 62);
+console.log(p.isSenior()); // true
+
+
+Spread Operator with Objects
+----------------------------
+Introduced in ES2018 (still considered ES6+).
+
+Cloning an Object
+----------------
+const user1 = {
+    name: "Rajeev",
+    role: "Trainer"
+};
+
+const user2 = { ...user1 };
+
+console.log(user2); // { name: "Rajeev", role: "Trainer" }
+
+Merging Objects
+---------------------
+const obj1 = { a: 1 };
+const obj2 = { b: 2 };
+
+const merged = { ...obj1, ...obj2 };
+console.log(merged); // { a: 1, b: 2 }
+
+
+Overriding Properties
+-------------------------
+const base = { role: "user", active: true };
+const override = { role: "admin" };
+
+const updated = { ...base, ...override };
+console.log(updated); // { role: "admin", active: true }
+
+
+Order matters: properties in later objects override earlier ones.
+
+
+
+
+
+
+
+
+
+
+
+Topic 8: Destructuring Arrays
+-------------------------------
+What is Destructuring?
+	Destructuring allows you to unpack values from arrays
+	(or objects) into distinct variables — 
+	like tuple unpacking in Python or pattern matching in Scala.
+
+Simple Array Destructuring
+----------------------------
+let employee = ["rajeev", "gupta", "Male"];
+
+let [fname, lname, gender] = employee;
+
+console.log(fname);   // rajeev
+console.log(lname);   // gupta
+console.log(gender);  // Male
+
+Unpacks values in order into variables.
+
+Default Values in Destructuring
+---------------------------------
+What if a value is missing from the array?
+
+let employee = ["rajeev", "gupta"];
+
+let [fname, lname, gender = "Male"] = employee;
+
+console.log(gender);  // Male (default)
+
+Skipping Elements
+-----------------
+You can skip unwanted values using commas:
+
+let employee = ["rajeev", "gupta", "Male"];
+
+let [, , gender] = employee;
+
+console.log(gender); // Male
+
+Collecting Remaining Elements (Rest)
+-----------------------------------
+Use the rest operator to gather remaining elements into an array:
+
+
+let employee = ["rajeev", "gupta", "Male", "Trainer", "Delhi"];
+
+let [fname, ...rest] = employee;
+
+console.log(fname); // rajeev
+console.log(rest);  // [ 'gupta', 'Male', 'Trainer', 'Delhi' ]
+
+
+Very useful in cases where only the first few elements matter.
+
+
+Best Practices
+-------------
+	Use default values to prevent undefined.
+	Combine with rest operator for flexible assignments.
+	Always respect order when destructuring arrays.
+
+
+Topic 9: Object Destructuring
+-------------------------------
+ What is Object Destructuring?
+	Object destructuring is a convenient way to extract multiple properties 
+	from an object and assign them to variables.
+
+Original Way (Before Destructuring)
+--------------------------------
+const msg = {
+    name: "rajeev gupta",
+    desi: "trainer",
+    hobby: "traveling",
+    social: {
+        twitter: "@rajeev_gupta76",
+        facebook: "https://www.facebook.com/profile.php?id=100021806671318"
+    }
+};
+
+// Traditional way
+const name = msg.name;
+const desi = msg.desi;
+const hobby = msg.hobby;
+const twitter = msg.social.twitter;
+
+console.log(name);
+console.log(hobby);
+console.log(twitter);
+
+Problem: Code is repetitive and hard to read.
+
+ES6 Object Destructuring (Cleaner)
+----------------------------------
+
+const { name, desi, hobby, social } = msg;
+
+console.log(name);   // rajeev gupta
+console.log(hobby);  // traveling
+console.log(social); // entire nested object
+
+Nested Destructuring
+-----------------------
+You can destructure nested objects like social:
+
+const {
+    name,
+    desi,
+    hobby,
+    social: { twitter, facebook }
+} = msg;
+
+console.log(twitter);  // @rajeev_gupta76
+console.log(facebook); // https://facebook.com/...
+
+Renaming Variables
+----------------------
+Assign properties to different variable names:
+
+const { name: fullName, desi: role } = msg;
+
+console.log(fullName); // rajeev gupta
+console.log(role);     // trainer
+
+
+Providing Default Values
+---------------------------
+const { company = "Busy Coder Academy" } = msg;
+
+console.log(company); // Busy Coder Academy
+
+
+
+
+
+
+
+Topic 10: Template Literals next?
+-----------------------------------
+Template Literals (aka String Templates)
+Problem with Old-Style String Concatenation (ES5)
+
+const person = {
+	name: "rajeev gupta",
+	address: "delhi",
+	phone: "43544344444"
+};
+
+let strMsg = "my name is " + person.name + ": " + " my address is " + person.address;
+
+Hard to read and maintain. Breaks easily when adding variables or formatting.
+
+
+ES6 Template Literals – Backtick Syntax
+-----------------------------------
+let strMsg2 = `my name is ${person.name} and my address is ${person.address}`;
+console.log(strMsg2);
+
+
+Multiline String Support (No \n Needed)
+-------------------------------------
+const strMsg3 = `
+	my name is ${person.name}
+	my address is ${person.address}
+	my phone is ${person.phone}
+`;
+
+console.log(strMsg3);
+
+Automatically preserves formatting, tabs, line breaks — no \n or \t needed.
+
+
+
+Topic 11: for...of Loop 
+------------------------
+for...of Loop: Used with Iterables
+
+Problem with for...in Loop (ES5)
+----------------------------------
+let colors = ['Red', 'Blue', 'Green'];
+
+for (let index in colors) {
+    console.log(colors[index]);
+}
+
+	for...in is meant for enumerating object keys, not array elements.
+	It iterates over enumerable properties, which may include inherited ones.
+
+
+ES6 Solution: for...of
+--------------------------
+	Introduced in ES6, for...of is the right loop for iterables like arrays,
+	strings, sets, maps, etc.
+
+
+let colors = ['Red', 'Blue', 'Green'];
+
+for (let color of colors) {
+    console.log(color);
+}
+
+	 Cleaner
+	 No indexing needed
+	 Works only on actual values, not keys or indexes
+
+
+Works on Strings Too
+---------------------
+let letters = "ABC";
+
+for (let letter of letters) {
+    console.log(letter);
+}
+
+Output:
+A
+B
+C
+
+
+
+
+
+Topic 12: ES6 Classes 
+---------------------
+What are JavaScript Classes?
+	JavaScript classes are syntactic sugar over JavaScript's 
+	existing prototype-based inheritance.
+
+	Before ES6, JS did not have a formal class keyword — 
+	developers used constructor functions and prototypes.
+
+	ES6 introduced the class keyword to make OOP-style development easier and more familiar 
+	(especially for Java/ C# developers).
+
+
+
+Basic Class Example
+----------------
+class Person {
+    greet() {}
+}
+
+let p = new Person();
+
+console.log(p.greet === Person.prototype.greet); // true
+
+Note:
+-------
+	Under the hood, classes are just functions.
+	Classes are not hoisted like regular functions.
+
+
+
+Function vs Class Hoisting Behavior
+--------------------------------------
+
+employee(); // Works (function hoisting)
+function employee() {}
+
+
+let p1 = new Employee(); // ReferenceError
+class Employee {}
+
+Function declarations are hoisted, but class declarations are not.
+
+
+
+Prior to ES6: Constructor Function + Prototype
+-----------------------------------------------
+function Animal(type) {
+    this.type = type;
+}
+
+Animal.prototype.identify = function () {
+    console.log(this.type);
+};
+
+var cat = new Animal('Cat');
+cat.identify(); // Cat
+
+
+
+Same in ES6 Using class
+--------------------------
+class Animal {
+    constructor(type) {
+        this.type = type;
+    }
+
+    identify() {
+        console.log(this.type);
+    }
+}
+
+let cat = new Animal('Cat');
+cat.identify(); // Cat
+
+
+Note:
+typeof Animal is still "function" — just syntactic sugar!
+console.log(typeof Animal); // function
+
+
+
+
+
+
+
+
+
+Class vs Funcation constructor Differences
+------------------------------------------
+Behavior				Function Constructor		ES6 Class
+Hoisted					✅ Yes						❌ No
+Called without new		✅ Yes						❌ Error
+syntax					function X()				class X {}
+Prototype method 		Explicit					Built-in with {} block
+definition
+
+
+let dog = new Animal('Dog'); // Works
+let duck = Animal('Duck');   // Error: must use 'new'
+
+
+
+JavaScript Class Expressions
+--------------------------
+let Animal = class {
+    constructor(type) {
+        this.type = type;
+    }
+
+    identify() {
+        console.log(this.type);
+    }
+};
+
+let duck = new Animal('Duck');
+
+console.log(duck instanceof Animal); // true
+console.log(duck instanceof Object); // true
+console.log(typeof Animal);          // function
+
+Classes can be anonymous and used in expressions — just like functions.
+
+
+Getter and Setter in Classes
+--------------------------------
+
+class Person {
+    constructor(firstName, lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    get fullName() {
+        return this.firstName + ' ' + this.lastName;
+    }
+
+    set fullName(str) {
+        let names = str.split(' ');
+        if (names.length === 2) {
+            this.firstName = names[0];
+            this.lastName = names[1];
+        } else {
+            throw 'Invalid name format';
+        }
+    }
+}
+
+let mary = new Person('rajeev', 'Gupta');
+console.log(mary.fullName); // rajeev Gupta
+
+mary.fullName = 'Rajeev Gupta';
+console.log(mary.fullName); // Rajeev Gupta
+
+
+Static Methods
+---------------
+class Animal {
+    constructor(type) {
+        this.type = type;
+    }
+
+    identify() {
+        console.log(this.type);
+    }
+
+    static create(type) {
+        return new Animal(type);
+    }
+}
+
+var mouse = Animal.create('Mouse');
+mouse.identify(); // Mouse
+
+// mouse.create('Monkey'); //  Error: mouse.create is not a function
+
+Static methods are called on the class, not on instances.
+
+
+Inheritance in ES6
+----------------------
+JavaScript uses prototype inheritance, but ES6 class simplifies it.
+
+Basic Inheritance Example
+-----------------------
+class Animal {
+    constructor(legs) {
+        this.legs = legs;
+    }
+
+    walk() {
+        console.log('walking on ' + this.legs + ' legs');
+    }
+}
+
+class Bird extends Animal {
+    constructor(legs) {
+        super(legs); // must call parent constructor
+    }
+
+    fly() {
+        console.log('flying');
+    }
+}
+
+let bird = new Bird(2);
+bird.walk(); // walking on 2 legs
+bird.fly();  // flying
+
+
+
+Inheritance with Additional Properties
+-----------------------------------
+class Bird extends Animal {
+    constructor(legs, color) {
+        super(legs);
+        this.color = color;
+    }
+
+    fly() {
+        console.log('flying');
+    }
+
+    getColor() {
+        console.log(this.color);
+    }
+}
+
+let pigeon = new Bird(2, 'white');
+console.log(pigeon.getColor()); // white
+
+
+Shadowing Methods (Method Overriding)
+----------------------------------------
+class Dog extends Animal {
+    constructor() {
+        super(4);
+    }
+
+    walk() {
+        console.log(`go walking`);
+    }
+}
+
+let bingo = new Dog();
+bingo.walk(); // go walking
+
+
+
+Calling Super Method (Base Class Method)
+---------------------------------------
+class Dog extends Animal {
+    constructor() {
+        super(4);
+    }
+
+    walk() {
+        super.walk(); // base class method
+        console.log(`go walking`);
+    }
+}
+
+let bingo = new Dog();
+bingo.walk();
+// Output:
+// walking on 4 legs
+// go walking
+
+
+
+Getter and setter in a class. This is commonly used to encapsulate 
+private data and control how it's accessed or modified.
+-------------------------------------------------------
+
+
+Example: getter and setter in ES6
+--------------------------------
+
+class Employee {
+  constructor(name, salary) {
+    this._name = name;
+    this._salary = salary;
+  }
+
+  // getter for name
+  get name() {
+    return this._name;
+  }
+
+  // setter for name
+  set name(newName) {
+    if (newName.length > 0) {
+      this._name = newName;
+    } else {
+      console.log("Name can't be empty!");
+    }
+  }
+
+  // getter for salary
+  get salary() {
+    return this._salary;
+  }
+
+  // setter for salary
+  set salary(newSalary) {
+    if (newSalary > 0) {
+      this._salary = newSalary;
+    } else {
+      console.log("Salary must be positive!");
+    }
+  }
+}
+
+// usage
+------------
+const emp = new Employee("Rajeev", 50000);
+
+console.log(emp.name);     // Rajeev
+emp.name = "Ravi";         // update name
+console.log(emp.name);     //  Ravi
+
+emp.salary = 60000;        // update salary
+console.log(emp.salary);   //  60000
+
+emp.salary = -2000;        // invalid update
+						// Salary must be positive!
+
+
+Notes:
+	Properties are accessed like normal (emp.name), but internally go through the getter/setter.
+	We use _name and _salary to simulate private variables (common JS pattern).
+	get/set provide encapsulation, validation, and abstraction.
+
+
+Note: The underscore (_) does not make the property private in JavaScript — it is just a naming convention.
+
+If You Want True Privacy (ES2022+) Use JavaScript Private Fields with #:
+----------------------------------------------
+class Person {
+  #name;
+
+  constructor(name) {
+    this.#name = name;
+  }
+
+  getName() {
+    return this.#name;
+  }
+}
+
+const p = new Person("Bob");
+console.log(p.#name); //  SyntaxError: Private field '#name' must be declared
+
+
+
+
+
+
+
+
+
+
+What are Iterables?
+-----------------------
+Iterables in JS include:
+	Arrays
+	Strings
+	Maps
+	Sets
+	arguments object
+	DOM collections (like NodeList)
+
+	You can use for...of on any iterable object.
+
+
+
+
+Topic 13 – Set and Map in ES6?
+--------------------------------
+Set, Map, WeakSet, and WeakMap in ES6
+
+
+Why Set and Map in ES6?
+---------------------
+Before ES6:
+	JavaScript lacked native Set and Map data structures.
+	Developers used Objects to emulate them.
+
+This had serious drawbacks:
+	Keys in objects can only be strings or symbols.
+	Duplicate values couldn’t be automatically managed.
+	Objects didn’t support key ordering.
+
+ES6 introduced Set, Map, WeakSet, and WeakMap to solve these.
+---------------------------------------------
+
+What is a Set?
+	A Set is a collection of unique values.
+	It automatically removes duplicates.
+
+
+const mySet = new Set();
+
+mySet.add(1);
+mySet.add(1); // duplicate, ignored
+
+console.log(mySet.size); // 1
+
+
+Adding Multiple Types
+---------------------
+let obj1 = {};
+let obj2 = {};
+
+mySet.add("Hello");
+mySet.add(42);
+mySet.add(obj1);
+mySet.add(obj2);
+
+console.log(mySet.size); // 4 (all are unique)
+
+
+Set allows any type — strings, numbers, objects, arrays.
+
+
+
+Constructor with Array
+-----------------------------
+let newSet = new Set([1, 2, 3, 4, 4, 4]);
+console.log(newSet.size); // 4 — duplicates removed
+
+
+
+
+Iterating Over a Set
+-------------------------
+for (let value of newSet) {
+  console.log(value);
+}
+
+
+Or using forEach:
+--------------------
+newSet.forEach(value => console.log(value));
+
+
+Other Set Methods
+---------------------
+Method				Description
+add(value)			Adds a value
+has(value)			Checks if value exists
+delete(value)		Deletes a value
+clear()				Removes all elements
+size				Number of elements in the set
+
+
+newSet.delete(1);
+console.log(newSet.has(1)); // false
+newSet.clear();
+
+
+Builder Pattern
+-----------------------
+let chainSet = new Set().add("hello").add("world");
+console.log(chainSet.size); // 2
+
+
+
+
+
+
+Map in ES6
+--------------
+What is a Map?
+	A Map is a key-value pair structure.
+	Keys can be of any type — not just strings.
+	Maintains insertion order.
+
+Example:
+-----------------
+	let myMap = new Map();
+	myMap.set("name", "rajeev");
+	myMap.set("job", "trainer");
+	console.log(myMap.get("name")); // rajeev
+
+Problem with Object-as-Map in ES5
+-----------------------------------
+let myMap = Object.create(null);
+let obj1 = {};
+let obj2 = {};
+
+myMap[obj1] = "World";
+console.log(myMap[obj2]); // "World" — BAD! keys converted to [object Object]
+
+ In Objects, keys are always strings. Even obj1 and obj2 get stringified.
+
+Maps Fix This
+---------------
+let myMap = new Map();
+let obj1 = {};
+let obj2 = {};
+
+myMap.set(obj1, "World");
+myMap.set(obj2, "Planet");
+
+console.log(myMap.get(obj1)); // World
+console.log(myMap.get(obj2)); // Planet
+
+Objects remain unique as keys.
+-----------------------------------
+
+Initializing a Map from Array
+----------------------------
+let myMap = new Map([
+  ["fname", "Chandler"],
+  ["lname", "Bing"]
+]);
+console.log(myMap.get("fname")); // Chandler
+
+Iterating Over Map
+----------------------
+// keys only
+for (let key of myMap.keys()) {
+  console.log(key);
+}
+
+// values only
+for (let val of myMap.values()) {
+  console.log(val);
+}
+
+// key-value pairs
+for (let [key, val] of myMap.entries()) {
+  console.log(`${key} → ${val}`);
+}
+
+Or use forEach:
+--------------
+myMap.forEach((value, key, callingMap) => {
+  console.log(`${key} → ${value}`);
+});
+
+
+Map 				Methods
+--------------------------------
+Method				Description
+--------------------------------
+set(key, value)		Adds/updates entry
+get(key)			Retrieves value
+has(key)			Checks if key exists
+delete(key)			Removes entry by key
+clear()				Removes all entries
+size				Number of entries in the map
+
+
+
+WeakSet and WeakMap
+--------------------------
+These are like Set and Map but:
+
+	Only work with objects (not primitives).
+	Do not prevent garbage collection (they are weakly held).
+	Cannot be iterated or have .size.
+
+WeakMap Example
+--------------------
+let myMap = new WeakMap();
+let ob1 = {};
+myMap.set(ob1, "Hello World");
+console.log(myMap.get(ob1)); // Hello World
+ob1 = null; // reference is gone, GC will clear it
+
+
+
+
+MCQs – ES6 Concepts
+----------------------
+🔹 1–5: let, var, const, Scope & Hoisting
+----------------------------------------
+What is the output of the following code?
+console.log(x);
+var x = 5;
+A) 5
+B) undefined
+C) ReferenceError
+D) null
+✅ Ans: B
+
+Which of the following keywords does not support block scoping?
+A) let
+B) var
+C) const
+D) None of the above
+✅ Ans: B
+
+What is the output?
+{
+  let a = 10;
+}
+console.log(a);
+A) 10
+B) undefined
+C) ReferenceError
+D) null
+✅ Ans: C
+
+Which of the following statements is true?
+A) let is hoisted and initialized as undefined
+B) var is block scoped
+C) const variables can be reassigned
+D) let prevents variable redeclaration
+✅ Ans: D
+
+What happens when you declare a const object and modify one of its properties?
+const obj = {name: "raj"};
+obj.name = "ravi";
+A) Error
+B) name becomes read-only
+C) Valid, no error
+D) Object becomes frozen
+✅ Ans: C
+
+6–10: Arrow Functions & Functional Programming
+----------------------------------------
+Which of the following is a valid arrow function?
+
+A) const sum = (a, b) => return a + b;
+B) const sum = a, b => a + b;
+C) const sum = (a, b) => a + b;
+D) const sum(a, b) => a + b;
+✅ Ans: C
+
+
+
+Which of the following is not true about arrow functions?
+A) They have lexical this
+B) They support implicit return
+C) They are hoisted
+D) They are concise
+✅ Ans: C
+
+
+
+Which functional method is used to transform elements in an array?
+A) filter()
+B) map()
+C) reduce()
+D) sort()
+✅ Ans: B
+
+
+
+What is the result of:
+[1, 2, 3].map(n => n * 2);
+A) [1, 2, 3]
+B) undefined
+C) [2, 4, 6]
+D) Error
+✅ Ans: C
+
+Which method accumulates a single result from an array?
+
+A) filter()
+B) map()
+C) reduce()
+D) find()
+✅ Ans: C
+
+🔹 11–15: Default, Rest, Spread
+----------------------------------
+What is the output?
+
+function greet(name = "Guest") {
+  return `Hello, ${name}`;
+}
+greet();
+A) Hello,
+B) Hello, undefined
+C) Hello, Guest
+D) Error
+✅ Ans: C
+
+What does the rest operator do?
+
+A) Merges arrays
+B) Converts arguments into an array
+C) Returns rest of the string
+D) None of the above
+✅ Ans: B
+
+What is the output?
+
+const nums = [1, 2, 3];
+console.log(...nums);
+A) [1,2,3]
+B) SyntaxError
+C) 1 2 3
+D) undefined
+✅ Ans: C
+
+In which scenario do we typically use the spread operator?
+
+A) Skipping parameters
+B) Combining or cloning arrays/objects
+C) Accessing object keys
+D) Creating closures
+✅ Ans: B
+
+What is the result?
+
+let a = [1, 2];
+let b = [...a, 3];
+console.log(b);
+A) [1, 2, 3]
+B) [3]
+C) [undefined, 3]
+D) Error
+✅ Ans: A
+
+
+
+🔹 16–18: Destructuring & Template Literals
+----------------------------------------
+Which syntax extracts values from an object?
+
+A) let {x} = obj;
+B) let x = obj{x};
+C) let x = {obj};
+D) let x = obj[x];
+✅ Ans: A
+
+What is the output?
+let [a = 10, b = 20] = [1];
+console.log(a, b);
+A) 10 20
+B) 1 20
+C) 1 undefined
+D) undefined undefined
+✅ Ans: B
+
+Template literals use which syntax?
+
+A) 'Hello ${name}'
+B) $(name)
+C) ${name}
+D) Hello ${name}
+✅ Ans: D
+
+
+
+
+🔹 19–22: for...of vs for...in
+--------------------------------
+Which loop is best for iterating array values?
+
+A) for...in
+B) forEach
+C) for...of
+D) for loop
+✅ Ans: C
+
+What does for...in loop iterate?
+
+A) Array values
+B) Object keys
+C) Set elements
+D) Map entries
+✅ Ans: B
+
+
+What is the output?
+
+for(let ch of "Hi") {
+  console.log(ch);
+}
+A) Error
+B) H i
+C) ["H", "i"]
+D) undefined
+✅ Ans: B
+
+
+
+What is the output?
+
+let colors = ['Red', 'Green'];
+for(let index in colors){
+    console.log(index);
+}
+A) Red Green
+B) 0 1
+C) undefined
+D) Error
+✅ Ans: B
+
+🔹 23–27: ES6 Classes, Inheritance, Static, Getters
+------------------------------------------------------
+What happens if you call a class constructor without new?
+
+A) Works normally
+B) Returns undefined
+C) TypeError
+D) SyntaxError
+✅ Ans: C
+
+Which is true about ES6 classes?
+
+A) They are hoisted
+B) They can be called without new
+C) They are syntactic sugar over functions
+D) They allow private inheritance
+✅ Ans: C
+
+Which keyword invokes the parent constructor?
+
+A) this
+B) super
+C) parent
+D) constructor
+✅ Ans: B
+
+How do you declare a static method?
+
+A) function static greet()
+B) greet static()
+C) static greet() {}
+D) class greet() {}
+✅ Ans: C
+
+What is the purpose of a getter?
+
+A) Returns class name
+B) Changes object
+C) Accesses properties like a method
+D) None
+✅ Ans: C
+
+🔹 28–30: Set, Map, WeakMap
+-----------------------------
+Which of the following is true about Set?
+
+A) Allows duplicate values
+B) Maintains insertion order
+C) Allows key-value pairs
+D) Is a weak collection
+✅ Ans: B
+
+What is the output?
+let map = new Map();
+map.set("name", "raj");
+console.log(map.get("name"));
+A) raj
+B) name
+C) undefined
+D) Error
+✅ Ans: A
+
+Which of the following is true for WeakMap?
+
+A) Keys must be strings
+B) Keys must be objects
+C) WeakMap has .size()
+D) It supports iteration
+✅ Ans: B
+
+
+
+
+
