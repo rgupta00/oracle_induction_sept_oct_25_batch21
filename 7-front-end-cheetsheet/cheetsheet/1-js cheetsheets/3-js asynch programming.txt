@@ -216,6 +216,49 @@ async function demo() {
 demo();
 
 
+is it synchronos or async?
+--------------------------
+this is not synchronous.
+
+Here’s why:
+
+setTimeout is asynchronous. 
+It doesn’t block the thread. Instead, it schedules a callback (resolve) to run after the given time.
+
+The wait(ms) function immediately returns a Promise (pending state).
+
+When you use await wait(2000), 
+the async function demo() pauses at that line — but only inside demo().
+
+Meanwhile, the JavaScript event loop is free to run other code. 
+The whole program does not block like in synchronous sleep.
+
+
+Example to see the difference:
+----------------------------
+async function demo() {
+  console.log("Start");
+  await wait(2000);
+  console.log("End after 2 sec");
+}
+
+demo();
+console.log("I run immediately after demo() call");
+
+
+Output:
+-----------
+Start
+I run immediately after demo() call
+(2 sec pause)
+End after 2 sec
+
+
+👉 This shows it’s asynchronous — the line after demo() doesn’t wait.
+
+
+
+
 Example with await on custom functions
 ----------------------------------
 

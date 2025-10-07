@@ -1,3 +1,30 @@
+What is this week:
+------------------
+html css js
+js quick recap
+es6 in details: OO in modern javascript
+typescript (superset of js) angular and react
+
+ajax 
+
+
+java 8: Optional class in javascript
+
+
+nodejs angular OJet, knockout js ( 5 day session)
+------------------------------
+nodejs , mean stack
+angular 18 
+OJet 
+knockout framework
+
+project work
+
+14th Oct
+------------
+devops workshop
+devops
+
 ES6 Tutorial: ES6 New Enhancements
 ==================================
 0. Setup
@@ -50,8 +77,7 @@ restricted to the block, but not in JS using var.
 
 
 Example 2:
-------------------
-
+-----------
 for (var i = 0; i < 10; i++) {
 	var fname = "rajeev";
 	console.log(fname + ": " + i);

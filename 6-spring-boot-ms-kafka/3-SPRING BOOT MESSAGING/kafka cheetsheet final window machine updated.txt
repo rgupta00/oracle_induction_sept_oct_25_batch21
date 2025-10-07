@@ -107,8 +107,11 @@ go to window:
 
 .\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic t-hello2 --partitions 3 --replication-factor 1
 
+.\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic order-confirmed --partitions 3 --replication-factor 1
+
 .\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic orders --partitions 3 --replication-factor 1
 
+.\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic shipment  --partitions 3 --replication-factor 1
 
 List topic
 

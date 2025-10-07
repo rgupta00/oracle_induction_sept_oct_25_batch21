@@ -328,7 +328,8 @@ conn.query(updateQuery, (err, result) => {
 
 Node.js with Express
 -----------------------
-	Express.js is a minimal and flexible Node.js web application framework for building single-page,
+	Express.js is a minimal and flexible Node.js web application 
+	framework for building single-page,
 	multi-page, and hybrid web apps.
 
 Standard backend framework in MEAN stack:
