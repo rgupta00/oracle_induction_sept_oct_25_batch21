@@ -1,7 +1,7 @@
 Node.js Discussion
 -------------------
-
 What is Node.js?
+
 	Node.js is an open-source, cross-platform, back-end JavaScript runtime environment 
 	that runs on the V8 engine and executes JavaScript code outside a web browser.
 
@@ -98,7 +98,7 @@ function mul(a, b) {
     return a * b;
 }
 
-// Option 1
+// Option 1 === object property shorthand (introduced in ES6)
 module.exports = { add, diff, mul };
 
 // Option 2
@@ -218,6 +218,9 @@ nodemon ./server.js
 
 
 
+how to connect node with mysql
+java + jdbc
+
 
 Connecting with MySQL
 -----------------------
@@ -326,7 +329,7 @@ conn.query(updateQuery, (err, result) => {
 
 
 
-Node.js with Express
+Node.js with ExpressJS(Spring REST)
 -----------------------
 	Express.js is a minimal and flexible Node.js web application 
 	framework for building single-page,
@@ -373,10 +376,15 @@ Express Routes Example
 ----------------------
 
 app.get('/', (req, res) => res.send('express js working!!'));
+
 app.get('/home', (req, res) => res.send('home'));
+
 app.get('/about', (req, res) => res.send('about'));
+
 app.get('/admin', (req, res) => res.send('admin'));
+
 app.get('/foo*bar', (req, res) => res.send('admin'));
+
 app.post('/postdemo', (req, res) => res.send('post'));
 
 
@@ -395,6 +403,9 @@ app.get('/user/:id', (req, res) => {
 
 
 
+http req----------- filter --- rest end point 
+
+http req-----------middleware ---- routes
 
 
 Middleware & Route Handlers
@@ -412,6 +423,7 @@ app.use((req, res, next) => {
 Hello world example:
 ------------------
 //Custom middleware (executes before every route)
+
 app.use((req, res, next) => {
   console.log(' Middleware called -', req.method, req.url);
   next(); // hand over to next middleware or route handler
@@ -567,7 +579,7 @@ mongdb compass
 
 Short into to mongodb
 -----------------------
-RDBMS 	MongoDB
+RDBMS 				MongoDB
 ---------------
 Table 	<--->	Collection
 Column 	<--->	Key
@@ -635,6 +647,13 @@ Angular<--------> Express <------> mongodb
 		Nodejs		   mongoose	
 
 
+hello world of mean application
+a X
+angular : front end mvc
+exprees: spring rest
+mongo: nosql
+nodejs: jvm
+mongooes vs mongo: jpa vs jdbc
 
 crud application: book application
 -----------------------------------
@@ -691,7 +710,107 @@ var BookSchema = new Schema({
   category: String
 });
 
+//coding convension : books(collections)-> Book
+//emps          Emp
 module.exports = mongoose.model('Book', BookSchema);
+
+
+app.js
+--------
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const Book = require('./Book.model');
+
+const app = express();
+const port = 8080;
+const dbURI = 'mongodb://localhost:27017/ora123'; // Better to specify port
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Connect to MongoDB using modern promise-based approach
+mongoose.connect(dbURI)
+  .then(() => console.log('MongoDB connected...'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('happy to be here');
+});
+// Get all books
+app.get('/book', async (req, res) => {
+  try {
+    const books = await Book.find({});
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.json(books);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Get book by ID
+app.get('/book/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    res.json(book);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Add new book
+app.post('/book', async (req, res) => {
+  try {
+    const newBook = new Book(req.body);
+    const savedBook = await newBook.save();
+    res.json(savedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Update book
+app.put('/book/:id', async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      { $set: { title: req.body.title } },
+      { new: true, upsert: true }
+    );
+    res.json(updatedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Delete book
+app.delete('/book/:id', async (req, res) => {
+  try {
+    const deletedBook = await Book.findByIdAndDelete(req.params.id);
+    res.json(deletedBook);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 app.js

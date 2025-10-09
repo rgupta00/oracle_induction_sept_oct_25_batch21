@@ -12,7 +12,7 @@ __________
 	- applying routing
 	- applying guards routes in angular
 	- angular forms and validations
-	- angular testing jasmine and karma
+
 	
 
 	
@@ -273,6 +273,20 @@ export class TestComponent {
 
 
 
+dont forget to import TestComponent to app.component.ts 
+----------------------------------------------------------
+@Component({
+ ........
+  imports: [RouterOutlet, TestComponent],
+ .........
+})
+export class AppComponent {
+  title = 'helloapp2';
+}
+ 
+and use it app.component.html
+----------------------------
+<app-test></app-test>
 
 
 _______________________________________________

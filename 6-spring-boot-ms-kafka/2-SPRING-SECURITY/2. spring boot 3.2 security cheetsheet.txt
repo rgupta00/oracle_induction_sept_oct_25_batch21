@@ -523,6 +523,18 @@ using securityContextHolder
 using Principle
 
 
+ @GetMapping("/me")
+    public ResponseEntity<String> getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok("Logged user: " + authentication.getName());
+    }
+	
+or
+	@GetMapping("/me")
+public ResponseEntity<String> getMe(@AuthenticationPrincipal UserDetails user) {
+    return ResponseEntity.ok("Hello, " + user.getUsername());
+}
+
 
 
 
@@ -656,9 +668,7 @@ We need to create an endpoint so that user can get token :
 -----------------------------------------------------
 allow to access without security:
 
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("authenticate").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth->auth.requestMatchers("authenticate").permitAll().anyRequest().authenticated())
 						
 	
 	
@@ -757,7 +767,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken=
                      new  UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-               // authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -817,16 +827,20 @@ public class SecConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("authenticate").permitAll()
-                        .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+    	http.csrf(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth ->
+            auth.requestMatchers("authenticate").permitAll()
+                .anyRequest().authenticated()
+        )
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(authenticationEntryPoint) // 401
+            .accessDeniedHandler(accessDeniedHandler)           // 403
+        )
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .sessionManagement(sess ->
+            sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
         return http.build();
     }
 

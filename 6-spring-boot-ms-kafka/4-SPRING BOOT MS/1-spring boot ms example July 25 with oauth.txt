@@ -1003,8 +1003,8 @@ what type of request flows is supported by Oauth2?
 2. client credential grant (backend application )
 		service -----------------service2
 		
-3. Resouce owner passaward grant type (back application)
-4. Implicit code grant (js application)
+3. Resouce owner passaward grant type (back application) ❌ Deprecated
+4. Implicit code grant (js application)	❌ Deprecated
 
 
 

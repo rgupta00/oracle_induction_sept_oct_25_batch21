@@ -1,5 +1,32 @@
+What today ?
+-------------
+classcial js , ES6, TS (angular/react)
+
+TS: add type to the script
+
+java :
+int i=5;
+i="foo";
+
+	tsc
+ts ---> js
+let a: number=4;
+a="foo"
+
+full stack?
+undertanding Modern JavaScript Async Programming and ajax
+
+node js (v8 engine)
+
+intro to MEAN stack and creating crud application, mongodb intro
+
+spring security basic JWT and Oauth2, KC
+
+
+
 Modern JavaScript Async Programming
 ===================================
+
 Topics includes:
 -----------------
 	Callbacks (sync & async)
@@ -376,7 +403,7 @@ Using Promises:
 ---------------
 boilWater()
   .then(() => addTeaLeaves())
-  .then(() => wait(2 mins))
+  .then(() => wait(2 * 60 * 1000))
   .then(() => strainTea())
   .then(() => serve())
   .catch((err) => console.log("Spilled tea!"));
