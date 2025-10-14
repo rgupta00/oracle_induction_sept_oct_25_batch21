@@ -271,7 +271,7 @@ Basics customization:
               <img src="css/images/emp-logo.jpeg" width="300" height="60"></img>
 
 
-3. change app name
+3. change app name (appcontroller.js)
       // Header
       // Application Name used in Branding Area
       this.appName = ko.observable("App Name");

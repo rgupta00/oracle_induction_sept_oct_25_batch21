@@ -1,3 +1,254 @@
+getting started with angular 18:
+_________________________________
+
+node 20 download
+----------------
+https://nodejs.org/en/download
+
+ng 18 install
+----------------
+npm install -g @angular/cli@18.0.0
+
+
+Compatibility Test (after install):
+----------------------------------
+node -v          # should return v20.19.4
+npm -v           # should return compatible npm version
+ng version       # verify Angular CLI 18 is used
+ng new test-app  # create test project
+cd test-app
+ng serve         # test local dev server
+
+
+checking version:
+---------------
+ng --version
+
+creating project:
+---------------
+ng new helloapp
+
+with routing support :
+ng new empappclient --standalone --routing --style=css
+
+
+
+Running:
+------
+ng serve --open
+
+
+
+ 
+Simplest ex:
+____________
+creating new module:
+ng g c test
+
+
+
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  templateUrl: './test.component.html',
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  name: string="angular 18 demo"
+}
+
+
+
+template vs templateUrl
+________________________
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+   template: `<h1>Hello {{name}}</h1>`,
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+}
+
+
+
+template vs templateUrl
+________________________
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  templateUrl: './test.component.html',
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+  namme: string="angular 18 demo"
+}
+
+
+
+dont forget to import TestComponent to app.component.ts 
+----------------------------------------------------------
+@Component({
+ ........
+  imports: [RouterOutlet, TestComponent],
+ .........
+})
+export class AppComponent {
+  title = 'helloapp2';
+}
+ 
+and use it app.component.html
+----------------------------
+<app-test></app-test>
+
+
+_______________________________________________
+- Data Binding in angular: one way , two way
+________________________________________________
+
+
+Interpolation in Angular
+________________________
+
+	-Interpolation is all about data binding in angular
+
+Data Binding		Description				How
+-----------------------------------------------------------------------------
+One way ==========>	From Component to View Template    Interpolation and Property binding
+One way ==========>	From View Template to Component	   event binding
+Two way ==========>	From Component <===> Template 	   <input [(ngModel)]='name'>
+
+
+
+
+1.One way data biding using Angular Interpolation {{}}
+____________________________________________________________
+	Interpolation {{}} used for data binding from C==> V
+____________________________________________________________
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test',
+  standalone: true,
+  imports: [],
+  template: `
+  <h4>{{20+20}}<h4>
+    {{title}}<br/>
+    {{name}}<br/>
+    {{fullname()}}
+
+  `,
+  styleUrl: './test.component.css'
+})
+export class TestComponent {
+
+   name: string="angular 18 demo"
+  title: string='angular demo'
+  fullname():string{
+    return `my name is ${this.name}`;
+  }
+}
+
+dont forget to import TestComponent to app.component.ts 
+----------------------------------------------------------
+@Component({
+ ........
+  imports: [RouterOutlet, TestComponent],
+ .........
+})
+export class AppComponent {
+  title = 'helloapp2';
+}
+ 
+and use it app.component.html
+----------------------------
+<app-test></app-test>
+
+
+
+
+
+1.One way data biding using Property binding [ ]
+________________________________________________
+Interpolation {{}} used for data binding from C==> V
+________________________________________________
+
+	=> Interpolation is an alternative of Property binding only work for
+	 string (not for boolean etc)
+
+
+Use interpolation when setting plain text content, e.g.:
+------------------------------------------------
+
+<p>{{ userName }}</p>
+
+Use property binding when setting element attributes or boolean flags, e.g.:
+---------------------------------------------------
+<button [disabled]="isDisabled">Click me</button>
+<img [src]="imagePath">
+
+
+
+Ex:
+This Angular component demonstrates the difference between interpolation and property binding in action
+--------------------------------------------------------------------------------------------------
+
+interpolation vs property binding
+---------------------------------------
+interpolation
+---------------
+Name <input type="text" name="name" value={{name}}/> <br/>
+This uses interpolation: value={{name}}
+Angular will convert name (string) to a string literal and insert it in the HTML.
+Works, but not preferred for DOM properties like value.
+
+property binding
+---------------------
+Name <input type="text" name="name" [value]="name"/> <br/>
+Uses property binding: [value]="name"
+
+This is the correct and recommended way.
+
+
+Directly binds the value of the name property ('raj') to the input’s DOM property value.
+
+@Component({
+  selector: 'app-test',
+  template: `
+  
+  Name <input type="text" name="name" value ={{name}}/> <br/>
+  Name <input type="text" name="name" [value]="name"/> <br/>
+
+
+  <div hidden={{isHidden}}>this is a div</div>
+  <div [hidden]="isHidden">this is a div2</div>
+
+  `,
+  styleUrls: ['./test.component.css']
+})
+export class TestComponent implements OnInit {
+
+  name:string='raj';
+  isHidden:boolean=false;
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+}
 
 ng new empappclient --standalone --routing --style=css
 
@@ -1092,6 +1343,10 @@ public AuthResponse validateLogin() {
 
 Step 5: Implement changes for Basic Authentication on the Angular side
 ----------------------------------------------------------------
+Note:btoa()
+ It’s used to encode a string into Base64 — typically when you need to safely transmit or store binary or text data 
+ (like credentials, images, or tokens).
+
 In the EmployeeService we will be adding the basic auth header
  before making the REST calls.
 
@@ -1307,7 +1562,8 @@ Step 9: HttpInterceptor service:
 	Next we will be creating a new HttpInterceptor service called BasicAuthInterceptor Service. 
 	
 	This service will check if the session has valid username and basicAuth String,
-	then it will update the headers of all outgoing HTTP requests. We implement the interceptor by extending the HttpInterceptor.
+	then it will update the headers of all outgoing HTTP requests. We implement the interceptor
+	by extending the HttpInterceptor.
 
 
 ng g service BasicAuthHtppInterceptor

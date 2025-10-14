@@ -1,0 +1,844 @@
+
+jenkins tutorial:
+-----------------
+Agenda:
+---------
+	*Introduction to Jenkins
+	*Jenkins configuration
+	*Jenkins Hello world
+	*Jenkins without pipeline script [configuration approach]
+	*Jenkins  pipeline script introduction
+	*Jenkins pipeline script spring boot + tomcat 
+	*Jenkins pipeline script spring boot + docker deployment
+	
+
+understanding ci/cd
+----------------------
+What is CI/CD?
+
+CI/CD stands for Continuous Integration and Continuous Delivery/Deployment. 
+
+It refers to the set of practices and tools that allow software development teams 
+to integrate code changes more frequently and automate the delivery process, 
+resulting in quicker releases and higher-quality software.
+
+Continuous Integration (CI): 
+	Developers frequently merge their code changes into a shared repository.
+	Automated builds and tests run on these changes to ensure that the new code
+	integrates smoothly with the existing codebase.
+	
+Continuous Delivery (CD): 
+	After the CI process, CD automates the delivery of validated code to a 
+	staging or production environment. 
+In Continuous Deployment:
+	this process is taken a step further, where every change that passes automated
+	tests is deployed directly to production.
+	
+	
+	
+https://medium.com/@mavidev/a-complete-guide-to-ci-cd-continuous-integration-and-continuous-delivery-explained-8da11d5d1036
+https://www.redhat.com/en/topics/devops/what-is-ci-cd
+
+
+Understanding devOps in depth:
+------------------------------
+ DevOps Infinity Loop
+ which represents Continuous Integration (CI) and Continuous Delivery/Deployment (CD):
+
+Cycle:
+=========
+ PLAN → CODE → BUILD → TEST → RELEASE → DEPLOY → OPERATE → MONITOR → (repeat)
+
+Each phase has tools that automate tasks.
+
+1) PLAN
+	Purpose: Manage requirements, tasks, and project collaboration.
+	JIRA – Issue and project tracking.
+	Confluence – Team documentation/wiki.
+
+	Alternatives:
+		Azure Boards
+		ClickUp
+		Notion
+
+2) CODE
+	Purpose: Source code management.
+	Git – Distributed version control.
+	DC/OS – Data center OS (less used in 2025).
+
+	🔄 DC/OS Alternatives:
+	GitHub
+	GitLab
+	Bitbucket
+
+3) BUILD
+	Purpose: Compile code and create artifacts.
+	Maven – Popular for Java builds.
+	✅ Maven still dominant for Java.
+	🔄 Alternatives:
+	Gradle
+
+4) TEST
+	Purpose: Validate code quality.
+	JUnit – Unit testing for Java.
+	Selenium – UI testing.
+
+	✅ JUnit remains core.
+	🔄 Modern tools:
+	Testcontainers (for integration tests)
+	Playwright/Cypress (instead of Selenium)
+
+5) RELEASE
+	Purpose: Package and prepare for deployment.
+	Jenkins – Automate pipelines.
+	Codeship – SaaS CI/CD platform (less popular in 2025).
+	✅ Jenkins still widely used.
+	🔄 Alternatives:
+		GitHub Actions
+		GitLab CI/CD
+		CircleCI
+
+🔹 6) DEPLOY
+	Purpose: Push artifacts to servers.
+	Docker – Containers.
+	AWS – Cloud hosting.
+	✅ Both are critical.
+
+7) OPERATE
+	Purpose: Configure infrastructure.
+	Chef – Configuration management.
+	Ansible – Automation.
+	Kubernetes – Orchestration.
+
+	🔄 Chef usage declined.
+	✅ Kubernetes + Ansible still dominant.
+	🔄 Alternatives:
+	Terraform (infrastructure as code)
+	Pulumi
+
+8) MONITOR
+	Purpose: Track health and logs.
+	Nagios – Monitoring (older).
+	Splunk – Log analysis.
+	Datadog – Cloud monitoring.
+
+	✅ Datadog very relevant.
+	🔄 Nagios Alternatives:
+		Prometheus + Grafana
+		New Relic
+		ELK Stack (ElasticSearch, Logstash, Kibana)
+
+Spring Boot CI/CD Pipeline Flow
+==========================================
++-----------------+
+|   Developer     |
+|   writes code   |
++-----------------+
+          |
+          v
++-----------------------+
+|   Push to GitHub      |
++-----------------------+
+          |
+          v
++--------------------------------------+
+| Jenkins / GitHub Actions Pipeline   |
++--------------------------------------+
+| 1. Checkout Code                    |
+| 2. Build with Maven                 |
+| 3. Run JUnit & Testcontainers       |
+| 4. Package JAR/WAR                  |
+| 5. Build Docker Image               |
+| 6. Push Image to AWS ECR            |
+| 7. Deploy to Kubernetes / EC2       |
++--------------------------------------+
+          |
+          v
++--------------------------------------+
+|     Kubernetes Cluster / EC2         |
+|   (Spring Boot app running)          |
++--------------------------------------+
+          |
+          v
++----------------------------+
+|   Monitor with Datadog &   |
+|   Prometheus + Grafana     |
++----------------------------+
+
+
+Tools Recommendation
+-----------------------------
+Phase	Recommended Tools
+-----------------------------	
+Plan		Jira / ClickUp / Notion
+Code		Git + GitHub / GitLab
+Build		Maven / Gradle
+Test		JUnit + Testcontainers + Cypress
+Release		Jenkins / GitHub Actions / GitLab CI
+Deploy		Docker + AWS + Kubernetes
+Operate		Terraform + Ansible + Kubernetes
+Monitor		Prometheus + Grafana + Datadog
+	
+	
+	
+	
+killing and port on window machine:
+----------------------------
+open cmd as admin
+netstat -ano | findstr :8080
+taskkill /PID 2660 /F
+	
+	
+What is Jenkins?
+------------------
+	Jenkins is an open-source automation server that 
+	helps with the software development process by automating tasks like building, 
+	testing, and deploying. 
+	It's a popular tool for continuous integration (CI) and continuous delivery (CD)
+	
+
+How it works
+	Jenkins can be triggered by code changes in repositories like GitHub, 
+	Bitbucket, and GitLab. 
+	It can then integrate with build tools like Maven and Gradle to automatically 
+	build, test, and deploy code. 
+	
+What it does
+	Jenkins can help increase developer productivity, ensure code quality, 
+	and speed up the delivery of software updates. 
+	
+How it's built
+	Jenkins is written in Java and was originally released in 2011
+	as a fork of the Hudson project
+	
+
+Jenkins configuration
+-------------------------
+ref: https://www.blazemeter.com/blog/jenkins-war-file
+	
+run jenkins jar, changing port
+-----------------------------
+java -jar jenkins.war --httpPort=8090
+
+1. login
+2. install plugins
+3. change admin password
+
+
+
+
+hello world jenkins job:
+-------------------------
+	login --> create first job-->
+
+
+public class Hello{
+	public static void main(String args[]){
+		System.out.println("hello to jenkins");
+	}
+}
+
+cd C:\hellojava
+javac Hello.java
+java Hello
+
+
+Spring web application Ci/CD on jenkins:
+--------------------------------------------
+https://github.com/rgupta00/empappwar.git
+
+
+jenkins : tomcat 9.x
+x.x
+
+Step 1: create spring boot web application with java 17 and spring boot version 2.7.11
+	choose web packaging
+	
+Step 2: run on tomcat 9 without ci/cd
+
+step 3: push project to github
+
+step 4: go to jenkins and install some plugins
+
+
+add some plugin:
+-------------
+maven
+deploy to container plugin
+
+
+spring boot 2.7.11
+
+Tomcat Server Setup For Jenkins Deployment :
+--------------------------------------------
+
+step 1: donwload install tomcat zip
+step 2: provide new user in tomcat-user.xml
+
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<user username="admin" password="admin" roles="manager-gui,manager-script"/>
+
+
+
+
+
+spring mvc maven github project :
+------------------------------
+
+step 3: create an new jenkins project
+
+springmvc ----->freestyle ---> give description
+				(spring MVC hello world)
+
+					|
+				choose : github project ..provide link
+
+
+				choose : SCM--> git
+				provide No Credentials
+
+					|
+				Build trigger --> poll scm: * * * * *
+
+					|
+				Build Environment: Delete workspace before build starts
+
+					|
+				Invoke top-level Maven targets
+				Choose build goals: clean compile test package
+
+
+
+step 4: now we need to add tomcat plugin for jenkins
+
+	click Manage Jenkins---> manage plugins--->search for  container
+
+								|
+							Deploy to container (name of container)
+								|
+						Installing Plugins/Upgrades
+	Now restart jenkins
+
+
+
+step 4: now from previous project
+
+choose last option:
+
+Post-build Actions
+
+	mention war file location: target/empapp.war
+
+	give context path /empapp
+	
+	configure  Credentials	
+
+	admin/****** (tomcat.admin)
+ 
+ 	and tomcat url
+
+
+Q: what is the best practice while using jenkine to write CI/CD?
+	declarative pipeline?
+	
+	hello world of jenkine
+	sprng web and deploy on tocat
+
+
+
+
+jenkins declerative pipeline:
+---------------------------
+https://www.jenkins.io/blog/2017/02/07/declarative-maven-project/
+https://medium.com/@venkatsatyanreddy_92646/beginners-guide-to-jenkins-pipelines-16a6181def97
+
+
+
+	demo-pipeline--> declarative pipeline
+
+	Hello world Jenkins Declarative Pipeline:
+
+	pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+    }
+}
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                bat "echo Hello World"
+                bat 'echo "${BUILD_ID}"'
+                echo 'Hello World'
+            }
+        }
+    }
+}
+
+Example 2: pipeline hello world with multiple stages:
+------------------------------------------------------
+
+
+Note: configure maven "localmvn" to global tools
+----------------------------------------------------
+
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "localmvn" and add it to the path.
+        maven "localmvn"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                // Get some code from a GitHub repository
+                git 'https://github.com/rgupta00/empappwar.git'
+
+                // Run Maven on a Unix agent.
+                //sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.war'
+                }
+            }
+        }
+    }
+}
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Git checkout') {
+            steps {
+                git 'https://github.com/rgupta00/empappwar.git'
+            }
+        }
+		stage ('Compile Stage') {
+		    steps {
+		            bat "mvn clean compile"
+		    }
+		}
+		stage ('Testing Stage') {
+		       bat "mvn test"
+		}
+		
+		stage ('Deployment Stage') {
+		    steps {
+		            bat "mvn deploy"
+		    }
+		}
+    }
+}
+
+	
+
+
+
+localmvn
+
+
+Example Spring boot mvc + tomcat + pipeline example:
+--------------------------------------------------
+step 1: add maven configuration in tools
+	with name localmvn
+	
+step 2: SCM checkout [checkout:from version control tools]
+	generate pipeline script
+	
+checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappwar.git']])
+checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappcicd.git']])
+
+Jenkinsfile
+--------------
+
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "localmvn"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                // Get some code from a GitHub repository
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappwar.git']])
+
+                // Run Maven on a Unix agent.
+                //sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/empapp.war'
+                }
+            }
+        }
+    }
+}
+
+pipeline {
+    agent any
+    
+    stages {
+        
+        stage('Git checkout') {
+            steps {
+               checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappwar.git']])
+            }
+        }
+        stage('build project') {
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"  
+            }
+            post { 
+                success {
+					junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/empapp.war'
+                }
+            }
+        }
+    }
+}
+
+Step 3: deploy war to the tomcat container
+	generate pipeline script
+--------------------------------------------------
+pipeline {
+    agent any
+    
+    stages {
+        
+        stage('Git checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappwar.git']])
+            }
+        }
+        stage('build project') {
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"  
+            }
+        }
+        stage ('Deploy to tomcat server') {
+             steps{
+                deploy adapters: [tomcat9(credentialsId: '7dac3c3a-8476-4caf-b184-ca6727532699', path: '', url: 'http://localhost:8080/')], contextPath: 'empappwar', war: '*/*.war'
+
+             }
+         }
+         
+    }
+}
+
+deploy adapters: [tomcat9(credentialsId: 'tomcat_server', path: '', url: 'http://localhost:8080/')], contextPath: '/empapp', war: '**/*.war'
+
+
+deploy adapters: [tomcat9(credentialsId: '4545d0a9-4bed-438e-9009-fe7b87e40695', path: '', url: 'http://localhost:8080')], contextPath: 'empapp', war: 'target/empapp.war'
+deploy adapters: [tomcat9(credentialsId: '7dac3c3a-8476-4caf-b184-ca6727532699', path: '', url: 'http://localhost:8080/')], contextPath: 'empappwar', war: '*/*.war'
+
+
+
+Step 4: deploy war to the tomcat container
+	generate pipeline script with post build steps
+--------------------------------------------------
+pipeline {
+    agent any
+    
+    stages {
+        
+        stage('Git checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/mvc2.git']])
+            }
+        }
+        stage('build project') {
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"  
+            }
+			 post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.war'
+                }
+            }
+        }
+        stage ('Deploy to tomcat server') {
+             steps{
+                 deploy adapters: [tomcat9(credentialsId: 'tomcat_server', path: '', url: 'http://localhost:8080/')], contextPath: '/empapp', war: '**/*.war'
+             }
+         }
+         
+    }
+}
+
+
+
+Spring boot + docker + jenkin:
+============================
+Step 1: create a spring boot application with docker file
+
+refer:
+https://github.com/rgupta00/employeeappaws
+
+step 2: add docker related plugin in jenkins
+------------------
+Docker common
+Docker API
+Docker
+Docker Pipeline
+
+
+Step 3: to create dockerhub seceat:
+---------------------------------------------
+withCredentials: bind credential to variable
+withdockerregistry:set up docker registry endpoint
+
+
+Jenkins+ docker integration:
+------------------------------
+pipeline {
+    agent any
+    
+    tools{
+        maven "maven"
+    }
+
+    environment{
+           APP_NAME = "empappcicd"
+           RELEASE_NO= "1.0.0"
+           DOCKER_USER= "rgupta00"
+           IMAGE_NAME= "${DOCKER_USER}"+"/"+"${APP_NAME}"
+           IMAGE_TAG= "${RELEASE_NO}-${BUILD_NUMBER}"
+    }
+    
+    stages {
+          stage("SCM checkout"){
+            steps{
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rgupta00/empappcicd.git']])
+            }
+        }
+
+        stage("Build Process"){
+            steps{
+                script{
+                    bat 'mvn clean install'
+                }
+            }
+        }
+        
+        stage("Build Image"){
+            steps{
+                script{
+                    bat 'docker build -t rgupta00/empappcicd:1.1 .'
+                }
+            }
+        }
+        stage("Deploy Image to Hub"){
+            steps{
+                withCredentials([string(credentialsId: 'mydp', variable: 'mydp')]) {
+                         bat 'docker login -u rgupta00 -p ${mydp}'
+                         bat 'docker push rgupta00/empappcicd:1.1'
+                }
+            }
+        }
+    }
+}
+
+
+
+
+https://medium.com/@lilnya79/integrating-dockerhub-with-jenkins-for-continuous-deployment-35cbd1b36a17#:~:text=Step%202%3A%20Adding%20DockerHub%20Credentials%20to%20Jenkins&text=Navigate%20to%20Manage%20Jenkins%20%3E%20Manage,Step%201%20as%20the%20password.
+
+
+
+
+https://www.youtube.com/watch?v=BePJ1bBWk3E
+https://www.youtube.com/watch?v=ShTC1u7_jew&ab_channel=DevOpsHint
+
+Reference:
+----------
+https://howtodoinjava.com/devops/setup-jenkins-pipeline-for-spring-boot-app/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ubuntu: examples:
+====================
+
+Example:
+--------
+pipeline{
+    agent any
+    
+    environment{
+        PATH = "/opt/maven3/bin:$PATH"
+    }
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'github', url: 'https://github.com/rgupta00/mvc'
+            }
+        }
+        stage("Maven Build"){
+            steps{
+                sh "mvn clean package"
+                sh "mv target/*.war target/mvc.war"
+            }
+        }
+       
+        }
+    }
+}
+
+
+
+
+Example :post build action
+--------------------------
+pipeline {
+    agent any
+	
+    environment{
+       	 PATH = "/opt/maven3/bin:$PATH"
+    }
+    stages {
+        
+        stage('Git checkout') {
+            steps {
+                git 'https://github.com/rgupta00/mvc2.git'
+            }
+        }
+        stage('build project') {
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"  
+            }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+				      echo "Archiving the Artifacts"
+                     junit '**/target/surefire-reports/TEST-*.xml'
+                     archiveArtifacts 'target/*.war'
+                }
+            }
+        }
+        
+    }
+}
+
+
+Example:
+
+
+
+	pipeline {
+	    agent any
+	
+	environment{
+       	 PATH = "/opt/maven3/bin:$PATH"
+    	}
+	    stages {
+		stage ('Compile Stage') {
+
+		    steps {
+		            sh 'mvn clean compile'
+		        
+		    }
+		}
+
+		stage ('Testing Stage') {
+		            sh 'mvn test'
+		        
+		    }
+		}
+
+
+		stage ('Deployment Stage') {
+		    steps {
+		            sh 'mvn deploy'
+		    }
+		}
+	    }
+	}
+
+
+
+Example deployment war file on tomcat
+----------------------------------
+
+pipeline{
+    agent any
+    
+    environment{
+        PATH = "/opt/maven3/bin:$PATH"
+    }
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'github', url: 'https://github.com/rgupta00/mvc'
+            }
+        }
+        stage("Maven Build"){
+            steps{
+                sh "mvn clean package"
+                sh "mv target/*.war target/mvc.war"
+            }
+        }
+       
+        }
+    }
+}
+
+
+Ref:
+-----
+https://github.com/sinemozturk/Jenkins-CI-CD-Pipeline
+https://howtodoinjava.com/devops/setup-jenkins-pipeline-for-spring-boot-app/
+
+

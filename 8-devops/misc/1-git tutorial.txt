@@ -1,0 +1,859 @@
+git commands practice
+===================
+0. Introduction
+1. basics commands
+2. git log 
+3. git diff command
+4. git rm command
+5. undo changes using git checkout command
+6. git reference (master and head)
+7. git reset
+8. git ignore
+9. git branching and commands
+10. merging and conflict
+11. deleting branches
+12. rebashing
+13. git slash
+14. git remote commands
+15. git taging
+
+
+What is git? git vs github?
+--------------------------
+
+1. basics commands
+---------------------
+git status
+	fatal: not a git repository (or any of the parent directories): .git
+ 
+
+git init
+	Initialized empty Git repository in /home/raj/Desktop/gitdemo/project1/.git/
+
+git status
+	On branch master
+	No commits yet
+	nothing to commit (create/copy files and use "git add" to track)
+
+cat >file1
+this is file 1
+cat >file2
+this is file 2
+
+git status
+	On branch master	
+	No commits yet
+
+	Untracked files:
+	file1, file2
+
+
+git add file1, file2
+
+git status
+	On branch master
+	No commits yet
+
+	Changes to be committed:
+	new file:   file1
+	new file:   file2
+
+
+git commit -m "first commit"
+
+	*** Please tell me who you are.
+
+	Run
+ 		 git config --global user.email "you@example.com"
+ 		 git config --global user.name "Your Name"
+
+		to set your account's default identity.
+
+
+git config --global user.email "rgupta.mtech@gmail.com"
+git config --global user.name "rgupta00"
+
+git commit -m "first commit"
+	[master (root-commit) bf0acc9] first commit
+ 		2 files changed, 2 insertions(+)
+ 		create mode 100644 file1
+ 		create mode 100644 file2
+
+git status
+	On branch master
+	nothing to commit, working tree clean
+
+
+Now update file1:
+-------------
+cat >> file1
+this is some update to file1
+
+git status
+
+	On branch master
+	Changes not staged for commit:
+  		(use "git add <file>..." to update what will be committed)
+  		(use "git checkout -- <file>..." to discard changes in working directory)
+		
+		modified:   file1
+	no changes added to commit (use "git add" and/or "git commit -a")
+
+git add .
+
+git commit -m "some changes to file1"
+
+
+
+
+
+
+
+
+2. git log : get log information:
+---------------------------------
+
+	=> git log command is used to see history of all commits in local repository
+		most commonly command
+
+git log . 		=> getting all log information
+git log file1		=> only commit related to file1
+git log --oneline	=> oneline message, useful to identity commit based on messages
+
+
+git log
+-------
+	commit 0a82246afbfba89105ffa95a0b2cc65ccfc0010c (HEAD -> master)
+	Author: rgupta00 <rgupta.mtech@gmail.com>
+	Date:   Thu Aug 6 11:59:07 2020 +0530
+
+    	some changes to file1
+
+	commit bf0acc933722c9740521ed2dc98c9c899365dc99
+	Author: rgupta00 <rgupta.mtech@gmail.com>
+	Date:   Thu Aug 6 11:56:59 2020 +0530
+
+   	 first commit
+
+
+git ls-files
+------------
+lists all the files in the index (staging area). 
+It shows the files that Git is currently tracking.
+
+
+file1
+file2
+
+git log file1
+-------------
+	commit 0a82246afbfba89105ffa95a0b2cc65ccfc0010c (HEAD -> master)
+	Author: rgupta00 <rgupta.mtech@gmail.com>
+	Date:   Thu Aug 6 11:59:07 2020 +0530
+
+  	  some changes to file1
+
+	commit bf0acc933722c9740521ed2dc98c9c899365dc99
+	Author: rgupta00 <rgupta.mtech@gmail.com>
+	Date:   Thu Aug 6 11:56:59 2020 +0530
+
+   	 first commit
+
+
+git log --oneline	: handy command to see oneline log messaege
+-----------------		show first seven char of commit id
+
+	0a82246 (HEAD -> master) some changes to file1
+	bf0acc9 first commit
+
+
+
+git log -n 2	: get log for latest first two commit 
+-------------
+commit 0a82246afbfba89105ffa95a0b2cc65ccfc0010c (HEAD -> master)
+Author: rgupta00 <rgupta.mtech@gmail.com>
+Date:   Thu Aug 6 11:59:07 2020 +0530
+
+    some changes to file1
+
+commit bf0acc933722c9740521ed2dc98c9c899365dc99
+Author: rgupta00 <rgupta.mtech@gmail.com>
+Date:   Thu Aug 6 11:56:59 2020 +0530
+
+    first commit
+
+
+
+git log --grep "firstr" --oneline
+
+git log --since="5 min ago"
+
+git log --author =rgupta00 --oneline
+
+git log --max-count=3
+
+
+
+
+3. git diff command
+--------------------
+	=> lets say afte commiting 
+	we change file in working directory then content of staging area will be different 
+	from local repository 
+	=> we want to see the difference bw working directory and staging area
+	=> git diff command
+
+
+	git diff file1
+	Will give diff bw working dir and staging area
+
+
+
+
+diff --git a/file1 b/file1
+index 6564281..171840f 100644
+--- a/file1
++++ b/file1
+@@ -2,3 +2,4 @@ this is file 1
+ this is some update to file1
+ this is added to file1
+ another line is added to file1
++this is another line
+
+
+diff --git a/file1 b/file1:
+-------------------------
+	a/file1: source copy ie staging area
+	 b/file1: destination copy ie working copy
+
+		staging area ----> working copy
+ 
+
+index 6564281..171840f 100644
+-------------------------
+	6564281: hashcode of soruce file 
+	171840f: hashcode of destination file
+	100644: GIT file mode
+	100: first 3 digits, represent type of file,ASCII text file
+	644: next 3 digits rep file permission
+	644-> rw-r--r--
+
+--- a/file1
+-----------
+	---- a/file1 is missing some lines ( staging area) 
+
++++ b/file1
+-----------
+	+++ b/file1 is having some extra data (working dir) 
+
+
+
+
+
+
+removing file from working dir (untracked file) and otherwise deleted
+----------------------
+Once deleted, files are gone — git clean does not move them to the trash or recovery
+
+
+git clean -f 
+
+git clean -fd
+
+
+
+
+
+Git Reset Command 
+------------------
+
+ Scenario Setup:
+----------------
+echo "i love apple" > demo.txt
+git add .
+git commit -m "demo.txt is added"
+
+Check commit history:
+------------------
+git log
+
+Suppose: You committed wrong data
+You now want to undo the last commit.
+
+Git Reset Syntax			Command	Meaning
+---------------------------------------
+git reset HEAD^			Reset to one commit before HEAD
+git reset HEAD^^		Reset to two commits before HEAD
+git reset HEAD~2		Alternate syntax for two commits before HEAD
+
+Note: git reset HEAD^ is does a mixed reset by default. 
+------------------------------------------------------
+git reset --mixed HEAD^
+
+
+What it do?
+-----------
+ Moves HEAD and branch back by 1 commit
+ Unstages the last commit’s changes (removes from staging area)
+ Does not delete changes from the working directory
+
+
+Soft Reset:
+-----------------
+git reset --soft HEAD^
+
+What happens?
+	HEAD moves back by 1 commit.
+	Staging area still has the changes.
+	
+	You can easily commit again (possibly after editing):
+
+	git add .
+	git commit -m "fixed commit"
+
+	Use this when:
+	-------------
+	You want to fix the last commit message or add/remove files before recommitting.
+
+NOTE: 
+KEY DIFFERENCE: 			--soft vs 		--mixed
+Staging area cleared?	❌ (unchanged)	✅ (unstaged)
+
+
+
+Hard Reset:
+-----------
+git reset --hard HEAD^
+
+What happens?
+	HEAD moves back by 1 commit.
+	Staging area is cleared.
+	Working directory is also cleared — file is gone if it was added in that last commit.
+
+
+summary
+-------------
+git reset --soft HEAD^
+→ Undo last commit, but keep changes in staging.
+→ You can fix and re-commit.
+
+git reset --hard HEAD^
+→ Undo last commit and delete changes completely (dangerous).
+→ Repo looks like it did one commit ago.
+
+
+
+
+
+
+
+https://kodekloud.com/blog/unraveling-the-6-most-confusing-git-commands-a-simple-guide/
+
+
+
+
+4. git rm command:
+------------------
+	git rm -f file1.txt => file will be removed from both working direct and staging area
+	
+		Removes a file from your Git repository, essentially marking it for deletion so that 
+		it won't be tracked by your version control system anymore; it effectively 
+		removes the file from both your working directory and the staging area, e
+		ssentially telling Git to "forget" about that file in future commits. 
+		
+	git rm --cached file1.txt => it will remove file only from and staging area
+					and not from working dir
+	
+		The git rm --cached command removes files from the Git index (staging area)
+		without deleting them from the local file system. 
+		This is useful for stopping tracking a file without removing it from your project.
+
+		
+	rm file1.txt => it will remove file from only from working area not from staging area
+
+	as files are already in local repo can revert back!
+	We can only restore commited files
+	
+	commit operation is requried even in case of removing files, if files is alread tracked
+	by git.
+
+	git clean -f will remove untracked files
+
+
+
+
+Stash in GIT
+---------
+What is a git stash?
+-------------------------
+	The git stash command takes your uncommitted changes (both staged and unstaged), 
+	saves them away for later use, and then reverts them from your working copy
+	
+	The git stash stores the changes made in the working directory locally that is inside your projects directory 
+	as /. git/refs/stash . 
+	
+	The stash not only lets you save the changes but also helps you
+	retrieve the changes whenever you need them
+
+demo
+
+git init
+create 2 files file1.txt and file2.txt
+
+echo "First Line in File1" >file1.txt 
+echo "First Line in File2" >file2.txt
+
+git add file1.txt file2.txt;
+git commit -m '2 files added' 
+
+vim file1.txt (add some data)
+vim file2.txt
+
+git add file2.txt git add file1.txt
+
+git status
+On branch master Changes to be committed:
+(use "git restore --staged <file>..." to unstage) modified: file2.txt
+Changes not staged for commit:
+(use "git add <file>..." to update what will be committed)
+(use "git restore <file>..." to discard changes in working directory) modified: file1.txt
+
+
+Assume we required to create and work on file3.txt and
+-----------------------------------------------
+ and this file changes needs to be committed immediately.
+ -------------------------------------------------
+ 
+To work on file3.txt, we have to save uncommitted changes of file1.txt 
+and file2.txt to some temporary location, 
+because we don't want to include these changes in the current commit.
+
+For this we should go for git stash command. 
+-----------------------------------------------
+git stash
+Saved working directory and index state WIP on master: 0323e16 2 files added
+
+git status
+On branch master
+nothing to commit, working tree clean
+lenovo@DESKTOP-ECE8V3R MINGW64 /d/gitprojects/stashing (master)
+
+
+How to list all available stashes:
+--------------------------------
+git stash list
+stash@{0}: WIP on master: 0323e16 2 files added
+
+How to check the contents of stash:
+------------------------------
+git show stash@{0}
+
+How to perform unstash 
+-----------------------------
+git stash pop stash@{0}
+
+to unstash all:
+----------------
+git stash pop
+
+How to clear stash
+-------------------
+git stash clear
+
+
+
+Ignoring unwanted Files And Directories by using .gitignore File
+--------------------------------------------
+	It is very common requirement that we are not required to store everything
+	in the repository.
+	
+	We have to store only source code files like .java files etc.
+	log files Not required to store
+	
+	We can request git, not to consider a particular file or directory.
+	We have to provide these files and directories information inside a special
+	file .gitignore (without extension)
+
+		# Don't track a.txt
+		a.txt
+		#Don't track all .txt files
+		*.txt
+		#Don't track log files
+		logs/
+		#Don't track any hidden file
+		.*
+
+
+
+
+
+
+
+Branching And Merging
+-------------------------
+
+creating new branch
+git branch brach_name
+
+How to Switch from one Branch to another Branch?
+git checkout brach_name
+
+Short-cut Way to Create a New Branch and switch to that Branch
+git checkout -b new2branch
+
+
+To see listing of all branches:(including remote branches)
+git branch -a 
+
+Want to see remote branches only:
+git branch -r 
+
+Want to delete a repo from local as well as remote
+git push origin -delete feature1
+
+
+
+
+Branching example
+-----------------
+
+Fast forward merge:
+-------------------
+After creating child branch, if we are not doing any new 
+commits in the parent branch, then git will perform fast-forward merge.
+ i.e updations(new commits) happened only in child branch but not in parent branch.
+ 
+In the fast-forward merge, git simply moves parent branch 
+and points to the last commit of the child branch.
+
+
+No Chance of raising conflicts in fast-forward Merge
+
+
+create file a.txt b.txt
+
+touch a.txt
+touch b.txt
+
+git add a.txt
+git commit -m 'c1m' 
+git add b.txt
+git commit -m 'c2m' 
+
+git log -–oneline
+
+git branch
+git checkout -b feature 
+
+git branch
+create new file z.txt
+git add z.txt
+git commit -m 'c1f' 
+
+create new file x.txt
+
+touch x.txt
+git add x.txt
+git commit -m 'c2f'
+
+git log --oneline master 
+git log --oneline feature
+
+
+Assume new feature implemented properly, We want to merge feature branch with master branch.
+
+git checkout master 
+git merge feature
+ls
+git log -–oneline
+
+
+
+
+
+Cherry picking :
+-----------------
+	The command git cherry-pick is typically used to introduce particular 
+	commits from one branch within a repository onto a different branch
+	
+	very useful in real world situation, lets say we have 2 branches master and feature branch
+	
+	let say i want to pick some specific commit and want to put to the master branch
+	
+	step 1: go to master branch
+	git checkout master
+	
+	step 2: git cherry-pick <--commit -id ---->
+	
+	
+	
+
+What is Three-Way Merge?
+---------------------------
+If changes present in both parent and child branches 
+and if we are trying to perform merge operation, 
+then git will do three-way merge.
+
+Demo:
+----------
+create file a.txt b.txt
+
+touch a.txt 
+touch b.txt
+
+git add a.txt
+git commit -m 'c1m' 
+git add b.txt
+git commit -m 'c2m' 
+git log –oneline
+
+git checkout -b feature 
+
+create file x.txt z.txt
+
+touch x.txt
+touch y.txt
+
+git add x.txt 
+git commit -m 'c1f'
+git add z.txt 
+git commit -m 'c2f'
+
+git branch
+git log --oneline master 
+git log --oneline feature
+
+Now we want to add new stuff to master branch after creating feature branch
+
+git checkout master 
+crete file c.txt
+git add c.txt 
+git commit -m 'c3m'
+
+git merge feature	(Merge made by the 'recursive' strategy)
+
+Three-way merge creates a new commit which is also 
+known as merge commit. 
+Parent branch will pointing to the newly created merge commit.
+
+git log --oneline –graph
+
+
+
+
+Merge Conflicts and Resolution Process
+-----------------------------------
+
+mkdir project12 
+cd project12
+
+git init
+
+create file a.txt
+
+touch a.txt
+echo "First Line Added" > a.txt 
+git add a.txt 
+git commit -m 'c1m'
+
+echo "Second Line Added" >> a.txt 
+git add a.txt
+git commit -m 'c2m'
+
+git checkout -b feature
+
+echo "New Data Added By Feature Branch" >> a.txt 
+git add a.txt 
+git commit -m 'c1f'
+
+git checkout master
+echo "New Data Added By Master Branch" >> a.txt 
+git add a.txt
+git commit -m 'c3m'
+
+git diff master feature
+
+git merge feature [Auto-merging a.txt
+					CONFLICT (content): Merge conflict in a.txt
+					Automatic merge failed; fix conflicts and then commit the result.]
+
+cat a.txt
+vim a.txt
+
+finally fix the conflict:
+git add a.txt 
+git commit -m 'Resolved Merge Conflicts' 
+
+git log --oneline --graph
+
+
+
+
+
+git tagging:
+---------------
+let you have done production deployment and you are happy to an particular commit
+if you tag then you come to know what you have achived till that commit
+
+git tag major_v1.0
+
+git log
+
+it give you some checkpoint so that you can easily track
+
+
+
+how to commit to github?
+-----------------------
+git remote
+git remote -v 
+
+imagin you till now working on local reposity , you have a team that want to contribute your project?
+how you share with them?
+
+creating remote repo and put all your local code ..
+
+
+
+How to work with Remote Repository:
+-----------------------------------
+To work with remote repository we have to use the following commands
+	1. git remote
+	2. git push
+	3. git clone
+	4. git pull
+	5. git fetch
+	
+	
+git remote
+-------------------
+configure remote repository to our local repository.
+
+git remote add <alias_name> remote_repository_url
+
+Eg:
+$ git remote add origin https://github.com/rgupta00/github_project.git
+
+Here, origin is alias name of the remote_repository_url. By using this alias
+name only we can communicate with remote repository.
+Instead of origin we can use any name, but it is convention to use origin.
+
+git remote
+------------
+It just provides the alias names of remote repositories
+
+git remote -v
+-----------
+It provides remote repository urls also
+
+
+git push
+-------
+We can use git push command to send our changes from local repository to
+remote repository. ie to push our changes from local repo to remote repo.
+
+git push <remote_name> <branch_name>
+
+git push origin master
+
+
+
+pushing all branches to remote repo:
+--------------------------------
+git push origin --all
+
+
+git clone
+----------------
+cloning means creating exactly duplicate copy.
+
+Already there is a project on remote repository. Being a new team member,
+we may required complete remote repository into our local
+repository. For this purpose we have to use git clone command.
+
+i.e we can use git clone command to create local repository with remote
+repository files. All the files and commit history will be copied from
+remote repository into local repository.
+
+Syntax: git clone <remote_repo_url>
+
+
+git clone https://github.com/rgupta00/github_project.git
+
+
+getting information of all branches:
+---------------------------
+git branch -r
+
+how to checkout to feature branch:
+-----------------------
+git checkout -b feature origin/feature
+
+
+how to push all branches:
+-----------------------
+git push origin --all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+go to azure dev site:
+-------------------
+Dont forget to fill: azure parallism form
+
+create new project ---> busycoder_devops_1 -> private ---> choose git a/file1
+new project is created 
+
+a repo with name "busycoder_devops_1" is automatically created
+
+azure repo is same as github (only ui differ)
+
+
+git clone: taking a mirror copy on your local system
+			along with your source code with history is copied
+			
+			one time activity
+			
+git fetch: give you list of  all commit , you have option to select 
+			seleted commits
+		
+
+git pull: syn local copy with the remote copy
+			it only fetch changes
+			
+
+git push : if you done some local commit you can push your changes to remote repo
+
+git push --tag
+
+
+
+
+
+
+
+Rebase : we want to get linear merge history 
+------------------------------------------
+What if we want liner graph (for easy understanding) , new commit should not be create (as in previous case)
+and we should not have any conflict.
+
+BEASE: Re+ base: re arrage the base
+
+
+https://phoenixnap.com/kb/git-rebase-vs-merge

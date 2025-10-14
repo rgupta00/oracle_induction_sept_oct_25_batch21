@@ -232,7 +232,7 @@ ng g c test
 })
 export class TestComponent {
 
-  namme: string="angular 18 demo"
+  name: string="angular 18 demo"
 }
 
 
@@ -330,11 +330,10 @@ import { Component } from '@angular/core';
 })
 export class TestComponent {
 
-  namme: string="angular 18 demo"
+   name: string="angular 18 demo"
   title: string='angular demo'
-  name: string='rajeev'
   fullname():string{
-    return `my name is ${thsi.name}`;
+    return `my name is ${this.name}`;
   }
 }
 
@@ -1450,6 +1449,469 @@ app.component.html
 
 
 
+________________________
+ - applying routing
+_______________________________
+
+Introduction to routing?
+__________________________
+	=> web applications can have different sections that corrosponds to 
+	different URLs and supporting those section programmatically is called routing
+
+	=> In simple words, as per url open different angular components is called routing
+
+
+
+
+step 1: create an angular project with routing option
+-----------------------------------------------
+ng new myapp --standalone --routing --style=css
+
+step 2: create two components 
+------------------------------
+ng g c deptlist -t -s --standalone --skip-tests
+ng g c emplist -t -s --standalone --skip-tests
+ng g c page-not-found -t -s --standalone --skip-tests
+
+
+step 3: configure the route in app.routes.ts
+------------------------------------------
+ app.routes.ts
+ -------------
+import { Routes } from '@angular/router';
+import { DeptlistComponent } from './components/deptlist/deptlist.component';
+import { EmplistComponent } from './components/emplist/emplist.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+
+export const routes: Routes = [
+    { path: '', redirectTo: '/departments', pathMatch: 'full' }, // default
+    { path: 'departments', component: DeptlistComponent },
+    { path: 'employees', component: EmplistComponent },
+    { path: '**', component: PageNotFoundComponent } // wildcard
+];
+
+
+step 4: Update app.config.ts
+----------------------------
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { appRoutes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(appRoutes)]
+};
+
+
+step 5: check  main.ts.....Make sure this uses appConfig:
+---------------------------------------
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig)
+  .catch(err => console.error(err));
+
+
+
+
+step 6: Update app.component.ts to import RouterModule
+---------------------------------------------------
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule],
+  templateUrl: './app.component.html'
+})
+export class AppComponent {}
+
+
+step 7: Create Navigation in app.component.html
+-----------------------------------------
+<h1>Angular 18 Standalone Routing</h1>
+
+<nav>
+  <a routerLink="/departments">Departments</a> |
+  <a routerLink="/employees">Employees</a>
+</nav>
+
+<hr>
+
+<router-outlet></router-outlet>
+
+
+
+href vs routerLink
+------------------
+href 		: HTML attribute, full page reload
+routerLink 	: Angular directive, no reload, SPA behavior
+
+
+
+<!-- Not recommended for Angular apps -->
+<a href="/departments">Departments</a>
+
+<!-- Recommended in Angular -->
+<a routerLink="/departments">Departments</a>
+
+
+Use routerLink inside Angular apps for internal navigation.
+Use href only for external links (like https://google.com).
+
+
+
+
+
+
+
+
+Routing parameters:
+______________________
+
+	we want to nevigate to department detail component if 
+	we click an particular department
+
+Dept 			Deptdetail
+----------------------------------------
+
+angular   id		you selected dept with id =1
+node	-------> 
+mongo
+java
+
+
+step 1: update dept component
+----------------------------
+
+ <ul class="item">
+  <li *ngFor="let department of departments">
+    <span class="badge">{{department.id}}</span> {{department.name}}
+  </li>
+</ul>
+
+
+
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+
+
+
+@Component({
+  selector: 'app-deptlist',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+     <ul class="item">
+    <li *ngFor="let department of departments">
+      <span class="badge">{{department.id}}</span> {{department.name}}
+    </li>
+</ul>
+  `,
+  styles: ``
+})
+export class DeptlistComponent {
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+}
+
+
+
+
+step 3: generate new component 
+ng g c dept-detail -t -s --standalone --skip-tests
+
+step 4: add route for this component in app-routing module
+
+{ path : 'departments/:id', component: DeptDetailComponent}
+
+
+step 5: update dept component to 
+-------------------------------
+
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-deptlist',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+   <ul class="item">
+	  <li (click)="onSelect(department)"  *ngFor="let department of departments">
+		<span class="badge">{{department.id}}</span> {{department.name}}
+	  </li>
+	</ul>
+  `,
+  styles: ``
+})
+export class DeptlistComponent {
+  public departments = [
+    {"id": 1, "name": "Angular"},
+    {"id": 2, "name": "Node"},
+    {"id": 3, "name": "MongoDB"},
+    {"id": 4, "name": "Ruby"},
+    {"id": 5, "name": "Bootstrap"}
+  ]
+  constructor(private rounter: Router) { }
+
+    onSelect(department: { id: any; }){
+    // from neviate from code to rooute we need router service
+    this.rounter.navigate(['/departments', department.id]);
+  }
+}
+
+
+
+Step 6: we want to access parameter (dept id) in department detail module and use it threre
+-----------------------------------------------------------------------------------------
+we have to use "ACTIVATED ROUTE SERVICE"
+
+go to dept detail compoent and update:
+-----------------------------------
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-dept-detail',
+  standalone: true,
+  imports: [],
+  template: `
+    <h3>you selected dept with id {{deptId}}</h3>
+  `,
+  styles: ``
+})
+export class DeptDetailComponent {
+   public deptId: any; 
+
+  constructor(private route: ActivatedRoute) { }
+
+  ngOnInit() {
+    // tslint:disable-next-line: radix
+    let id = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
+    this.deptId = id;
+  }
+}
+
+
+
+
+
+
+______________________________________
+- applying guards routes in angular
+______________________________________
+
+guards routes in angular:
+__________________________
+
+	=> The Angular supports several guards like CanActivate, 
+	CanDeactivate, Resolve, CanLoad, and CanActivateChild. 
+
+	=> These guards help us to secure the route or to perform some actions before navigating 
+	into a route or leaving the route
+
+
+Why guards routes?
+_____________________
+
+	=> Allowing the user to navigate all parts of the application is not a good idea.
+	 We need to restrict the user until the user performs specific actions like login.
+	 Angular provides the Route Guards for this purpose.
+
+	One of the common scenario, where we use Route guards is authentication. 
+	We want our App to stop the unauthorized user from accessing the protected route. 
+	We achieve this by using the CanActivate guard, which angular invokes when the 
+	user tries to navigate into the protected route.
+
+	 Then we hook into the CanActivate guard and use the authentication service to check whether the user is 			
+	 authorized to use the route and if not we can redirect the user to the login page.
+
+
+Uses of  Angular Route Guards
+________________________________
+
+	To Confirm the navigational operation
+	Asking whether to save before moving away from a view
+	Allow access to certain parts of the application to specific users
+	Validating the route parameters before navigating to the route
+	Fetching some data before you display the component
+
+Types of Route Guards
+______________________
+
+The Angular Router supports Five different guards, which you can use to protect the route
+
+CanActivate:
+	This guard decides if a route can be activated (or component gets used). 
+	This guard is useful in the circumstance where the user is not authorized 
+	to navigate to the target component Or the user might not be logged into the system
+
+
+CanDeactivate:
+	The CanDeactivate route allows us to ask user confirmation before leaving the component.  
+	You might ask the user if it’s OK to discard pending changes rather than save them.
+
+Resolve:
+
+	This guard delays the activation of the route until some tasks are complete.
+	 You can use the guard to pre-fetch the data from the backend API, before activating the route
+
+
+CanLoad:
+	The CanLoad Guard prevents the loading of the Lazy Loaded Module. 
+	We generally use this guard when we do not want to unauthorized user 
+	to be able to even see the source code of the module.
+
+
+
+CanActivateChild:
+	This guard determines whether a child route can be activated. 
+	This guard is very similar to CanActivateGuard. We apply this guard to the parent route. 
+	The Angular invokes this guard whenever the user tries to navigate to any of its child route.
+	 This allows us to check some condition and decide whether to proceed with the navigation or cancel it.
+
+
+step 1: create new project
+-------------------
+ng new myapp --standalone --routing --style=css
+
+
+
+Step 2: Create Basic Components
+--------------------
+ng g c home -t -s --standalone --skip-tests
+ng g c admin -t -s --standalone --skip-tests
+
+
+Step 3: Create the Route Guard
+-----------------------
+ng g guard auth/activate --skip-tests
+
+activate.guard.ts
+------------------
+import { CanActivateFn } from '@angular/router';
+export const activateGuard: CanActivateFn = (route, state) => {
+  return true;
+};
+
+
+Step 4: Create a User Service and edit user.service.ts
+------------------------------------------------
+ng g service services/user --skip-tests
+
+
+import { Injectable } from '@angular/core';
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  isAdminRight(): boolean {
+    // Logic can be based on login token or user role
+    return false; // change to true to allow access
+  }
+}
+
+
+
+
+
+Create Routing File using Standalone Route Config in app.routes.ts
+--------------------------------------------------------------------
+Define routes:
+--------------
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home.component';
+import { AdminComponent } from './admin.component';
+import { activateGuard } from './auth/activate.guard';
+
+export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [activateGuard] }
+];
+
+
+
+
+step 5: Update app.component.ts to import RouterModule
+---------------------------------------------------
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule],
+  templateUrl: './app.component.html'
+})
+export class AppComponent {}
+
+
+step 6: check  main.ts.....Make sure this uses appConfig:
+---------------------------------------
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig)
+  .catch(err => console.error(err));
+  
+  
+
+
+use user service in ActivateGuard:
+---------------------------------
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+
+export const activateGuard: CanActivateFn = (route, state) => {
+  const userService = inject(UserService);
+  const router = inject(Router);
+  if (userService.isAdminRight()) {
+    return true;
+  } else {
+    alert('You do not have permission to access this page.');
+    return router.createUrlTree(['/home']);
+  }
+};
+
+
+update app.compoent.html:
+------------------------
+
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a routerLink="home" routerLinkActive="active" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="admin" routerLinkActive="active" class="nav-link">Admin</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="text-center mt-3">
+    <router-outlet></router-outlet>
+  </div>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2030,469 +2492,6 @@ studentForm.controls['firstName'].errors?.['required']
 
 It safely accesses nested properties without throwing an error if 
 the previous object is null or undefined.
-
-
-
-
-
-
-
-
-________________________
- - applying routing
-_______________________________
-
-Introduction to routing?
-__________________________
-	=> web applications can have different sections that corrosponds to 
-	different URLs and supporting those section programmatically is called routing
-
-	=> In simple words, as per url open different angular components is called routing
-
-
-
-
-step 1: create an angular project with routing option
------------------------------------------------
-ng new myapp --standalone --routing --style=css
-
-step 2: create two components 
-------------------------------
-ng g c deptlist -t -s --standalone --skip-tests
-ng g c emplist -t -s --standalone --skip-tests
-ng g c page-not-found -t -s --standalone --skip-tests
-
-
-step 3: configure the route in app.routes.ts
-------------------------------------------
- app.routes.ts
- -------------
-import { Routes } from '@angular/router';
-import { DeptlistComponent } from './components/deptlist/deptlist.component';
-import { EmplistComponent } from './components/emplist/emplist.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-
-export const routes: Routes = [
-    { path: '', redirectTo: '/departments', pathMatch: 'full' }, // default
-    { path: 'departments', component: DeptlistComponent },
-    { path: 'employees', component: EmplistComponent },
-    { path: '**', component: PageNotFoundComponent } // wildcard
-];
-
-
-step 4: Update app.config.ts
-----------------------------
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { appRoutes } from './app.routes';
-
-export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(appRoutes)]
-};
-
-
-step 5: check  main.ts.....Make sure this uses appConfig:
----------------------------------------
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { appConfig } from './app/app.config';
-
-bootstrapApplication(AppComponent, appConfig)
-  .catch(err => console.error(err));
-
-
-
-
-step 6: Update app.component.ts to import RouterModule
----------------------------------------------------
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterModule],
-  templateUrl: './app.component.html'
-})
-export class AppComponent {}
-
-
-step 7: Create Navigation in app.component.html
------------------------------------------
-<h1>Angular 18 Standalone Routing</h1>
-
-<nav>
-  <a routerLink="/departments">Departments</a> |
-  <a routerLink="/employees">Employees</a>
-</nav>
-
-<hr>
-
-<router-outlet></router-outlet>
-
-
-
-href vs routerLink
-------------------
-href 		: HTML attribute, full page reload
-routerLink 	: Angular directive, no reload, SPA behavior
-
-
-
-<!-- Not recommended for Angular apps -->
-<a href="/departments">Departments</a>
-
-<!-- Recommended in Angular -->
-<a routerLink="/departments">Departments</a>
-
-
-Use routerLink inside Angular apps for internal navigation.
-Use href only for external links (like https://google.com).
-
-
-
-
-
-
-
-
-Routing parameters:
-______________________
-
-	we want to nevigate to department detail component if 
-	we click an particular department
-
-Dept 			Deptdetail
-----------------------------------------
-
-angular   id		you selected dept with id =1
-node	-------> 
-mongo
-java
-
-
-step 1: update dept component
-----------------------------
-
- <ul class="item">
-  <li *ngFor="let department of departments">
-    <span class="badge">{{department.id}}</span> {{department.name}}
-  </li>
-</ul>
-
-
-
-  public departments = [
-    {"id": 1, "name": "Angular"},
-    {"id": 2, "name": "Node"},
-    {"id": 3, "name": "MongoDB"},
-    {"id": 4, "name": "Ruby"},
-    {"id": 5, "name": "Bootstrap"}
-  ]
-
-
-
-@Component({
-  selector: 'app-deptlist',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-     <ul class="item">
-    <li *ngFor="let department of departments">
-      <span class="badge">{{department.id}}</span> {{department.name}}
-    </li>
-</ul>
-  `,
-  styles: ``
-})
-export class DeptlistComponent {
-  public departments = [
-    {"id": 1, "name": "Angular"},
-    {"id": 2, "name": "Node"},
-    {"id": 3, "name": "MongoDB"},
-    {"id": 4, "name": "Ruby"},
-    {"id": 5, "name": "Bootstrap"}
-  ]
-}
-
-
-
-
-step 3: generate new component 
-ng g c dept-detail -t -s --standalone --skip-tests
-
-step 4: add route for this component in app-routing module
-
-{ path : 'departments/:id', component: DeptDetailComponent}
-
-
-step 5: update dept component to 
--------------------------------
-
-import { Router } from '@angular/router';
-
-@Component({
-  selector: 'app-deptlist',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-   <ul class="item">
-	  <li (click)="onSelect(department)"  *ngFor="let department of departments">
-		<span class="badge">{{department.id}}</span> {{department.name}}
-	  </li>
-	</ul>
-  `,
-  styles: ``
-})
-export class DeptlistComponent {
-  public departments = [
-    {"id": 1, "name": "Angular"},
-    {"id": 2, "name": "Node"},
-    {"id": 3, "name": "MongoDB"},
-    {"id": 4, "name": "Ruby"},
-    {"id": 5, "name": "Bootstrap"}
-  ]
-  constructor(private rounter: Router) { }
-
-    onSelect(department: { id: any; }){
-    // from neviate from code to rooute we need router service
-    this.rounter.navigate(['/departments', department.id]);
-  }
-}
-
-
-
-Step 6: we want to access parameter (dept id) in department detail module and use it threre
------------------------------------------------------------------------------------------
-we have to use "ACTIVATED ROUTE SERVICE"
-
-go to dept detail compoent and update:
------------------------------------
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
-@Component({
-  selector: 'app-dept-detail',
-  standalone: true,
-  imports: [],
-  template: `
-    <h3>you selected dept with id {{deptId}}</h3>
-  `,
-  styles: ``
-})
-export class DeptDetailComponent {
-   public deptId: any; 
-
-  constructor(private route: ActivatedRoute) { }
-
-  ngOnInit() {
-    // tslint:disable-next-line: radix
-    let id = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
-    this.deptId = id;
-  }
-}
-
-
-
-
-
-
-______________________________________
-- applying guards routes in angular
-______________________________________
-
-guards routes in angular:
-__________________________
-
-	=> The Angular supports several guards like CanActivate, 
-	CanDeactivate, Resolve, CanLoad, and CanActivateChild. 
-
-	=> These guards help us to secure the route or to perform some actions before navigating 
-	into a route or leaving the route
-
-
-Why guards routes?
-_____________________
-
-	=> Allowing the user to navigate all parts of the application is not a good idea.
-	 We need to restrict the user until the user performs specific actions like login.
-	 Angular provides the Route Guards for this purpose.
-
-	One of the common scenario, where we use Route guards is authentication. 
-	We want our App to stop the unauthorized user from accessing the protected route. 
-	We achieve this by using the CanActivate guard, which angular invokes when the 
-	user tries to navigate into the protected route.
-
-	 Then we hook into the CanActivate guard and use the authentication service to check whether the user is 			
-	 authorized to use the route and if not we can redirect the user to the login page.
-
-
-Uses of  Angular Route Guards
-________________________________
-
-	To Confirm the navigational operation
-	Asking whether to save before moving away from a view
-	Allow access to certain parts of the application to specific users
-	Validating the route parameters before navigating to the route
-	Fetching some data before you display the component
-
-Types of Route Guards
-______________________
-
-The Angular Router supports Five different guards, which you can use to protect the route
-
-CanActivate:
-	This guard decides if a route can be activated (or component gets used). 
-	This guard is useful in the circumstance where the user is not authorized 
-	to navigate to the target component Or the user might not be logged into the system
-
-
-CanDeactivate:
-	The CanDeactivate route allows us to ask user confirmation before leaving the component.  
-	You might ask the user if it’s OK to discard pending changes rather than save them.
-
-Resolve:
-
-	This guard delays the activation of the route until some tasks are complete.
-	 You can use the guard to pre-fetch the data from the backend API, before activating the route
-
-
-CanLoad:
-	The CanLoad Guard prevents the loading of the Lazy Loaded Module. 
-	We generally use this guard when we do not want to unauthorized user 
-	to be able to even see the source code of the module.
-
-
-
-CanActivateChild:
-	This guard determines whether a child route can be activated. 
-	This guard is very similar to CanActivateGuard. We apply this guard to the parent route. 
-	The Angular invokes this guard whenever the user tries to navigate to any of its child route.
-	 This allows us to check some condition and decide whether to proceed with the navigation or cancel it.
-
-
-step 1: create new project
--------------------
-ng new myapp --standalone --routing --style=css
-
-
-
-Step 2: Create Basic Components
---------------------
-ng g c home -t -s --standalone --skip-tests
-ng g c admin -t -s --standalone --skip-tests
-
-
-Step 3: Create the Route Guard
------------------------
-ng g guard auth/activate --skip-tests
-
-activate.guard.ts
-------------------
-import { CanActivateFn } from '@angular/router';
-export const activateGuard: CanActivateFn = (route, state) => {
-  return true;
-};
-
-
-Step 4: Create a User Service and edit user.service.ts
-------------------------------------------------
-ng g service services/user --skip-tests
-
-
-import { Injectable } from '@angular/core';
-@Injectable({
-  providedIn: 'root'
-})
-export class UserService {
-  isAdminRight(): boolean {
-    // Logic can be based on login token or user role
-    return false; // change to true to allow access
-  }
-}
-
-
-
-
-
-Create Routing File using Standalone Route Config in app.routes.ts
---------------------------------------------------------------------
-Define routes:
---------------
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home.component';
-import { AdminComponent } from './admin.component';
-import { activateGuard } from './auth/activate.guard';
-
-export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
-  { path: 'admin', component: AdminComponent, canActivate: [activateGuard] }
-];
-
-
-
-
-step 5: Update app.component.ts to import RouterModule
----------------------------------------------------
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterModule],
-  templateUrl: './app.component.html'
-})
-export class AppComponent {}
-
-
-step 6: check  main.ts.....Make sure this uses appConfig:
----------------------------------------
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { appConfig } from './app/app.config';
-
-bootstrapApplication(AppComponent, appConfig)
-  .catch(err => console.error(err));
-  
-  
-
-
-use user service in ActivateGuard:
----------------------------------
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { UserService } from '../services/user.service';
-
-export const activateGuard: CanActivateFn = (route, state) => {
-  const userService = inject(UserService);
-  const router = inject(Router);
-  if (userService.isAdminRight()) {
-    return true;
-  } else {
-    alert('You do not have permission to access this page.');
-    return router.createUrlTree(['/home']);
-  }
-};
-
-
-update app.compoent.html:
-------------------------
-
-<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a routerLink="home" routerLinkActive="active" class="nav-link">Home</a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="admin" routerLinkActive="active" class="nav-link">Admin</a>
-      </li>
-    </ul>
-  </nav>
-  <div class="text-center mt-3">
-    <router-outlet></router-outlet>
-  </div>
-  
-  
-
-
-
-
 
 
 
